@@ -11,5 +11,10 @@
 
 .navigation-elem {
   display: flex;
-  justify-content: space-between;
+}
+.left-component{
+    display: flex;
+    flex-direction: column;
+    padding: 15px 10px;
+    gap: 20px;
 }
