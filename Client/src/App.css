@@ -1,0 +1,15 @@
+:root {
+  --sidebar-width: 250px;
+  --sidebar-bg-color: #3b3030;
+  --sidebar-border-radius: 10px;
+  --sidebar-margin: 15px 10px;
+  --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-color: white;
+  --font-size: 12px;
+  --icon-width: 24px;
+}
+
+.navigation-elem {
+  display: flex;
+  justify-content: space-between;
+}
