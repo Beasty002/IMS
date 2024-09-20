@@ -16,13 +16,15 @@ export default function App() {
         <SideBar />
         <div className="left-component">
           <NavBar />
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/purchases" element={<Purchase />} />
-            <Route path="/report" element={<Report />} />
-            <Route path="/sales" element={<Sales />} />
-          </Routes>
+          <main className="page-changer">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/inventory" element={<Inventory />} />
+              <Route path="/purchases" element={<Purchase />} />
+              <Route path="/report" element={<Report />} />
+              <Route path="/sales" element={<Sales />} />
+            </Routes>
+          </main>
         </div>
       </div>
     </>
