@@ -5,15 +5,8 @@
   --sidebar-margin: 15px 0;
   --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --font-color: white;
-  --font-size-small: 12px;
-  --font-size-large: 15px;
-  --font-color-light: #b9b9b9;
-  --font-color-dark: #555555;
-  --border-color: #dfdfdf;
-  --icon-color: #111111;
-  --search-border: #bfb8b8;
-  --search-width: 248px;
-  --icon-size: 21px;
+  --font-size: 12px;
+  --icon-width: 24px;
 }
 
 .navigation-elem {
