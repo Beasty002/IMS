@@ -17,19 +17,26 @@ const corsOptions={
     optionsSuccessStatus: 200,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type,Authorization",
-  } 
-  app.use(cors(corsOptions));
-  app.options('*',cors(corsOptions));
+}
+app.use(cors(corsOptions));
+app.options('*',cors(corsOptions));
 
-  app.use(express.json());
-  app.use('/', dataRouter);
+app.use(express.json());
 
-  connectDb().then(()=>{
-    const PORT= process.env.PORT || 3000;
-    app.listen(PORT,()=>{
-        console.log("Server is ready");
-    });
+// primary router
+app.use('/api/', dataRouter);
+
+
+connectDb().then(()=>{
+  const PORT= process.env.PORT || 3000;
+  app.listen(PORT,()=>{
+      console.log("Server is ready at port:",PORT);
   });
+});
+
+
+
+
 
   
 
