@@ -40,6 +40,26 @@ const createCategory = async (req,res) => {
     }
 }
 
+const delCategory = async(req,res) =>{
+    try{
+        const delCat = req.body.delCat
+
+        if (!delCat){
+            console.log("No such category found!")
+            return res.json({ err: "No such category found!"});
+        }
+
+        await Category.deleteOne({ title: delCat});
+
+        return res.json({msg: delCat+" category deleted!"});
+
+    }
+    catch(err){
+        console.error("Error deleting category:", err);
+        res.status(500).json({ message: "Internal server error!!(delCat)" });
+    }
+}
+
 const getAllBrands = async (req,res) => {
     try{
         const brands = await Brand.find()
@@ -60,18 +80,26 @@ const createBrand = async (req,res) => {
     try{
         const {brandName, multiVar, rowLabel, colLabel } = req.body
 
-        console.log(brandName)
+        let newBrand;
 
-        const newBrand = new Brand({
-            name: brandName,
-            multiVar: multiVar,
-            rowLabel: rowLabel,
-            colLabel: colLabel
-        });
+        if (multiVar === 0 || multiVar === true){
+            newBrand = new Brand({
+                brandName: brandName,
+                multiVar: multiVar,
+                rowLabel: rowLabel,
+                colLabel: colLabel
+            });
+        }
+        else{
+            newBrand = new Brand({
+                brandName: brandName,
+                multiVar: multiVar,
+            });
+        }
 
         await newBrand.save();
 
-        res.json({msg: brandName + " brand created!"})
+        res.json({msg: `${brandName} brand created!`})
 
     }
     catch(err){
@@ -80,6 +108,29 @@ const createBrand = async (req,res) => {
     }
 }
 
+const delBrand = async (req,res) =>{
+    try{
+        const delBrandId = req.body.delBrandId
+
+        if (!delBrandId || delBrandId == null){
+            console.log("No such brand found!")
+            return res.json({ err: "No such brand found!"});
+        }
+
+        const delBrand = await Brand.findById({_id:delBrandId})
+        const delBrandName = delBrand.brandName;
+
+        await Brand.deleteOne({ _id: delBrandId});
+
+        return res.json({msg: delBrandName +" brand deleted!"});
+
+    }
+    catch(err){
+        console.error("Error deleting category:", err);
+        res.status(500).json({ message: "Internal server error!!(delBrand)" });
+    }
+}
 
 
-module.exports = {getAllCategories, createCategory, getAllBrands, createBrand}
+
+module.exports = {getAllCategories, createCategory,delCategory, getAllBrands, createBrand, delBrand}

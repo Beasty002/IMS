@@ -2,7 +2,7 @@ const {Schema , model} = require("mongoose")
 
 const brandSchema = new Schema({
     //
-    name:{
+    brandName:{
         type: String,
         required: true
     },
@@ -13,11 +13,9 @@ const brandSchema = new Schema({
     },
     rowLabel:{
         type:String,
-        required:true
     },
     colLabel:{
         type:String,
-        required:true
     }
 
 })
