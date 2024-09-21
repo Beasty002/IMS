@@ -9,6 +9,8 @@
     margin: var(--sidebar-margin);
     margin-left: 10px;
     border-radius: var(--sidebar-border-radius);
+    position: sticky;
+    top: 15px;
   }
   
   .logo-cont {

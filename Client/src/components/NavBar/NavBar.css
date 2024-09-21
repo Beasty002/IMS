@@ -3,7 +3,10 @@
     width: calc(100vw - 250px);
     justify-content: space-between;
     border-bottom: 1px solid #dfdfdf;
-    padding: 0 8px;
+    padding: 0 30px;
+    position: sticky;
+    background-color: white;
+    top: 0px;
   }
   
   .left-crumb span {
@@ -44,6 +47,7 @@
   .right-interact i {
     font-size: 21px;
     color: #111111;
+    cursor: pointer;
   }
   
   .search-box {
