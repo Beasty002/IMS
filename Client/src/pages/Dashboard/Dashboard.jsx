@@ -7,6 +7,7 @@ import Category from "../../assets/category.svg";
 import ProductTable from "../../components/DashboardComponents/ProductTable";
 import StockData from "../../components/DashboardComponents/StockData";
 import GraphSection from "../../components/DashboardComponents/GraphSection";
+import DelPoppp from "../../components/DelPop/DelPoppp";
 
 const Dashboard = () => {
   const products = [
@@ -37,6 +38,7 @@ const Dashboard = () => {
         <ProductTable title="Low Stock Products" data={products} />
         <ProductTable title="Top Selling Products" data={products} />
       </div>
+      <DelPoppp />
     </section>
   );
 };

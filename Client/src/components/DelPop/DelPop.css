@@ -1,0 +1,75 @@
+.overlay {
+    position: fixed;
+    background-color: rgba(3, 3, 3, 0.664);
+    z-index: 3;
+    inset: 0;
+    backdrop-filter: blur(2px);
+}
+
+.del-popup {
+    position: fixed;
+    z-index: 4;
+    background-color: var(--primary-color);
+    width: 550px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px 80px;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    .bxs-trash {
+        font-size: 80px;
+        color: #ee0030;
+    }
+}
+
+.del-msg {
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-align: center;
+
+    .del-item-name {
+        color: #ee0030;
+    }
+}
+
+.btn-container {
+    display: flex;
+    gap: 35px;
+
+    button {
+        cursor: pointer;
+        font-weight: 500;
+        letter-spacing: 1px;
+        min-width: 100px;
+        padding: 10px 25px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        border: none;
+        transition: .2s;
+
+    }
+
+    .del-btn {
+        background-color: #ee0030;
+        color: #fff;
+    }
+}
+
+.cancel-btn {
+    background-color: rgb(225, 225, 225);
+
+}
+
+.cancel-btn:hover {
+    background-color: rgb(195, 195, 195);
+}
+
+.del-btn:hover {
+    background-color: #d4002a;
+}

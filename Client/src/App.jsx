@@ -8,6 +8,7 @@ import Inventory from "./pages/Inventory/Inventory";
 import Purchase from "./pages/Purchase/Purchase";
 import Sales from "./pages/Sales/Sales";
 import Report from "./pages/Report/Report";
+import DelPoppp from "./components/DelPop/DelPoppp";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           </main>
         </div>
       </div>
+      <DelPoppp />
     </>
   );
 }
