@@ -1,7 +1,6 @@
 const {Schema , model} = require("mongoose")
 
 const brandSchema = new Schema({
-
     //
     name:{
         type: String,
@@ -23,6 +22,6 @@ const brandSchema = new Schema({
 
 })
 
-const BrandModel = new model("Category", brandSchema);
+const BrandModel = new model("Brand", brandSchema);
 
 module.exports = BrandModel

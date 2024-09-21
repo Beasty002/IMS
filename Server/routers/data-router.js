@@ -10,6 +10,7 @@ router.get("/", (req, res) => {
 });
 
 router.route("/category").get(datac.getAllCategories).post(datac.createCategory)
+router.route("/brand").get(datac.getAllBrands).post(datac.createBrand)
 
 
 module.exports = router;
