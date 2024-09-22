@@ -4,10 +4,10 @@ import SideBar from "./components/SideBar/SideBar";
 import NavBar from "./components/NavBar/NavBar";
 import "./App.css";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Inventory from "./pages/Inventory/Inventory";
 import Purchase from "./pages/Purchase/Purchase";
 import Report from "./pages/Report/Report";
 import SalesPage from "./pages/SalesPage/SalesPage";
+import Category from "./pages/CategoryLayout/Category";
 
 export default function App() {
   const location = useLocation();
@@ -36,8 +36,8 @@ export default function App() {
           <main className="page-changer">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/inventory" element={<Inventory />} />
               <Route path="/purchases" element={<Purchase />} />
+              <Route path="/cateogry"  element={<Category/>} />
               <Route path="/report" element={<Report />} />
               <Route path="/sales" element={<SalesPage />} />
             </Routes>

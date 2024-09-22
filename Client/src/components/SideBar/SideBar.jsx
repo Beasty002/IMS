@@ -55,7 +55,7 @@ function SideBar({currentPage}) {
               </span>
             </li>
           </Link>
-          <Link to="/inventory">
+          <Link to={`${currentPage.toLowerCase()}`}>
             <li
               className={activeIndex === 'Inventory' ? "active" : ""}
               onClick={() => handleActive('Inventory')}
