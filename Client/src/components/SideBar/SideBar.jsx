@@ -2,17 +2,28 @@ import React, { useState } from "react";
 import "./SideBar.css";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
+import DelPop from "../../popups/DelPop/DelPop";
 
-function SideBar() {
-  const [activeIndex, setActiveIndex] = useState(0);
+function SideBar({currentPage}) {
+
+  const [activeIndex, setActiveIndex] = useState({currentPage});
   const [expand, setExpand] = useState(false);
+  const [isCatModel, setIsCatModel] = useState(false);
 
   const handleActive = (index) => {
     setActiveIndex(index);
+    
   };
 
   const handleExpand = () => {
     setExpand(!expand);
+  };
+
+  const setCatModel = () => {
+    setIsCatModel(true);
+  };
+  const closeCatModel = () => {
+    setIsCatModel(false);
   };
 
   return (
@@ -24,8 +35,8 @@ function SideBar() {
         <ul>
           <Link to="/">
             <li
-              className={activeIndex === 0 ? "active" : ""}
-              onClick={() => handleActive(0)}
+              className={activeIndex === 'Dashboard' ? "active" : ""}
+              onClick={() => handleActive('Dashboard')}
             >
               <span>
                 <i className="fa-solid fa-house"></i>
@@ -35,8 +46,8 @@ function SideBar() {
           </Link>
           <Link to="/sales">
             <li
-              className={activeIndex === 1 ? "active" : ""}
-              onClick={() => handleActive(1)}
+              className={activeIndex === 'Sales' ? "active" : ""}
+              onClick={() => handleActive('Sales')}
             >
               <span>
                 <i className="fa-solid fa-dollar-sign"></i>
@@ -46,8 +57,8 @@ function SideBar() {
           </Link>
           <Link to="/inventory">
             <li
-              className={activeIndex === 2 ? "active" : ""}
-              onClick={() => handleActive(2)}
+              className={activeIndex === 'Inventory' ? "active" : ""}
+              onClick={() => handleActive('Inventory')}
             >
               <span onClick={handleExpand}>
                 <i className="fa-solid fa-store"></i>
@@ -66,7 +77,7 @@ function SideBar() {
                   <li> Liner</li>
                   <li> Doors</li>
                   <li> Laminates</li>
-                  <li> + Add category</li>
+                  <li onClick={setCatModel}> + Add category</li>
                 </ul>
               </>
             ) : (
@@ -75,8 +86,8 @@ function SideBar() {
           </Link>
           <Link to="/purchases">
             <li
-              className={activeIndex === 3 ? "active" : ""}
-              onClick={() => handleActive(3)}
+              className={activeIndex === 'Purchase' ? "active" : ""}
+              onClick={() => handleActive('Purchase')}
             >
               <span>
                 <i className="fa-solid fa-tag"></i>
@@ -86,8 +97,8 @@ function SideBar() {
           </Link>
           <Link to="/report">
             <li
-              className={activeIndex === 4 ? "active" : ""}
-              onClick={() => handleActive(4)}
+              className={activeIndex === 'Reports' ? "active" : ""}
+              onClick={() => handleActive('Reports')}
             >
               <span>
                 <i className="fa-solid fa-file"></i>
@@ -97,6 +108,7 @@ function SideBar() {
           </Link>
         </ul>
       </div>
+      <DelPop isOpen={isCatModel} onClose={closeCatModel} />
     </aside>
   );
 }
