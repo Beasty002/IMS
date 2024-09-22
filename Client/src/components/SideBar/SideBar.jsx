@@ -2,17 +2,15 @@ import React, { useState } from "react";
 import "./SideBar.css";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
-import DelPop from "../../popups/DelPop/DelPop";
+import AddCat from "../../popups/AddCat/AddCat";
 
-function SideBar({currentPage}) {
-
-  const [activeIndex, setActiveIndex] = useState({currentPage});
+function SideBar({ currentPage }) {
+  const [activeIndex, setActiveIndex] = useState({ currentPage });
   const [expand, setExpand] = useState(false);
   const [isCatModel, setIsCatModel] = useState(false);
 
   const handleActive = (index) => {
     setActiveIndex(index);
-    
   };
 
   const handleExpand = () => {
@@ -35,8 +33,8 @@ function SideBar({currentPage}) {
         <ul>
           <Link to="/">
             <li
-              className={activeIndex === 'Dashboard' ? "active" : ""}
-              onClick={() => handleActive('Dashboard')}
+              className={activeIndex === "Dashboard" ? "active" : ""}
+              onClick={() => handleActive("Dashboard")}
             >
               <span>
                 <i className="fa-solid fa-house"></i>
@@ -46,8 +44,8 @@ function SideBar({currentPage}) {
           </Link>
           <Link to="/sales">
             <li
-              className={activeIndex === 'Sales' ? "active" : ""}
-              onClick={() => handleActive('Sales')}
+              className={activeIndex === "Sales" ? "active" : ""}
+              onClick={() => handleActive("Sales")}
             >
               <span>
                 <i className="fa-solid fa-dollar-sign"></i>
@@ -57,8 +55,8 @@ function SideBar({currentPage}) {
           </Link>
           <Link to={`${currentPage.toLowerCase()}`}>
             <li
-              className={activeIndex === 'Inventory' ? "active" : ""}
-              onClick={() => handleActive('Inventory')}
+              className={activeIndex === "Inventory" ? "active" : ""}
+              onClick={() => handleActive("Inventory")}
             >
               <span onClick={handleExpand}>
                 <i className="fa-solid fa-store"></i>
@@ -86,8 +84,8 @@ function SideBar({currentPage}) {
           </Link>
           <Link to="/purchases">
             <li
-              className={activeIndex === 'Purchase' ? "active" : ""}
-              onClick={() => handleActive('Purchase')}
+              className={activeIndex === "Purchase" ? "active" : ""}
+              onClick={() => handleActive("Purchase")}
             >
               <span>
                 <i className="fa-solid fa-tag"></i>
@@ -97,8 +95,8 @@ function SideBar({currentPage}) {
           </Link>
           <Link to="/report">
             <li
-              className={activeIndex === 'Reports' ? "active" : ""}
-              onClick={() => handleActive('Reports')}
+              className={activeIndex === "Reports" ? "active" : ""}
+              onClick={() => handleActive("Reports")}
             >
               <span>
                 <i className="fa-solid fa-file"></i>
@@ -108,7 +106,7 @@ function SideBar({currentPage}) {
           </Link>
         </ul>
       </div>
-      <DelPop isOpen={isCatModel} onClose={closeCatModel} />
+      <AddCat isOpen={isCatModel} onClose={closeCatModel} />
     </aside>
   );
 }
