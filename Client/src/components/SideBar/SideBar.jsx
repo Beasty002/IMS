@@ -5,9 +5,14 @@ import { Link } from "react-router-dom";
 
 function SideBar() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [expand, setExpand] = useState(false);
 
   const handleActive = (index) => {
     setActiveIndex(index);
+  };
+
+  const handleExpand = () => {
+    setExpand(!expand);
   };
 
   return (
@@ -44,12 +49,29 @@ function SideBar() {
               className={activeIndex === 2 ? "active" : ""}
               onClick={() => handleActive(2)}
             >
-              <span>
+              <span onClick={handleExpand}>
                 <i className="fa-solid fa-store"></i>
                 <p>Inventory</p>
               </span>
-              <i className="fa-solid fa-greater-than"></i>
+              <i
+                className={`fa-solid fa-greater-than ${
+                  expand ? "rotate" : "passive"
+                } `}
+              ></i>
             </li>
+            {expand ? (
+              <>
+                <ul className="hidden-cate">
+                  <li> Plywood</li>
+                  <li> Liner</li>
+                  <li> Doors</li>
+                  <li> Laminates</li>
+                  <li> + Add category</li>
+                </ul>
+              </>
+            ) : (
+              <></>
+            )}
           </Link>
           <Link to="/purchases">
             <li
