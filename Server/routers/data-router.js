@@ -9,8 +9,8 @@ router.get("/", (req, res) => {
     res.send("Welcome to plywood IMSs api!");
 });
 
-router.route("/category").get(datac.getAllCategories).post(datac.createCategory).delete(datac.delCategory)
-router.route("/brand").get(datac.getAllBrands).post(datac.createBrand).delete(datac.delBrand)
+router.route("/category").get(datac.getAllCategories).post(datac.createCategory).delete(datac.delCategory).patch(datac.editCategory)
+router.route("/brand").get(datac.getAllBrands).post(datac.createBrand).delete(datac.delBrand).patch(datac.editBrand)
 
 
 module.exports = router;
