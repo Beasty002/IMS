@@ -3,6 +3,8 @@ const Category = require("../models/category-model")
 const Brand = require("../models/brand-model")
 const { Collection } = require("mongoose")
 
+
+///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req,res) => {
     try{
         const categories = await Category.find()
@@ -59,6 +61,32 @@ const delCategory = async(req,res) =>{
         res.status(500).json({ message: "Internal server error!!(delCat)" });
     }
 }
+
+const editCategory = async(req,res) => {
+    try{
+        const editCatId = req.body.editCatId
+        const editCatName = req.body.editCatName
+
+        const toUpdateCat = await Category.findById({ _id: editCatId})
+
+        if(!toUpdateCat){
+            return res.json({ err: "No such category found!"})
+        }
+
+        toUpdateCat.title = editCatName
+
+        toUpdateCat.save()
+
+        return res.json({ updated: toUpdateCat})
+    }
+    catch(err){
+        console.error("Error editing category:");
+        res.status(500).json({ message: "Internal server error!!(editCat)" });
+    }
+}
+
+
+////////////////////////////////////// BRANDS ///////////////////////////////////////////////////
 
 const getAllBrands = async (req,res) => {
     try{
@@ -132,5 +160,37 @@ const delBrand = async (req,res) =>{
 }
 
 
+const editBrand = async(req,res) => {
+    try{
+        const editBrandId = req.body.editBrandId
 
-module.exports = {getAllCategories, createCategory,delCategory, getAllBrands, createBrand, delBrand}
+        const editBrandName = req.body.editBrandName
+        const editBrandMultiVar = req.body.editBrandMultiVar
+        const editBrandRowLabel = req.body.editBrandRowLabel
+        const editBrandColLabel = req.body.editBrandColLabel
+
+        var toUpdateBrand = await Brand.findById({ _id: editBrandId})
+
+        if(!toUpdateBrand){
+            return res.json({ err: "No such Brand found!"})
+        }
+
+        //// only edit the edited
+        if (editBrandName) toUpdateBrand.brandName = editBrandName;
+        if (editBrandMultiVar) toUpdateBrand.multiVar = editBrandMultiVar;
+        if (editBrandRowLabel) toUpdateBrand.rowLabel = editBrandRowLabel;
+        if (editBrandColLabel) toUpdateBrand.colLabel = editBrandColLabel;
+
+        toUpdateBrand.save()
+
+        return res.json({ msg : toUpdateBrand})
+    }
+    catch(err){
+        console.error("Error editing Brandegory:");
+        res.status(500).json({ message: "Internal server error!!(editBrand)" });
+    }
+}
+
+
+
+module.exports = {getAllCategories, createCategory,delCategory,editCategory, getAllBrands, createBrand, delBrand, editBrand}
