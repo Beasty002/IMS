@@ -19,12 +19,12 @@ function Sales() {
           <h1>Sales Summary</h1>
           <input type="date" />
         </div>
-        <div className="right-sale">
-          <button>
+        <div className="btn-container">
+          <button className="secondary-btn">
             <i class="bx bxs-edit"></i>
             <p className="bx-sale">Edit</p>
           </button>
-          <button>
+          <button className="primary-btn">
             <i class="bx bxs-plus-circle"></i>
             <p className="bx-sale">New Entry</p>
           </button>

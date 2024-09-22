@@ -9,7 +9,7 @@
 .del-popup {
     position: fixed;
     z-index: 4;
-    background-color: var(--primary-color);
+    background-color: var(--default-color);
     width: 550px;
     top: 50%;
     left: 50%;
@@ -36,40 +36,4 @@
     .del-item-name {
         color: #ee0030;
     }
-}
-
-.btn-container {
-    display: flex;
-    gap: 35px;
-
-    button {
-        cursor: pointer;
-        font-weight: 500;
-        letter-spacing: 1px;
-        min-width: 100px;
-        padding: 10px 25px;
-        font-size: 1.2rem;
-        border-radius: 10px;
-        border: none;
-        transition: .2s;
-
-    }
-
-    .del-btn {
-        background-color: #ee0030;
-        color: #fff;
-    }
-}
-
-.cancel-btn {
-    background-color: rgb(225, 225, 225);
-
-}
-
-.cancel-btn:hover {
-    background-color: rgb(195, 195, 195);
-}
-
-.del-btn:hover {
-    background-color: #d4002a;
 }

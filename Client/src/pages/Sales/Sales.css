@@ -4,6 +4,7 @@
   align-items: center;
   padding: 0 10px;
 }
+
 .left-sale {
   display: flex;
   gap: 40px;
@@ -11,6 +12,7 @@
   margin: 10px;
   padding: 0 5px;
 }
+
 .left-sale input {
   padding: 5px 20px;
   border-radius: 8px;
@@ -18,18 +20,21 @@
   border: 1px solid #d2d2d2;
   cursor: pointer;
 }
+
 .right-sale {
   display: flex;
   padding: 5px;
   gap: 40px;
   align-items: center;
 }
+
 .right-sale i,
 .bx-sale {
   margin: 0;
   padding: 5px 10px;
   font-size: 15px;
 }
+
 .right-sale i {
   font-size: 20px;
 }
@@ -40,24 +45,29 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
 .right-sale button:first-child {
   border: 3px solid #1f6dff;
   background-color: white;
   color: #1f6dff;
 }
+
 .right-sale button:last-child {
   background-color: #1f6dff;
   border: 3px solid #1f6dff;
   color: white;
 }
+
 .sale-quantity-table {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 5px 0.3px rgb(0, 0, 0, 0.5);
 }
+
 .sale-qnt-table th:last-child {
   text-align: center;
 }
+
 .total-calculate {
   display: flex;
   margin-top: 20px;
@@ -68,6 +78,7 @@
   box-shadow: 0px 0px 3px 0.2px rgb(0, 0, 0, 0.5);
   font-size: 16px;
 }
+
 .total-calculate span:first-child {
   font-weight: 700;
 }
