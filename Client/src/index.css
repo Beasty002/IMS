@@ -1,11 +1,12 @@
 body {
-    margin: 0;
-    padding: 0px;
+
     overflow-y: scroll;
     overflow-x: hidden;
 }
 
 * {
+    margin: 0;
+    padding: 0px;
     box-sizing: border-box;
     font-family: "Poppins", system-ui;
 }
@@ -29,7 +30,13 @@ body {
 
 }
 
-
+.overlay {
+    position: fixed;
+    background-color: rgba(3, 3, 3, 0.664);
+    z-index: 3;
+    inset: 0;
+    backdrop-filter: blur(2px);
+}
 
 /* ------------------------------------------Button css -------------------------------------------------------------------- */
 
@@ -102,3 +109,71 @@ body {
 }
 
 /* ------------------------------------------Button css -------------------------------------------------------------------- */
+
+.cat-pop {
+    background-color: var(--default-color);
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    gap: 30px;
+    position: fixed;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    min-width: 380px;
+
+    h2 {
+        height: fit-content;
+        font-size: 2rem;
+
+    }
+
+    .btn-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 20px;
+
+    label {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    input {
+        padding: 6px 5px;
+        flex: 1;
+        width: 100%;
+        border: 2px solid gray;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    input::placeholder {
+        font-weight: 500;
+    }
+
+
+
+}
+
+input:focus {
+    outline: none;
+    border-color: black;
+}
+
+.form-container>* {
+    text-align: center;
+}
