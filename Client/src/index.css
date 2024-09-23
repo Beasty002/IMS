@@ -127,7 +127,7 @@ body {
     flex-direction: column;
     /* justify-content: center; */
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     position: fixed;
     z-index: 999;
     top: 50%;
@@ -145,6 +145,16 @@ body {
     .btn-container {
         width: 100%;
         justify-content: space-between;
+    }
+}
+
+.cat-pop form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .form-container input {
+        width: 280px;
     }
 }
 
