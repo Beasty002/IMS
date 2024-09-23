@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
+import './AddCat.css'
 
 function AddCat({ isOpen, onClose, addCategory }) {
   const [createCate, setCreateCate] = useState("");
