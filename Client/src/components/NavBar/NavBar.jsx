@@ -1,7 +1,7 @@
 import React from "react";
 import "./NavBar.css";
 
-function NavBar({currentPage}) {
+function NavBar({ currentPage }) {
 
 
   return (
@@ -9,7 +9,7 @@ function NavBar({currentPage}) {
       <div className="left-crumb">
         <span>
           <p className="category">Plyhouse</p>
-          <i className="fa-solid fa-arrow-right" aria-label="Arrow"></i>
+          <i class='bx bx-chevron-right' ></i>
           <p className="pages">{currentPage}</p>
         </span>
       </div>
@@ -17,7 +17,7 @@ function NavBar({currentPage}) {
         <i className="fa-regular fa-bell" aria-label="Notifications"></i>
         <span className="border-line"></span>
         <div className="search-box">
-          <i className="fa-solid fa-magnifying-glass" aria-label="Search"></i>
+          <i className='bx bx-search-alt'></i>
           <input
             type="text"
             placeholder="Search..."
