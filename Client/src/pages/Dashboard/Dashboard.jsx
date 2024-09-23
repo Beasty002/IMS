@@ -19,24 +19,20 @@ const Dashboard = () => {
 
   return (
     <section className="upper-dash">
-      <div className="upper-section">
-        <div className="left-dash">
-          <div className="sub-left">
-            <StockData label="Stock on hand" value="680" imgSrc={Vector} />
-            <StockData label="Total categories" value="4" imgSrc={Category} />
-          </div>
-          <GraphSection />
+      <div className="summary-graph">
+        <div className="summary-sec">
+          <StockData label="Stock on hand" value="680" imgSrc={Vector} />
+          <StockData label="Total categories" value="4" imgSrc={Category} />
         </div>
-        <div className="right-chart">
-          <h2>Categories</h2>
-          <img src={PieChart} alt="chart" />
-          <img src={Legends} alt="legends" />
-        </div>
+        <GraphSection />
       </div>
-      <div className="lower-section">
-        <ProductTable title="Low Stock Products" data={products} />
-        <ProductTable title="Top Selling Products" data={products} />
+      <div className="cat-pie-chart">
+        <h2>Categories</h2>
+        <img id="pieChart" src={PieChart} alt="chart" />
+        <img src={Legends} alt="legends" />
       </div>
+      <ProductTable title="Low Stock Products" data={products} />
+      <ProductTable title="Top Selling Products" data={products} />
     </section>
   );
 };
