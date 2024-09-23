@@ -50,7 +50,7 @@ function AddCat({ isOpen, onClose, addCategory }) {
 
   return ReactDOM.createPortal(
     <>
-      <div className="overlay"></div>
+      <div onClick={onClose} className="overlay"></div>
 
       <section className="cat-pop">
         <h2>New Category</h2>
