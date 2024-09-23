@@ -16,6 +16,10 @@ const brandSchema = new Schema({
     },
     colLabel:{
         type:String,
+    },
+    parentCategory:{
+        type:String,
+        required:true
     }
 
 })

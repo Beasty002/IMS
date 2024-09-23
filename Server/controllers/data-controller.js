@@ -106,7 +106,7 @@ const getAllBrands = async (req,res) => {
 
 const createBrand = async (req,res) => {
     try{
-        const {brandName, multiVar, rowLabel, colLabel } = req.body
+        const {brandName, multiVar, rowLabel, colLabel, parentCat } = req.body
 
         let newBrand;
 
@@ -115,13 +115,15 @@ const createBrand = async (req,res) => {
                 brandName: brandName,
                 multiVar: multiVar,
                 rowLabel: rowLabel,
-                colLabel: colLabel
+                colLabel: colLabel,
+                parentCategory: parentCat
             });
         }
         else{
             newBrand = new Brand({
                 brandName: brandName,
                 multiVar: multiVar,
+                parentCategory: parentCat
             });
         }
 
@@ -168,6 +170,7 @@ const editBrand = async(req,res) => {
         const editBrandMultiVar = req.body.editBrandMultiVar
         const editBrandRowLabel = req.body.editBrandRowLabel
         const editBrandColLabel = req.body.editBrandColLabel
+        const editBrandParentCat = req.body.editBrandParentCategory
 
         var toUpdateBrand = await Brand.findById({ _id: editBrandId})
 
@@ -180,6 +183,8 @@ const editBrand = async(req,res) => {
         if (editBrandMultiVar) toUpdateBrand.multiVar = editBrandMultiVar;
         if (editBrandRowLabel) toUpdateBrand.rowLabel = editBrandRowLabel;
         if (editBrandColLabel) toUpdateBrand.colLabel = editBrandColLabel;
+        if (editBrandParentCat) toUpdateBrand.parentCategory = editBrandParentCat;
+
 
         toUpdateBrand.save()
 
