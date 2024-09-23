@@ -6,54 +6,70 @@ function AddCat({ isOpen, onClose, addCategory }) {
 
   if (!isOpen) return null;
 
+  const handleEnter = (event) => {
+    // called the fetch function when input is focused  and key event occurs
+    if (event.key === 13) {
+      handleAddCategory();
+      return;
+    }
+  };
+
   const handleAddCategory = async (event) => {
     event.preventDefault();
+
+    if (!createCate.trim()) {
+      console.log("Category title cannot be empty");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3000/api/category", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({category:createCate}),
+        body: JSON.stringify({ category: createCate }),
       });
 
       const data = await response.json();
       if (!response.ok) {
-        console.log("Network error has occured");
+        console.log("Network error has occurred");
         return;
       }
 
-      console.log(data.msg);
       addCategory(createCate);
-      setCreateCate('');
-      // in the button it might cause closing before fetching data to i shifted this here
+
+      setCreateCate("");
+
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error("Error adding category:", error);
     }
   };
 
   return ReactDOM.createPortal(
     <>
-      <div class="overlay"></div>
+      <div className="overlay"></div>
 
-      <section class="cat-pop">
+      <section className="cat-pop">
         <h2>New Category</h2>
         <form onSubmit={handleAddCategory}>
-          <div class="form-container">
-            <label htmlFor="">Enter title for the Category :</label>
+          <div className="form-container">
+            <label>Enter title for the Category:</label>
             <input
               value={createCate}
               onChange={(event) => setCreateCate(event.target.value)}
+              onKeyDown={handleEnter}
               type="text"
-              placeholder="eg plywood, doors ..."
+              placeholder="e.g., plywood, doors ..."
+              required
             />
           </div>
-          <div class="btn-container">
-            <button onClick={onClose} class="cancel-btn">
+          <div className="btn-container">
+            <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
             </button>
-            <button type="submit" class="primary-btn">
+            <button type="submit" className="primary-btn">
               Add
             </button>
           </div>

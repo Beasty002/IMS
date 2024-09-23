@@ -25,33 +25,33 @@ function SideBar({ currentPage }) {
     setIsCatModel(false);
   };
 
-  useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/category", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  const fetchCategory = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/category", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        const data = await response.json();
-        if (!response.ok) {
-          console.log("Error while fetching data");
-          return;
-        }
-        setCategories(data.cats);
-      } catch (error) {
-        console.error(error);
+      const data = await response.json();
+      if (!response.ok) {
+        console.log("Error while fetching data");
+        return;
       }
-    };
+      setCategories(data.cats);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchCategory();
   }, []);
-
-  // still facing issue space for new cate is seen but not inserted
   const addCategory = (newCategory) => {
     setCategories((prevState) => [...prevState, newCategory]);
+    // double fetched to retrieve full category
+    fetchCategory();
   };
 
   return (
