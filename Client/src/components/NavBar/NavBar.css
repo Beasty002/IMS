@@ -1,71 +1,74 @@
 .page-head {
-    display: flex;
-    width: calc(100vw - 250px);
-    justify-content: space-between;
-    border-bottom: 1px solid #dfdfdf;
-    padding: 0 30px;
-    position: sticky;
-    background-color: white;
-    top: 0px;
-  }
-  
-  .left-crumb span {
-    display: flex;
-    gap: 5px;
-    padding: 0 10px;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    align-items: center;
-  }
-  
-  .category, .pages {
-    font-size: 15px;
-    letter-spacing: 0.3px;
-  }
-  
-  .category {
-    color: #b9b9b9;
-    font-weight: 500;
-  }
-  
-  .pages {
-    font-weight: 700;
-    color: #555555;
-  }
-  
-  .right-interact {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    padding: 0 10px;
-  }
-  
-  .border-line {
-    border: 1px solid #bfb8b8;
-    height: 30px;
-  }
-  
-  .right-interact i {
-    font-size: 21px;
-    color: #111111;
-    cursor: pointer;
-  }
-  
-  .search-box {
-    display: flex;
-    gap: 10px;
-    border: 1px solid #bfb8b8;
-    padding: 5px;
-    border-radius: 22px;
-    width: 248px;
-  }
-  
-  .search-box input {
-    border: none;
-    outline: none;
-    font-size: 13px;
-  }
-  
-  .search-box i {
-    color: #7b7b7b;
-  }
-  
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  border-bottom: 1px solid #dfdfdf;
+  padding: 0 15px;
+  padding-top: 10px;
+  padding-bottom: 25px;
+  position: sticky;
+  background-color: white;
+  top: 0px;
+  align-items: center;
+}
+
+.left-crumb span {
+  display: flex;
+  gap: 5px;
+  padding: 0 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  align-items: center;
+}
+
+.category,
+.pages {
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.category {
+  color: #b9b9b9;
+  font-weight: 500;
+}
+
+.pages {
+  font-weight: 700;
+  color: #555555;
+}
+
+.right-interact {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 0 10px;
+}
+
+.border-line {
+  border: 1px solid #bfb8b8;
+  height: 30px;
+}
+
+.right-interact i {
+  font-size: 21px;
+  color: #111111;
+  cursor: pointer;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  border: 1px solid #bfb8b8;
+  padding: 5px;
+  border-radius: 22px;
+  width: 248px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+}
+
+.search-box i {
+  color: #7b7b7b;
+}

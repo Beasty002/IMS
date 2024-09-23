@@ -30,6 +30,16 @@ body {
 
 }
 
+#root {
+    width: 100%;
+}
+
+.hidden-carte li {
+    color: red;
+    padding: 400px;
+}
+
+
 .overlay {
     position: fixed;
     background-color: rgba(3, 3, 3, 0.664);
