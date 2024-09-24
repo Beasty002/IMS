@@ -14,16 +14,16 @@ function SaleTable({ data }) {
         <table>
           <thead className="sale-qnt-table">
             <tr>
-              <th>S.N</th>
-              <th>Product</th>
+              <th className="table-sn">S.N</th>
+              <th className="sales-table-prod">Product</th>
               <th>Quantity</th>
             </tr>
           </thead>
           <tbody>
             {data?.map((item, index) => (
               <tr key={index}>
-                <td>{item.id}</td>
-                <td>{item.product}</td>
+                <td className="table-sn">{item.id}</td>
+                <td className="sales-table-prod">{item.product}</td>
                 <td>{item.stockLeft}</td>
               </tr>
             ))}

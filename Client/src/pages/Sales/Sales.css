@@ -2,23 +2,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  margin-bottom: 10px;
 }
 
 .left-sale {
   display: flex;
-  gap: 40px;
+  gap: 20px;
   align-items: center;
-  margin: 10px;
-  padding: 0 5px;
 }
 
 .left-sale input {
   padding: 5px 20px;
   border-radius: 8px;
-  font-size: 10px;
   border: 1px solid #d2d2d2;
   cursor: pointer;
+  font-size: .85rem;
 }
 
 .right-sale {
@@ -61,7 +59,11 @@
 .sale-quantity-table {
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0px 0px 5px 0.3px rgb(0, 0, 0, 0.5);
+  box-shadow: 0px 0px 5px 0.3px rgba(0, 0, 0, 0.322);
+}
+
+.sales-table-prod {
+  padding-left: 30px;
 }
 
 .sale-qnt-table th:last-child {
