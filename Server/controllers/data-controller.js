@@ -110,7 +110,7 @@ const createBrand = async (req,res) => {
 
         let newBrand;
 
-        if (multiVar === 0 || multiVar === true){
+        if (multiVar === "yes"){
             newBrand = new Brand({
                 brandName: brandName,
                 multiVar: multiVar,
@@ -189,7 +189,7 @@ const editBrand = async(req,res) => {
         toUpdateBrand.save()
 
         return res.json({ msg : toUpdateBrand})
-    }
+    } 
     catch(err){
         console.error("Error editing Brandegory:");
         res.status(500).json({ message: "Internal server error!!(editBrand)" });
