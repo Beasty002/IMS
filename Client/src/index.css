@@ -41,6 +41,14 @@ body {
 }
 
 
+.overlay1 {
+    position: fixed;
+    background-color: rgba(3, 3, 3, 0.664);
+    z-index: 3;
+    inset: 0;
+    backdrop-filter: blur(2px);
+}
+
 .overlay {
     position: fixed;
     background-color: rgba(3, 3, 3, 0.664);

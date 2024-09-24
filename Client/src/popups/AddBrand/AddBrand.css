@@ -22,15 +22,44 @@
     form {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        justify-content: start;
+        align-items: start;
+        gap: 5px;
 
-        .form-container input {
-            width: 280px;
+        .form-container {
+            align-items: start;
+            gap: 4px;
+
+            label {
+                font-size: 1.1rem;
+            }
+
+            input {
+                width: 100%;
+                text-align: left;
+                padding-left: 15px;
+            }
         }
+    }
+
+    .radio-form-container {
+        display: flex;
+        gap: 30px;
+    }
+
+    .radio-form {
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
     }
 
     .btn-container {
         width: 100%;
         justify-content: space-between;
+        margin-top: 15px;
+
+        button {
+            min-width: 150px;
+        }
     }
 }
