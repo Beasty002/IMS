@@ -255,3 +255,123 @@ input:focus {
 
 
 /* --------------------------------------------------------------------------------------------------------- */
+
+#newSales {
+    background-color: var(--default-color);
+    background-color: var(--default-color);
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 20px;
+    position: fixed;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    min-width: 70dvw;
+    max-height: 95vh;
+
+    h2 {
+        text-align: center;
+        font-size: 1.8rem;
+    }
+
+    .search-box {
+        background-color: var(--default-color);
+        margin-top: 12px;
+    }
+}
+
+
+
+.sales-item-container {
+    form {
+
+        .sales-entry-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 1.2rem 1.5rem;
+            border-radius: 14px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
+            min-height: 30vh;
+        }
+
+
+        .new-item {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 35px auto;
+
+            .btn-container {
+                button {
+                    padding: 0.3em 0.8em;
+                }
+            }
+        }
+    }
+}
+
+.sales-entry-item {
+    display: grid;
+    grid-template-columns: 25px repeat(4, 1fr) 150px;
+    align-items: center;
+    gap: 10px;
+
+    .del-icon {
+        color: red;
+        font-size: 1.5rem;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    select {
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: 0.2rem 0.6rem;
+        border-radius: 5px;
+        outline: none;
+        border: 1px solid gray;
+    }
+}
+
+.sales-entry-qty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: end;
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input {
+        width: 60px;
+        text-align: center;
+        font-size: 1rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 5px;
+        outline: none;
+        border: 1px solid gray;
+    }
+
+    i {
+        cursor: pointer;
+        font-size: 1.5rem;
+    }
+}
+
+.btn-container.new-entry-btn-container {
+    margin-top: 20px;
+    justify-content: end;
+
+    button {
+        min-width: 140px;
+        padding: 0.8rem 0.8rem;
+        font-size: 1.2rem;
+    }
+}
