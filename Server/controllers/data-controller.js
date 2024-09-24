@@ -106,12 +106,14 @@ const getAllBrands = async (req,res) => {
 
 const createBrand = async (req,res) => {
     try{
-        let rowLabel;
         let colLabel;
+
         const brandName = req.body.brandName;
         const multiVar = req.body.multiVar;
-        if (req.body.rowLabel) rowLabel = req.body.rowLabel
+        const rowLabel = req.body.rowLabel
+
         if (req.body.colLabel) colLabel = req.body.colLabel;
+
         const parentCat = req.body.parentCat;
 
         let newBrand;
@@ -129,6 +131,7 @@ const createBrand = async (req,res) => {
             newBrand = new Brand({
                 brandName: brandName,
                 multiVar: multiVar,
+                rowLabel: rowLabel,
                 parentCategory: parentCat
             });
         }else{
