@@ -25,7 +25,7 @@ export default function App() {
       case "/sales":
         return "Sales";
       default:
-        return "Dashboard";
+        return "/";
     }
   };
   return (

@@ -71,8 +71,8 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
                   name="multiVar"
                   id="variationYes"
                   onChange={handleFormData}
-                  value="true"
-                  checked={formData.multiVar === "true"} //checked is used cause it will remove potential
+                  value='yes'
+                  checked={formData.multiVar === "yes"} //checked is used cause it will remove potential
                   // rerender error by proving  the existing  value form the state
                 />
                 <label htmlFor="variationYes">Yes</label>
@@ -81,9 +81,9 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
                 <input
                   type="radio"
                   name="multiVar"
-                  value="false"
+                  value="no"
                   onChange={handleFormData}
-                  checked={formData.multiVar === "false"}
+                  checked={formData.multiVar === "no"}
                   id="variationNo"
                 />
                 <label htmlFor="variationNo">No</label>
@@ -100,7 +100,7 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
               placeholder="eg size , code ...."
             />
           </div>
-          {formData.multiVar === "true" ? (
+          {formData.multiVar === "no" ? (
             <></>
           ) : (
             <>
