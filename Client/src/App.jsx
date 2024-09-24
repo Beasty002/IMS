@@ -8,13 +8,14 @@ import Purchase from "./pages/Purchase/Purchase";
 import Report from "./pages/Report/Report";
 import SalesPage from "./pages/SalesPage/SalesPage";
 import Category from "./pages/CategoryLayout/Category";
+import CatBrandList from "./pages/CatBrandList/CatBrandList";
 
 export default function App() {
   const location = useLocation();
   const getCurrentPageTitle = () => {
     switch (location.pathname) {
       case "/":
-        return "Dashboard";
+        return "/";
       case "/inventory":
         return "Inventory";
       case "/purchases":
@@ -40,6 +41,7 @@ export default function App() {
               <Route path="/cateogry" element={<Category />} />
               <Route path="/report" element={<Report />} />
               <Route path="/sales" element={<SalesPage />} />
+              <Route path="/catband/:categoryName" element={<CatBrandList />} />
             </Routes>
           </main>
         </div>

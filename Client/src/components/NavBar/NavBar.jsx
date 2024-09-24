@@ -3,6 +3,10 @@ import "./NavBar.css";
 
 function NavBar({ currentPage }) {
 
+  if(currentPage === '/'){
+    currentPage = 'Dashboard';
+  }
+
 
   return (
     <nav className="page-head">

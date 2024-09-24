@@ -102,9 +102,9 @@ function SideBar({ currentPage }) {
               <>
                 <ul className="hidden-cate">
                   {categories?.map((item) => (
-                    <li key={item._id}>{item.title}</li>
+                  <Link to={`/catband/${item.title.toLowerCase()}`}>  <li key={item._id}>{item.title}</li></Link>
                   ))}
-                  <li onClick={setCatModel}> + Add category</li>
+                  <li onClick={setCatModel}> <p className="cat-add"> + Add category</p></li>
                 </ul>
               </>
             ) : (
