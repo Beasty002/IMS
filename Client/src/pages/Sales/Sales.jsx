@@ -2,8 +2,8 @@ import React from "react";
 import "./Sales.css";
 import SaleTable from "../../components/SalesComponent/SaleTable";
 
-function Sales({title, TableComponent, products}) {
- 
+function Sales({ title, TableComponent, products }) {
+
   return (
     <section>
       <div className="sec-sale-head">
@@ -26,6 +26,7 @@ function Sales({title, TableComponent, products}) {
         <TableComponent data={products} />
       </div>
     </section>
+
   );
 }
 
