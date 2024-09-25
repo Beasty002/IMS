@@ -4,12 +4,7 @@ import './Report.css'
 function Report() {
   return (
     <>
-
-
-
-
-
-
+      report
     </>
   )
 }
