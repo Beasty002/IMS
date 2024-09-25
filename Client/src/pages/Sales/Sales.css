@@ -1,8 +1,14 @@
+.sale-purchase {
+  h1 {
+    margin-bottom: 10px;
+  }
+}
+
 .sec-sale-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .left-sale {

@@ -11,10 +11,10 @@ function Sales({ title, TableComponent, products }) {
   };
 
   return (
-    <section>
+    <section className="sale-purchase">
+      <h1>{title} </h1>
       <div className="sec-sale-head">
         <div className="left-sale">
-          <h1>{title} </h1>
           <input type="date" />
         </div>
         <div className="btn-container">
