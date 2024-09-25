@@ -1,0 +1,79 @@
+.customize-col-popup {
+    background-color: var(--default-color);
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: fixed;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    min-width: 380px;
+
+    h2 {
+        margin-bottom: 12px;
+    }
+
+
+}
+
+.edit-box-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+
+
+}
+
+.edit-col-box {
+    display: flex;
+    gap: 10px;
+    border: 1px solid rgba(128, 128, 128, 0.526);
+    padding: 0.4rem 0.6rem;
+    border-radius: 10px;
+    min-width: 300px;
+
+    input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 0px;
+        font-size: 1rem;
+    }
+
+    .action-edit-col {
+        font-size: 1.2rem;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .action-edit-col>* {
+        cursor: pointer;
+    }
+}
+
+.new-col-btn {
+    margin-bottom: 35px;
+}
+
+.new-col-btn .secondary-btn {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 10px;
+    min-width: 300px;
+}
+
+.btn-container.main-col-btn {
+    justify-content: space-between;
+
+    button {
+        width: 120px;
+    }
+}
