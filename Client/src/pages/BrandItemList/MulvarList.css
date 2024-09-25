@@ -1,0 +1,46 @@
+.brand-item-table {
+    background-color: var(--default-color);
+    padding: 15px 16px;
+    border-radius: 14px;
+
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+
+    th {
+        font-size: 1.01rem;
+    }
+
+    th,
+    td {
+        text-align: center;
+        padding: auto 5px;
+    }
+
+    min-height: calc(100dvh - 275px);
+}
+
+.table-checkbox {
+    width: 10px;
+
+    input {
+        position: relative;
+        top: 2px;
+        cursor: pointer;
+        height: 15px;
+        width: 15px;
+    }
+}
+
+.table-action-container {
+    width: 110px;
+
+    .action-container {
+        position: relative;
+        left: 6px;
+        padding: 0;
+        margin: 0;
+
+        i {
+            font-size: 1.6rem;
+        }
+    }
+}
