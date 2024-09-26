@@ -12,6 +12,12 @@ body {
     font-family: "Poppins", system-ui;
 }
 
+h1.h2,
+h3,
+h4 {
+    text-transform: capitalize;
+}
+
 :root {
     --sidebar-width: 300px;
     --sidebar-bg-color: #3b3030;
@@ -178,49 +184,52 @@ input:focus {
 /* 
 
 /* --------------------------------------------------------------------------------------------------------- */
+.page-top-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 14px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
+    margin-bottom: 20px;
+}
 
 #newSales {
-    background-color: var(--default-color);
-    background-color: var(--default-color);
-    padding: 30px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    gap: 20px;
-    position: fixed;
-    z-index: 999;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 12px;
-    min-width: 70dvw;
-    max-height: 95vh;
+
 
     h2 {
-        text-align: center;
+        text-align: left;
         font-size: 1.8rem;
+        margin-bottom: 10px;
     }
 
     .search-box {
         background-color: var(--default-color);
-        margin-top: 12px;
     }
 }
 
 
 
 .sales-item-container {
+
     form {
+        padding: 1.2rem 1rem;
+        border-radius: 14px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
+        max-width: calc(100dvw - 325px);
+        display: grid;
+        grid-template-rows: calc(100dvh - 392px) auto;
+        background-color: var(--default-color);
+        gap: 10px;
+
 
         .sales-entry-items-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
-            padding: 1.2rem 1.5rem;
-            border-radius: 14px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
-            min-height: 50vh;
-            max-height: 50vh;
+            padding-right: 8px;
+
             overflow-y: auto;
             scrollbar-gutter: stable;
 
@@ -259,11 +268,12 @@ input:focus {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
     background-color: #afafaf49;
+    cursor: pointer;
 }
 
 .sales-entry-item {
     display: grid;
-    grid-template-columns: 25px repeat(4, 1fr) 150px;
+    grid-template-columns: 25px repeat(4, 1fr) auto;
     align-items: center;
     gap: 20px;
 
@@ -275,7 +285,7 @@ input:focus {
     }
 
     select {
-        font-size: 1.1rem;
+        font-size: 1rem;
         cursor: pointer;
         padding: 0.4rem 0.6rem;
         border-radius: 5px;
@@ -314,14 +324,17 @@ input:focus {
 
 .btn-container.new-entry-btn-container {
     margin-top: 20px;
-    justify-content: end;
+    justify-content: space-between;
+    padding: 0px 10px;
 
     button {
-        min-width: 140px;
+        min-width: 160px;
         padding: 0.8rem 0.8rem;
         font-size: 1.2rem;
     }
 }
 
 
-/*--------------------------------------------------------------customize col popup----------------------------------------------------------------------*/
+.print-icon {
+    color: var(--primary-btn-color);
+}

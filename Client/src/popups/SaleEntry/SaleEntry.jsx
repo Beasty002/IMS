@@ -28,7 +28,7 @@ function SaleEntry() {
   };
 
   // here each select is treated as a sinle so there will be only one field 
-  
+
   const handleDataInsert = async (itemId, field, value) => {
     setAddInput(
       addInput.map((item) =>
@@ -88,14 +88,22 @@ function SaleEntry() {
     <>
       <div id="newSales">
         <h2>Sales Entry</h2>
-        <div className="search-box">
-          <i className="bx bx-search-alt"></i>
-          <input
-            type="text"
-            placeholder="Search items to add..."
-            aria-label="Search input"
-          />
-        </div>
+        <section className="page-top-container">
+          <div className="search-box">
+            <i className="bx bx-search-alt"></i>
+            <input
+              type="text"
+              placeholder="Search items to add..."
+              aria-label="Search input"
+            />
+          </div>
+          <div className="btn-container">
+            <button onClick={addNewList} className="secondary-btn">
+              + New Item
+            </button>
+          </div>
+        </section>
+
         <section className="sales-item-container">
           <form>
             <section className="sales-entry-items-list">
@@ -174,15 +182,11 @@ function SaleEntry() {
 
               <div className="new-item">
                 <span></span>
-                <div className="btn-container">
-                  <button onClick={addNewList} className="secondary-btn">
-                    + New Item
-                  </button>
-                </div>
+
               </div>
             </section>
             <div className="btn-container new-entry-btn-container">
-              <button className="cancel-btn">Cancel</button>
+              <button className="cancel-btn">Back</button>
               <button className="primary-btn">Add</button>
             </div>
           </form>
