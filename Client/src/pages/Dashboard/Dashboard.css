@@ -217,3 +217,26 @@ th {
 tbody tr:hover {
     background-color: #f1f1f1;
 }
+
+
+@media(width < 860px) {
+    .upper-dash {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(width < 665px) {
+    .navigation-elem {
+        display: block;
+    }
+
+    .summary-sec {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sub-stock,
+    .sub-category {
+        min-width: 0;
+    }
+}

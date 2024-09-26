@@ -338,3 +338,23 @@ input:focus {
 .print-icon {
     color: var(--primary-btn-color);
 }
+
+
+
+
+/*-------------------------------------------------responsive--------------------------------------------------------------*/
+@media (max-width: 1100px) {
+    .sidebar {
+        width: 0px;
+        overflow: hidden;
+        display: none;
+    }
+
+    .page-changer {
+        padding: 0 10px;
+    }
+
+
+
+
+}

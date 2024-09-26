@@ -157,7 +157,7 @@ function SaleEntry() {
                     name="cat"
                     className="column-select"
                   >
-                    <option value="">Select ColLabel</option>
+                    <option value="" disabled selected>Column</option>
                     <option value="mayur">mayur</option>
                     <option value="Greenlam">Greenlam</option>
                   </select>
