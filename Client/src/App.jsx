@@ -9,6 +9,7 @@ import Report from "./pages/Report/Report";
 import SalesPage from "./pages/SalesPage/SalesPage";
 import Category from "./pages/CategoryLayout/Category";
 import CatBrandList from "./pages/CatBrandList/CatBrandList";
+import SaleEntry from "./popups/SaleEntry/SaleEntry";
 
 export default function App() {
   const location = useLocation();
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/cateogry" element={<Category />} />
               <Route path="/report" element={<Report />} />
               <Route path="/sales" element={<SalesPage />} />
+              <Route path="/saleEntry" element={<SaleEntry />} />
               <Route path="/catband/:categoryName" element={<CatBrandList />} />
             </Routes>
           </main>

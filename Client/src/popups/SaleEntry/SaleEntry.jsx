@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import ReactDOM from "react-dom";
 
-function SaleEntry({ isOpen, onClose }) {
+function SaleEntry() {
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -85,10 +84,8 @@ function SaleEntry({ isOpen, onClose }) {
     setAddInput((prevState) => prevState.filter((item) => item.id !== itemId));
   };
 
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
+  return (
     <>
-      <div onClick={onClose} className="overlay"></div>
       <div id="newSales">
         <h2>Sales Entry</h2>
         <div className="search-box">
@@ -191,8 +188,7 @@ function SaleEntry({ isOpen, onClose }) {
           </form>
         </section>
       </div>
-    </>,
-    document.getElementById("overlay")
+    </>
   );
 }
 
