@@ -215,12 +215,18 @@ input:focus {
         .sales-entry-items-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
             padding: 1.2rem 1.5rem;
             border-radius: 14px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
-            min-height: 30vh;
+            min-height: 50vh;
+            max-height: 50vh;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+
         }
+
+
 
 
         .new-item {
@@ -237,11 +243,29 @@ input:focus {
     }
 }
 
+.sales-entry-items-list::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.sales-entry-items-list::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5;
+    position: relative;
+}
+
+.sales-entry-items-list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #afafaf49;
+}
+
 .sales-entry-item {
     display: grid;
     grid-template-columns: 25px repeat(4, 1fr) 150px;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 
     .del-icon {
         color: red;
@@ -253,7 +277,7 @@ input:focus {
     select {
         font-size: 1.1rem;
         cursor: pointer;
-        padding: 0.2rem 0.6rem;
+        padding: 0.4rem 0.6rem;
         border-radius: 5px;
         outline: none;
         border: 1px solid gray;
@@ -301,3 +325,52 @@ input:focus {
 
 
 /*--------------------------------------------------------------customize col popup----------------------------------------------------------------------*/
+
+
+.print-icon {
+    color: var(--primary-btn-color);
+}
+
+
+
+
+.print-popup {
+    background-color: var(--default-color);
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: fixed;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    min-width: 380px;
+
+    h2 {
+        height: fit-content;
+        font-size: 2rem;
+
+    }
+}
+
+.cat-list-to-print {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.cat-print-container {
+    display: flex;
+    gap: 20px;
+
+    input,
+    label {
+        cursor: pointer;
+    }
+}
