@@ -114,6 +114,7 @@ const getSpecificBrand = async (req, res) => {
 const createBrand = async (req, res) => {
   try {
     let colLabel;
+    console.log(req.body);
 
     const brandName = req.body.brandName;
     const multiVar = req.body.multiVar;

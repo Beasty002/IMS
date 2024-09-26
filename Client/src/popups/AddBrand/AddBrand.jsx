@@ -6,13 +6,7 @@ import "./AddBrand.css";
 export default function AddBrand({ isOpen, onClose, newBrand }) {
   const { categoryName } = useParams();
 
-  const [formData, setFormData] = useState({
-    brandName: "",
-    multiVar: "",
-    rowLabel: "",
-    colLabel: "",
-    parentCat: categoryName,
-  });
+  const [formData, setFormData] = useState({});
 
   const handleFormData = (event) => {
     setFormData((prevState) => ({
@@ -54,9 +48,17 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
       console.error(error);
     }
   };
-  useEffect(()=>{
-    console.log(categoryName);
-  },[])
+  
+  useEffect(() => {
+    const initialState = {
+      brandName: "",
+      multiVar: "",
+      rowLabel: "",
+      colLabel: "",
+      parentCat: categoryName,
+    };
+    setFormData(initialState);
+  }, [categoryName]);
 
   if (!isOpen) return null;
 
