@@ -1,4 +1,5 @@
 import React from 'react'
+import './ReportPrint.css'
 
 export default function ReportPrint() {
     return (
