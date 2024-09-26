@@ -93,17 +93,27 @@ function SideBar({ currentPage }) {
                 <p>Inventory</p>
               </span>
               <i
-                className={`fa-solid fa-greater-than ${expand ? "rotate" : "passive"
-                  } `}
+                className={`fa-solid fa-greater-than ${
+                  expand ? "rotate" : "passive"
+                } `}
               ></i>
             </li>
             {expand ? (
               <>
                 <ul className="hidden-cate">
                   {categories?.map((item) => (
-                    <Link to={`/catband/${item.title.toLowerCase()}`}>  <li key={item._id}>{item.title}</li></Link>
+                    <Link
+                      to={`/catband/${
+                        item.title ? item.title.toLowerCase() : ""
+                      }`}
+                    >
+                      <li key={item._id}>{item.title || "Unknown"}</li>
+                    </Link>
                   ))}
-                  <li onClick={setCatModel}> <p className="cat-add"> + Add category</p></li>
+                  <li onClick={setCatModel}>
+                    {" "}
+                    <p className="cat-add"> + Add category</p>
+                  </li>
                 </ul>
               </>
             ) : (

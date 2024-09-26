@@ -17,8 +17,7 @@ function Sales({ title, TableComponent, products }) {
           </button>
           <button className="primary-btn">
             <i class="bx bxs-plus-circle"></i>
-            <Link to='/saleEntry'>
-              
+            <Link id="cname" to='/saleEntry'>
               <p className="bx-sale">New Entry</p>
             </Link>
           </button>

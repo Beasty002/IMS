@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { useParams } from "react-router-dom";
 import "./AddBrand.css";
 
-export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) {
+export default function AddBrand({ isOpen, onClose, newBrand }) {
+  const { categoryName } = useParams();
+
   const [formData, setFormData] = useState({
     brandName: "",
     multiVar: "",
     rowLabel: "",
     colLabel: "",
-    parentCat: parentCategory,
+    parentCat: categoryName,
   });
 
   const handleFormData = (event) => {
@@ -21,6 +24,7 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
   const fetchBrandData = async (event) => {
     event.preventDefault();
     try {
+      console.log(categoryName);
       const response = await fetch("http://localhost:3000/api/brand", {
         method: "POST",
         headers: {
@@ -38,11 +42,21 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
       newBrand("fetch on more time");
       console.log(formData);
       console.log(data);
-        onClose();
+      setFormData({
+        brandName: "",
+        multiVar: "",
+        rowLabel: "",
+        colLabel: "",
+        parentCat: "",
+      });
+      onClose();
     } catch (error) {
       console.error(error);
     }
   };
+  useEffect(()=>{
+    console.log(categoryName);
+  },[])
 
   if (!isOpen) return null;
 
@@ -71,7 +85,7 @@ export default function AddBrand({ isOpen, onClose, parentCategory, newBrand }) 
                   name="multiVar"
                   id="variationYes"
                   onChange={handleFormData}
-                  value='yes'
+                  value="yes"
                   checked={formData.multiVar === "yes"} //checked is used cause it will remove potential
                   // rerender error by proving  the existing  value form the state
                 />
