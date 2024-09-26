@@ -4,12 +4,14 @@
   justify-content: space-between;
   border-bottom: 1px solid #dfdfdf;
   padding: 25px 15px;
+  overflow: hidden;
 
   position: sticky;
   background-color: white;
   margin-top: -15px;
   top: 0px;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .left-crumb {
@@ -47,9 +49,10 @@
   padding: 0 10px;
 }
 
-.border-line {
+.nav-border-line {
   border: 1px solid #bfb8b8;
   height: 30px;
+  display: none;
 }
 
 .right-interact i {

@@ -3,7 +3,7 @@ import "./NavBar.css";
 
 function NavBar({ currentPage }) {
 
-  if(currentPage === '/' ){
+  if (currentPage === '/') {
     currentPage = 'Dashboard';
   }
 
@@ -19,15 +19,8 @@ function NavBar({ currentPage }) {
       </div>
       <div className="right-interact">
         <i className="fa-regular fa-bell" aria-label="Notifications"></i>
-        <span className="border-line"></span>
-        <div className="search-box">
-          <i className='bx bx-search-alt'></i>
-          <input
-            type="text"
-            placeholder="Search..."
-            aria-label="Search input"
-          />
-        </div>
+        <span className="nav-border-line"></span>
+
       </div>
     </nav>
   );
