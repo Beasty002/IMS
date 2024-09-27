@@ -202,6 +202,8 @@ input:focus {
     border-radius: 14px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 #newSales {
@@ -226,7 +228,6 @@ input:focus {
         padding: 1.2rem 1rem;
         border-radius: 14px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
-        max-width: calc(100dvw - 325px);
         display: grid;
         grid-template-rows: calc(100dvh - 392px) auto;
         background-color: var(--default-color);
@@ -268,7 +269,13 @@ input:focus {
 }
 
 .sales-entry-items-list::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
+    background-color: #F5F5F5;
+    position: relative;
+}
+
+.sales-entry-items-list::-webkit-scrollbar:horizontal {
+    height: 8px;
     background-color: #F5F5F5;
     position: relative;
 }
@@ -340,6 +347,34 @@ input:focus {
         min-width: 160px;
         padding: 0.8rem 0.8rem;
         font-size: 1.2rem;
+    }
+}
+
+@media(width <=550px) {
+    .page-top-container {
+        padding: 18px 20px !important;
+
+        .btn-container {
+            button {
+                min-width: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    .page-top-container>* {
+        width: 100%;
+    }
+
+    .sales-item-container {
+        form {
+            grid-template-rows: calc(100dvh - 442px) auto;
+
+        }
+    }
+
+    .sales-entry-items-list::-webkit-scrollbar:vertical {
+        display: none;
     }
 }
 

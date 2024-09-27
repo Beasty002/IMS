@@ -77,3 +77,22 @@
         color: red;
     }
 }
+
+@media(width <=550px) {
+    .cat-list-top {
+        padding: 18px 20px !important;
+        flex-direction: column;
+        gap: 10px;
+
+        .btn-container {
+            button {
+                min-width: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    .cat-list-top>* {
+        width: 100%;
+    }
+}
