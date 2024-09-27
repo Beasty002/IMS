@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import SideBar from "./components/SideBar/SideBar";
 import NavBar from "./components/NavBar/NavBar";
@@ -29,12 +30,17 @@ export default function App() {
         return "/";
     }
   };
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
   return (
     <>
       <div className="navigation-elem">
-        <SideBar currentPage={getCurrentPageTitle()} />
+        <SideBar currentPage={getCurrentPageTitle()} sideClass={isSidebarOpen ? "sidebar-active" : ""} />
         <div className="left-component">
-          <NavBar currentPage={getCurrentPageTitle()} />
+          <NavBar currentPage={getCurrentPageTitle()} onMenuClick={toggleSidebar} />
           <main className="page-changer">
             <Routes>
               <Route path="/" element={<Dashboard />} />

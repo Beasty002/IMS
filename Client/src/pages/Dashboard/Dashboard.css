@@ -233,10 +233,20 @@ tbody tr:hover {
     .summary-sec {
         flex-direction: column;
         height: auto;
+        gap: 10px;
     }
 
     .sub-stock,
     .sub-category {
         min-width: 0;
+        padding: 1.5em 2em;
+
     }
+
+    .graph,
+    .cat-pie-chart,
+    .left-table {
+        padding: 10px 20px;
+    }
+
 }

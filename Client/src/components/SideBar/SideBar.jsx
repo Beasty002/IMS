@@ -4,7 +4,7 @@ import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import AddCat from "../../popups/AddCat/AddCat";
 
-function SideBar({ currentPage }) {
+function SideBar({ currentPage, sideClass }) {
   const [activeIndex, setActiveIndex] = useState({ currentPage });
   const [expand, setExpand] = useState(false);
   const [isCatModel, setIsCatModel] = useState(false);
@@ -55,7 +55,7 @@ function SideBar({ currentPage }) {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${sideClass}`}>
       <div className="logo-cont">
         <img src={Logo} alt="logo" />
       </div>
@@ -93,9 +93,8 @@ function SideBar({ currentPage }) {
                 <p>Inventory</p>
               </span>
               <i
-                className={`fa-solid fa-greater-than ${
-                  expand ? "rotate" : "passive"
-                } `}
+                className={`fa-solid fa-greater-than ${expand ? "rotate" : "passive"
+                  } `}
               ></i>
             </li>
             {expand ? (
@@ -103,9 +102,8 @@ function SideBar({ currentPage }) {
                 <ul className="hidden-cate">
                   {categories?.map((item) => (
                     <Link
-                      to={`/catband/${
-                        item.title ? item.title.toLowerCase() : ""
-                      }`}
+                      to={`/catband/${item.title ? item.title.toLowerCase() : ""
+                        }`}
                     >
                       <li key={item._id}>{item.title || "Unknown"}</li>
                     </Link>
