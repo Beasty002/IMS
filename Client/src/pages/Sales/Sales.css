@@ -1,4 +1,6 @@
 .sale-purchase {
+  position: relative;
+
   h1 {
     margin-bottom: 10px;
   }
@@ -9,6 +11,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .left-sale {
@@ -91,6 +94,37 @@
   font-weight: 700;
 }
 
-a{
+a {
   color: white;
+}
+
+@media(width <=530px) {
+  .sec-sale-head {
+    margin-top: 20px;
+
+    .btn-container {
+      width: 100%;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0;
+
+      button {
+        min-width: 46%;
+        font-size: 1.3rem;
+
+        p {
+          font-size: 1.2rem;
+
+        }
+      }
+    }
+  }
+
+  .left-sale input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: fit-content;
+    padding: 0.4em 0.6em;
+  }
 }

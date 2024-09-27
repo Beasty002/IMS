@@ -27,7 +27,7 @@ const Dashboard = () => {
         <GraphSection />
       </div>
       <div className="cat-pie-chart">
-        <h2>Categories</h2>
+        <h2 className="dash-title">Categories</h2>
         <img id="pieChart" src={PieChart} alt="chart" />
         <img src={Legends} alt="legends" />
       </div>

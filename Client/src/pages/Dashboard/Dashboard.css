@@ -249,4 +249,12 @@ tbody tr:hover {
         padding: 10px 20px;
     }
 
+    .graph-head {
+        gap: 10px;
+    }
+
+    .dash-title {
+        font-size: 1.2rem;
+    }
+
 }
