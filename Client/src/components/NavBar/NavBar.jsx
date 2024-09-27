@@ -20,6 +20,7 @@ function NavBar({ currentPage }) {
       <div className="right-interact">
         <i className="fa-regular fa-bell" aria-label="Notifications"></i>
         <span className="nav-border-line"></span>
+        <i class="fa-solid fa-bars"></i>
 
       </div>
     </nav>
