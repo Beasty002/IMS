@@ -1,7 +1,9 @@
 const path = require("path");
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
+const Sales = require("../models/sales-model")
 const { Collection } = require("mongoose");
+const { isString } = require("util");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -202,10 +204,73 @@ const editBrand = async (req, res) => {
 
     return res.json({ msg: toUpdateBrand });
   } catch (err) {
-    console.error("Error editing Brandegory:");
+    console.error("Error editing Brand:");
     res.status(500).json({ message: "Internal server error!!(editBrand)" });
   }
 };
+
+
+// ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
+const salesEntry = async (req,res) => {
+    try{
+        let sCol;
+        console.log(req.body);
+
+        const sCat = req.body.sCategory;
+        const sBrand = req.body.sBrand;
+        const sRow = req.body.sRowLabel;
+
+        if (req.body.sColLabel) sCol = req.body.sColLabel;
+
+        const sQty = req.body.sQty;
+
+        if (isNaN(sQty)){
+            return res.json({err: "Quantity not a number"})
+        }
+
+        let newSales;
+
+        if (sCol){
+            newSales = new Sales({
+                sCategory: sCat,
+                sBrand:sBrand,
+                sRowLabel:sRow,
+                sColLabel:sCol,
+                sQty:sQty
+            });
+
+        }else{
+            newSales = new Sales({
+                sCategory: sCat,
+                sBrand:sBrand,
+                sRowLabel:sRow,
+                sQty:sQty
+            });        
+        }
+
+        await newSales.save()
+
+        return res.json({msg: "New Sale Added!"})
+    }
+    catch(err){
+        console.error("Error sales entry:");
+        res.status(500).json({ message: "Internal server error!!(salesEntry)" });
+    }
+}
+
+const getAllSales = async (req,res) => {
+    try{
+        const sales = await Sales.find();
+
+        return res.json({ msg: sales})
+    }
+    catch(err){
+        console.error("Error sales entry:");
+        res.status(500).json({ message: "Internal server error!!(salesEntry)" });
+    }
+}
+
+
 
 module.exports = {
   getAllCategories,
@@ -217,4 +282,7 @@ module.exports = {
   delBrand,
   editBrand,
   getSpecificBrand,
+
+  salesEntry,
+  getAllSales,
 };

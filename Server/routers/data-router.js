@@ -21,4 +21,8 @@ router
   .delete(datac.delBrand)
   .patch(datac.editBrand);
 
+router.route("/sales")
+  .get(datac.getAllSales)
+  .post(datac.salesEntry);
+
 module.exports = router;
