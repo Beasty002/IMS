@@ -6,7 +6,7 @@ import Graph from "../../assets/Chart&Axis.svg";
 const GraphSection = () => (
   <div className="graph">
     <div className="graph-head">
-      <h2>Sales and Purchase</h2>
+      <h2 className="dash-title">Sales & Purchase</h2>
       <select name="timeline">
         <option value="Weekly">Weekly</option>
         <option value="Monthly">Monthly</option>
