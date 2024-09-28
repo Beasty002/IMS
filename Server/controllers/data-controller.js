@@ -216,10 +216,13 @@ const salesEntry = async (req,res) => {
     try{
         // console.log(req.body);
         var saleIds = [];
+        var count =0;
 
         const sales = req.body;
 
+
         for(var sale of sales){
+          count++;
 
           const sCat = sale.sCategory;
           const sBrand = sale.sBrand;
@@ -228,7 +231,7 @@ const salesEntry = async (req,res) => {
           const sQty = sale.sQty;
   
           if (isNaN(sQty)){
-              return res.json({err: "Quantity not a number"})
+              return res.json({err: `Quantity of sale no.${count} is not a number`})
           }
 
           var newSaleEntry = new Sales({
@@ -270,9 +273,65 @@ const getAllSales = async (req,res) => {
         return res.json({ msg: sales})
     }
     catch(err){
-        console.error("Error sales entry:");
-        res.status(500).json({ message: "Internal server error!!(salesEntry)" });
+      console.error("Error getallsales :");
+      res.status(500).json({ message: "Internal server error!!(getAllSales)" });
     }
+}
+
+const getPastWeekSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aWeekAgo = new Date();
+    aWeekAgo.setDate(currDate.getDate() - 7);
+      
+    const pastWeekSales = await SalesRecord.find({
+      dos: { $gte: aWeekAgo}
+    });
+
+    return res.json({pastWeekSales: pastWeekSales})
+  }
+  catch(err){
+    console.error("Error past week sales");
+    res.json({ message: "Internal server error!!(getPastWeekSales)" });
+  }
+}
+
+const getPastMonthSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aMonthAgo = new Date();
+    aMonthAgo.setDate(currDate.getDate() - 30);
+      
+    const pastMonthSales = await SalesRecord.find({
+      dos: { $gte: aMonthAgo}
+    });
+
+    return res.json({pastMonthSales: pastMonthSales})
+  }
+  catch(err){
+    console.error("Error past month sales");
+    res.json({ message: "Internal server error!!(getPastMonthSales)" });
+  }
+}
+const getPastYearSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aYearAgo = new Date();
+    aYearAgo.setDate(currDate.getDate() - 365);
+      
+    const pastYearSales = await SalesRecord.find({
+      dos: { $gte: aYearAgo}
+    });
+
+    return res.json({pastYearSales: pastYearSales})
+  }
+  catch(err){
+    console.error("Error past year sales");
+    res.json({ message: "Internal server error!!(getPastYearSales)" });
+  }
 }
 
 
@@ -290,4 +349,7 @@ module.exports = {
 
   salesEntry,
   getAllSales,
+  getPastWeekSales,
+  getPastMonthSales,
+  getPastYearSales,
 };
