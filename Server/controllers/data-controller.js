@@ -1,7 +1,8 @@
 const path = require("path");
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
-const Sales = require("../models/sales-model")
+const Sales = require("../models/sales-model");
+const SalesRecord = require("../models/sale-record-model")
 const { Collection } = require("mongoose");
 const { isString } = require("util");
 
@@ -213,42 +214,46 @@ const editBrand = async (req, res) => {
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
 const salesEntry = async (req,res) => {
     try{
-        let sCol;
-        console.log(req.body);
+        // console.log(req.body);
+        var saleIds = [];
 
-        const sCat = req.body.sCategory;
-        const sBrand = req.body.sBrand;
-        const sRow = req.body.sRowLabel;
+        const sales = req.body;
 
-        if (req.body.sColLabel) sCol = req.body.sColLabel;
+        for(var sale of sales){
 
-        const sQty = req.body.sQty;
+          const sCat = sale.sCategory;
+          const sBrand = sale.sBrand;
+          const sRow = sale.sRowLabel;
+          const sCol = sale.sColLabel;
+          const sQty = sale.sQty;
+  
+          if (isNaN(sQty)){
+              return res.json({err: "Quantity not a number"})
+          }
 
-        if (isNaN(sQty)){
-            return res.json({err: "Quantity not a number"})
+          var newSaleEntry = new Sales({
+            sCategory: sCat,
+            sBrand:sBrand,
+            sRowLabel:sRow,
+            sColLabel:sCol,
+            sQty:sQty
+          });
+
+          var newSale = await newSaleEntry.save();
+
+          saleIds.push(newSale._id)
+
+          
         }
+        // console.log(saleIds)
 
-        let newSales;
 
-        if (sCol){
-            newSales = new Sales({
-                sCategory: sCat,
-                sBrand:sBrand,
-                sRowLabel:sRow,
-                sColLabel:sCol,
-                sQty:sQty
-            });
+        const newSalesEntry = new SalesRecord({
+          saleIds: saleIds
+        });     
+        
 
-        }else{
-            newSales = new Sales({
-                sCategory: sCat,
-                sBrand:sBrand,
-                sRowLabel:sRow,
-                sQty:sQty
-            });        
-        }
-
-        await newSales.save()
+        await newSalesEntry.save()
 
         return res.json({msg: "New Sale Added!"})
     }

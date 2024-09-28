@@ -7,7 +7,6 @@ const saleSchema = new Schema({
         type: String,
         required: true
     },
-    
     sBrand:{
         type: String,
         required: true
@@ -18,7 +17,7 @@ const saleSchema = new Schema({
     },
     sColLabel:{
         type: String,
-        
+        required: true
     },
     sQty:{
         type: Number,
