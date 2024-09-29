@@ -130,6 +130,7 @@ function SideBar({ currentPage, sideClass }) {
         isOpen={isCatModel}
         onClose={closeCatModel}
         addCategory={addCategory}
+        type="category"
       />
     </aside>
   );

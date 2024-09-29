@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import './AddCat.css'
+import "./AddCat.css";
 
-function AddCat({ isOpen, onClose, addCategory }) {
+function AddCat({ isOpen, onClose, addCategory, type }) {
   const [createCate, setCreateCate] = useState("");
 
   if (!isOpen) return null;
@@ -19,17 +19,19 @@ function AddCat({ isOpen, onClose, addCategory }) {
     event.preventDefault();
 
     if (!createCate.trim()) {
-      console.log("Category title cannot be empty");
+      console.log(
+        `${type.charAt(0).toUpperCase() + type.slice(1)} title cannot be empty`
+      );
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/category", {
+      const response = await fetch(`http://localhost:3000/api/${type}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ category: createCate }),
+        body: JSON.stringify({ [type]: createCate }),
       });
 
       const data = await response.json();
@@ -44,7 +46,7 @@ function AddCat({ isOpen, onClose, addCategory }) {
 
       onClose();
     } catch (error) {
-      console.error("Error adding category:", error);
+      console.error(`Error adding ${type} :`, error);
     }
   };
 
@@ -53,16 +55,22 @@ function AddCat({ isOpen, onClose, addCategory }) {
       <div onClick={onClose} className="overlay"></div>
 
       <section className="cat-pop">
-        <h2>New Category</h2>
+        <h2>New {type}</h2>
         <form onSubmit={handleAddCategory}>
           <div className="form-container">
-            <label>Enter title for the Category:</label>
+            {type === "category" ? (
+              <label>Enter a title for category</label>
+            ) : (
+              <label>Enter the label for row</label>
+            )}
             <input
               value={createCate}
               onChange={(event) => setCreateCate(event.target.value)}
               onKeyDown={handleEnter}
               type="text"
-              placeholder="e.g., plywood, doors ..."
+              placeholder={`e.g ${
+                type === "category" ? "plywood, doors" : "12 MDF"
+              }`}
               required
             />
           </div>
