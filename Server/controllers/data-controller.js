@@ -286,6 +286,7 @@ const getAllSales = async (req,res) => {
 
 const getPastWeekSales = async (req,res) => {
   try{
+    var soldQty = 0;
     const currDate = new Date();
 
     const aWeekAgo = new Date();
@@ -294,6 +295,17 @@ const getPastWeekSales = async (req,res) => {
     const pastWeekSales = await SalesRecord.find({
       dos: { $gte: aWeekAgo}
     });
+
+    // console.log(pastWeekSales)
+    const saleIds = pastWeekSales.map(sale => sale.saleIds).flat();
+    // return res.json({saleIds: saleIds})
+
+    for (var saleId of saleIds){
+      const sale = await Sales.findById({_id: saleId});
+
+      ////////////////////// TOOO BEEE CONTTINUUUEEEDDD //////////////////////////////
+
+    }
 
     return res.json({pastWeekSales: pastWeekSales})
   }
