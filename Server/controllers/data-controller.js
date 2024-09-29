@@ -1,7 +1,8 @@
 const path = require("path");
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
-const Sales = require("../models/sales-model")
+const Sales = require("../models/sales-model");
+const SalesRecord = require("../models/sale-record-model")
 const { Collection } = require("mongoose");
 const { isString } = require("util");
 
@@ -213,42 +214,49 @@ const editBrand = async (req, res) => {
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
 const salesEntry = async (req,res) => {
     try{
-        let sCol;
-        console.log(req.body);
+        // console.log(req.body);
+        var saleIds = [];
+        var count =0;
 
-        const sCat = req.body.sCategory;
-        const sBrand = req.body.sBrand;
-        const sRow = req.body.sRowLabel;
+        const sales = req.body;
 
-        if (req.body.sColLabel) sCol = req.body.sColLabel;
 
-        const sQty = req.body.sQty;
+        for(var sale of sales){
+          count++;
 
-        if (isNaN(sQty)){
-            return res.json({err: "Quantity not a number"})
+          const sCat = sale.sCategory;
+          const sBrand = sale.sBrand;
+          const sRow = sale.sRowLabel;
+          const sCol = sale.sColLabel;
+          const sQty = sale.sQty;
+  
+          if (isNaN(sQty)){
+              return res.json({err: `Quantity of sale no.${count} is not a number`})
+          }
+
+          var newSaleEntry = new Sales({
+            sCategory: sCat,
+            sBrand:sBrand,
+            sRowLabel:sRow,
+            sColLabel:sCol,
+            sQty:sQty
+          });
+
+          var newSale = await newSaleEntry.save();
+
+          saleIds.push(newSale._id)
+
+          
         }
+        // console.log(saleIds)
 
-        let newSales;
 
-        if (sCol){
-            newSales = new Sales({
-                sCategory: sCat,
-                sBrand:sBrand,
-                sRowLabel:sRow,
-                sColLabel:sCol,
-                sQty:sQty
-            });
+        const newSalesEntry = new SalesRecord({
+          saleIds: saleIds
+        });     
+        
 
-        }else{
-            newSales = new Sales({
-                sCategory: sCat,
-                sBrand:sBrand,
-                sRowLabel:sRow,
-                sQty:sQty
-            });        
-        }
-
-        await newSales.save()
+        await newSalesEntry.save()
 
         return res.json({msg: "New Sale Added!"})
     }
@@ -265,9 +273,65 @@ const getAllSales = async (req,res) => {
         return res.json({ msg: sales})
     }
     catch(err){
-        console.error("Error sales entry:");
-        res.status(500).json({ message: "Internal server error!!(salesEntry)" });
+      console.error("Error getallsales :");
+      res.status(500).json({ message: "Internal server error!!(getAllSales)" });
     }
+}
+
+const getPastWeekSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aWeekAgo = new Date();
+    aWeekAgo.setDate(currDate.getDate() - 7);
+      
+    const pastWeekSales = await SalesRecord.find({
+      dos: { $gte: aWeekAgo}
+    });
+
+    return res.json({pastWeekSales: pastWeekSales})
+  }
+  catch(err){
+    console.error("Error past week sales");
+    res.json({ message: "Internal server error!!(getPastWeekSales)" });
+  }
+}
+
+const getPastMonthSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aMonthAgo = new Date();
+    aMonthAgo.setDate(currDate.getDate() - 30);
+      
+    const pastMonthSales = await SalesRecord.find({
+      dos: { $gte: aMonthAgo}
+    });
+
+    return res.json({pastMonthSales: pastMonthSales})
+  }
+  catch(err){
+    console.error("Error past month sales");
+    res.json({ message: "Internal server error!!(getPastMonthSales)" });
+  }
+}
+const getPastYearSales = async (req,res) => {
+  try{
+    const currDate = new Date();
+
+    const aYearAgo = new Date();
+    aYearAgo.setDate(currDate.getDate() - 365);
+      
+    const pastYearSales = await SalesRecord.find({
+      dos: { $gte: aYearAgo}
+    });
+
+    return res.json({pastYearSales: pastYearSales})
+  }
+  catch(err){
+    console.error("Error past year sales");
+    res.json({ message: "Internal server error!!(getPastYearSales)" });
+  }
 }
 
 
@@ -285,4 +349,7 @@ module.exports = {
 
   salesEntry,
   getAllSales,
+  getPastWeekSales,
+  getPastMonthSales,
+  getPastYearSales,
 };
