@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MulVarList.css";
 import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
 import AddCat from "../../popups/AddCat/AddCat";
+import { useParams } from "react-router-dom";
 
 export default function MulVarList() {
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
+
+  const { categoryName, brandName } = useParams();
 
   const enableCustPortal = () => {
     setCustPortal(!custPortal);
@@ -75,7 +78,14 @@ export default function MulVarList() {
           </table>
         </div>
         <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} />
-        <AddCat isOpen={catPortal} onClose={enableCatPortal} type="item" />
+        <AddCat
+          isOpen={catPortal}
+          onClose={enableCatPortal}
+          type="item"
+          multiVar="true"
+          catName={categoryName}
+          brndName={brandName}
+        />
       </section>
     </>
   );

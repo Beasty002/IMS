@@ -36,6 +36,7 @@ export default function App() {
   const CatBrandPage = () => {
     const { categoryName, brandName, multi } = useParams();
 
+
     if (multi === "true") {
       return <MulVarList />;
     } else {
