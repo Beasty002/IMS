@@ -213,57 +213,63 @@ const editBrand = async (req, res) => {
 
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
 const salesEntry = async (req,res) => {
-    try{
-        // console.log(req.body);
-        var saleIds = [];
-        var count =0;
+  try{
+      // console.log(req.body);
+      var saleIds = [];
+      var count =0;
 
-        const sales = req.body;
+      const sales = req.body;
 
+      console.log(sales)
 
-        for(var sale of sales){
-          count++;
+      for(var sale of sales.addInput){
+        count++;
 
-          const sCat = sale.sCategory;
-          const sBrand = sale.sBrand;
-          const sRow = sale.sRowLabel;
-          const sCol = sale.sColLabel;
-          const sQty = sale.sQty;
-  
-          if (isNaN(sQty)){
-              return res.json({err: `Quantity of sale no.${count} is not a number`})
-          }
+        const sCat = sale.category;
+        const sBrand = sale.brand;
+        const sRow = sale.rowLabel;
+        const sCol = sale.colLabel;
+        const sQty = sale.counter;
 
-          var newSaleEntry = new Sales({
-            sCategory: sCat,
-            sBrand:sBrand,
-            sRowLabel:sRow,
-            sColLabel:sCol,
-            sQty:sQty
-          });
-
-          var newSale = await newSaleEntry.save();
-
-          saleIds.push(newSale._id)
-
-          
-        }
-        // console.log(saleIds)
-
-
-        const newSalesEntry = new SalesRecord({
-          saleIds: saleIds
-        });     
         
+        
+        if (isNaN(sQty)){
+          return res.json({err: `Quantity of sale no.${count} is not a number`})
+        }
+        
+        var newSaleEntry = new Sales({
+          sCategory: sCat,
+          sBrand:sBrand,
+          sRowLabel:sRow,
+          sColLabel:sCol,
+          sQty:sQty
+        });
 
-        await newSalesEntry.save()
 
-        return res.json({msg: "New Sale Added!"})
-    }
-    catch(err){
-        console.error("Error sales entry:");
-        res.status(500).json({ message: "Internal server error!!(salesEntry)" });
-    }
+        // return res.json(sQty)
+
+        var newSale = await newSaleEntry.save();
+
+        saleIds.push(newSale._id)
+
+        
+      }
+      // console.log(saleIds)
+
+
+      const newSalesEntry = new SalesRecord({
+        saleIds: saleIds
+      });     
+      
+
+      await newSalesEntry.save()
+
+      return res.json({msg: "New Sale Added!"})
+  }
+  catch(err){
+      console.error("Error sales entry:");
+      res.status(500).json({ message: "Internal server error!!(salesEntry)" });
+  }
 }
 
 const getAllSales = async (req,res) => {
@@ -315,6 +321,7 @@ const getPastMonthSales = async (req,res) => {
     res.json({ message: "Internal server error!!(getPastMonthSales)" });
   }
 }
+
 const getPastYearSales = async (req,res) => {
   try{
     const currDate = new Date();
@@ -334,6 +341,54 @@ const getPastYearSales = async (req,res) => {
   }
 }
 
+const getSalesByWeekday = async (req, res) => {
+  try {
+    const weekday = req.body.weekday;
+
+    if (!weekday || weekday < 1 || weekday > 7) {
+      return res.status(400).json({ message: "Invalid weekday. Please provide a value between 1 (Sunday) and 7 (Saturday)." });
+    }
+
+    const salesByWeekday = await SalesRecord.find({
+      $expr: { $eq: [{ $dayOfWeek: "$dos" }, parseInt(weekday)] }
+    });
+
+    return res.json({ salesByWeekday });
+  } catch (err) {
+    console.error("Error fetching sales by weekday");
+    res.status(500).json({ message: "Internal server error!! (getSalesByWeekday)" });
+  }
+};
+
+
+// const getSundaySales = async (req,res) => {
+//   try{
+//     const sundaySales = await SalesRecord.find({
+//       $expr: { $eq: [{ $dayOfWeek: "$dos" }, 1] } // MongoDB $dayOfWeek returns 1 for Sunday
+//     });
+
+//     return res.json({sundaySales: sundaySales})
+
+//   }
+//   catch(err){
+//     console.error("Error sun sales");
+//     res.json({ message: "Internal server error!!(getSunSales)" });
+//   }
+// }
+
+// const getSaturdaySales = async (req, res) => {
+//   try {
+//     const saturdaySales = await SalesRecord.find({
+//       $expr: { $eq: [{ $dayOfWeek: "$dos" }, 7] } // MongoDB $dayOfWeek returns 7 for Saturday
+//     });
+
+//     return res.json({ saturdaySales: saturdaySales });
+//   } catch (err) {
+//     console.error("Error sat sales");
+//     res.json({ message: "Internal server error!!(getSatSales)" });
+//   }
+// };
+
 
 
 module.exports = {
@@ -352,4 +407,9 @@ module.exports = {
   getPastWeekSales,
   getPastMonthSales,
   getPastYearSales,
+
+  // getSundaySales,
+  // getSaturdaySales,
+  getSalesByWeekday,
+
 };

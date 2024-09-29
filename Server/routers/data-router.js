@@ -28,6 +28,9 @@ router.route("/sales")
 router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
 router.route("/getPastMonthSales").get(datac.getPastMonthSales); 
 router.route("/getPastYearSales").get(datac.getPastYearSales); 
+// router.route("/getSundaySales").get(datac.getSundaySales); 
+// router.route("/getSaturdaySales").get(datac.getSaturdaySales); 
+router.route("/getSalesByWeekday").post(datac.getSalesByWeekday); 
 
 
 module.exports = router;
