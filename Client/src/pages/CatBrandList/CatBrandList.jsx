@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./CatBrandList.css";
 import AddBrand from "../../popups/AddBrand/AddBrand";
+import { useAuth } from "../../customHooks/useAuth";
 
 export default function CatBrandList() {
   //new thing -> we need to use the variable we defined for dynamic routing here to get the param
   const { categoryName } = useParams();
-  const [fetchBrand, setFetchBrand] = useState([]);
+  const catName = categoryName;
 
   const [brandIsOpen, setBrandIsOpen] = useState(false);
 
@@ -14,35 +15,14 @@ export default function CatBrandList() {
     setBrandIsOpen(!brandIsOpen);
   };
 
-  const fetchBrandData = async () => {
-    try {
-      console.log(categoryName);
-      const response = await fetch(`http://localhost:3000/api/brandList`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ categoryName }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setFetchBrand([]);
-        console.log("Network error occurred", response.statusText);
-        return;
-      }
-      console.log(data);
-      setFetchBrand(data.brands);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const { fetchBrand, fetchBrandData } = useAuth();
 
   const newBrand = () => {
-    fetchBrandData();
+    fetchBrandData(catName);
   };
 
   useEffect(() => {
-    fetchBrandData();
+    fetchBrandData(catName);
   }, [categoryName]);
 
   return (
@@ -64,7 +44,7 @@ export default function CatBrandList() {
             </button>
           </div>
         </div>
-        {fetchBrand.length !==0 ? (
+        {fetchBrand.length !== 0 ? (
           <>
             <div className="brand-list">
               {fetchBrand?.map((item) => (

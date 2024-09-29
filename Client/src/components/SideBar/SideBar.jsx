@@ -3,12 +3,12 @@ import "./SideBar.css";
 import Logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import AddCat from "../../popups/AddCat/AddCat";
+import { useAuth } from "../../customHooks/useAuth";
 
 function SideBar({ currentPage, sideClass }) {
   const [activeIndex, setActiveIndex] = useState({ currentPage });
   const [expand, setExpand] = useState(false);
   const [isCatModel, setIsCatModel] = useState(false);
-  const [categories, setCategories] = useState([]);
 
   const handleActive = (index) => {
     setActiveIndex(index);
@@ -25,25 +25,7 @@ function SideBar({ currentPage, sideClass }) {
     setIsCatModel(false);
   };
 
-  const fetchCategory = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/category", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        console.log("Error while fetching data");
-        return;
-      }
-      setCategories(data.cats);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const { fetchCategory, categories, setCategories } = useAuth();
 
   useEffect(() => {
     fetchCategory();
@@ -93,8 +75,9 @@ function SideBar({ currentPage, sideClass }) {
                 <p>Inventory</p>
               </span>
               <i
-                className={`fa-solid fa-greater-than ${expand ? "rotate" : "passive"
-                  } `}
+                className={`fa-solid fa-greater-than ${
+                  expand ? "rotate" : "passive"
+                } `}
               ></i>
             </li>
             {expand ? (
@@ -102,8 +85,9 @@ function SideBar({ currentPage, sideClass }) {
                 <ul className="hidden-cate">
                   {categories?.map((item) => (
                     <Link
-                      to={`/catband/${item.title ? item.title.toLowerCase() : ""
-                        }`}
+                      to={`/catband/${
+                        item.title ? item.title.toLowerCase() : ""
+                      }`}
                     >
                       <li key={item._id}>{item.title || "Unknown"}</li>
                     </Link>

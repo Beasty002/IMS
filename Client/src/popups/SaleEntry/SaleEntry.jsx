@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../customHooks/useAuth";
 
 function SaleEntry() {
+  const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -9,13 +11,14 @@ function SaleEntry() {
       rowLabel: "",
       colLabel: "",
       counter: 0,
+      fetchData: [],
     },
   ]);
 
   const addNewList = (event) => {
     event.preventDefault();
-    setAddInput([
-      ...addInput,
+    setAddInput((prev) => [
+      ...prev,
       {
         id: Date.now() + Math.random(),
         category: "",
@@ -23,176 +26,204 @@ function SaleEntry() {
         rowLabel: "",
         colLabel: "",
         counter: 0,
+        fetchData: [],
       },
     ]);
   };
 
-  // here each select is treated as a sinle so there will be only one field 
-
   const handleDataInsert = async (itemId, field, value) => {
-    setAddInput(
-      addInput.map((item) =>
-        item.id === itemId ? { ...item, [field]: value } : item
-      )
+    const updatedData = addInput.map((item) =>
+      item.id === itemId ? { ...item, [field]: value } : item
     );
+    setAddInput(updatedData);
 
-    const categoryName = addInput
-      .map((item) => (item.id === itemId ? item.category : null))
-      // this filter(Boolean) removes any falsy value like null,false,undefined
-      // which will left us with our required value of the selected category and[0] representts
-      // the first index as it is still in array form
-      .filter(Boolean)[0];
+    if (field === "category") {
+      const catName = updatedData.find((item) => item.id === itemId)?.category;
 
+      if (catName) {
+        // direvlty return garya value instead of using previous state to get late data
+        const fetchedData = await fetchBrandData(catName);
+
+        console.log("Fetched brand data:", fetchedData);
+
+        setAddInput((prevData) =>
+          prevData.map((item) =>
+            item.id === itemId ? { ...item, fetchData: fetchedData } : item
+          )
+        );
+      }
+    }
+  };
+
+  const handleSubmission = async (event) => {
+    event.preventDefault();
+    console.log(JSON.stringify(addInput));
     try {
-      const response = await fetch("http://localhost:3000/api/categoryData", {
+      const response = await fetch("http://localhost:3000/api/sales", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ category: categoryName }),
+        body: JSON.stringify({ addInput }),
       });
+
       const data = await response.json();
-      if (!response.ok) {
-        console.log("Network error");
+      if (response.ok) {
+        console.log(data);
+      } else {
+        console.log("Error");
         return;
       }
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
   };
 
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
   const handleDecrement = (itemId) => {
-    setAddInput(
-      addInput.map((item) =>
+    setAddInput((prev) => {
+      const updatedList = prev.map((item) =>
         item.id === itemId
-          ? { ...item, counter: Math.max(0, item.counter - 1) }
+          ? // Math.max is used to determine upper and lower limit
+            { ...item, counter: Math.max(0, item.counter - 1) }
           : item
-      )
-    );
+      );
+      return updatedList;
+    });
   };
 
   const handleIncrement = (itemId) => {
-    setAddInput(
-      addInput.map((item) =>
+    setAddInput((prev) => {
+      const updatedList = prev.map((item) =>
         item.id === itemId ? { ...item, counter: item.counter + 1 } : item
-      )
-    );
+      );
+      return updatedList;
+    });
   };
 
   const handleDelete = (itemId) => {
-    setAddInput((prevState) => prevState.filter((item) => item.id !== itemId));
+    setAddInput((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   return (
-    <>
-      <div id="newSales">
-        <h2>Sales Entry</h2>
-        <section className="page-top-container">
-          <div className="search-box">
-            <i className="bx bx-search-alt"></i>
-            <input
-              type="text"
-              placeholder="Search items to add..."
-              aria-label="Search input"
-            />
-          </div>
-          <div className="btn-container">
-            <button onClick={addNewList} className="secondary-btn">
-              + New Item
+    <div id="newSales">
+      <h2>Sales Entry</h2>
+      <section className="page-top-container">
+        <div className="search-box">
+          <i className="bx bx-search-alt"></i>
+          <input
+            type="text"
+            placeholder="Search items to add..."
+            aria-label="Search input"
+          />
+        </div>
+        <div className="btn-container">
+          <button onClick={addNewList} className="secondary-btn">
+            + New Item
+          </button>
+        </div>
+      </section>
+
+      <section className="sales-item-container">
+        <form  onSubmit={handleSubmission}>
+          <section className="sales-entry-items-list">
+            {addInput.map((item) => (
+              <div key={item.id} className="sales-entry-item">
+                <i
+                  onClick={() => handleDelete(item.id)}
+                  className="bx bx-trash del-icon"
+                ></i>
+
+                <select
+                  value={item.category}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "category", event.target.value)
+                  }
+                  className="cat-select"
+                >
+                  <option value="">Select Category</option>
+                  {Array.isArray(categories) &&
+                    categories.map((category) => (
+                      <option key={category._id} value={category.title}>
+                        {category.title}
+                      </option>
+                    ))}
+                </select>
+
+                <select
+                  value={item.brand}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "brand", event.target.value)
+                  }
+                  className="brand-select"
+                >
+                  <option value="">Select Brand</option>
+                  {Array.isArray(item.fetchData) &&
+                    item.fetchData.map((brand) => (
+                      <option key={brand._id} value={brand.brandName}>
+                        {brand.brandName}
+                      </option>
+                    ))}
+                </select>
+
+                <select
+                  value={item.rowLabel}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "rowLabel", event.target.value)
+                  }
+                  className="row-select"
+                >
+                  <option value="">Select RowLabel</option>
+                  {Array.isArray(item.fetchData) &&
+                    item.fetchData.map((label) => (
+                      <option key={label._id} value={label.rowLabel}>
+                        {label.rowLabel}
+                      </option>
+                    ))}
+                </select>
+
+                <select
+                  value={item.colLabel}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "colLabel", event.target.value)
+                  }
+                  className="column-select"
+                >
+                  <option value="">Select ColLabel</option>
+                  {Array.isArray(item.fetchData) &&
+                    item.fetchData.map((label) => (
+                      <option key={label._id} value={label.colLabel}>
+                        {label.colLabel}
+                      </option>
+                    ))}
+                </select>
+
+                <div className="sales-entry-qty">
+                  <i
+                    onClick={() => handleDecrement(item.id)}
+                    className="bx bxs-minus-circle"
+                  ></i>
+                  <input type="number" value={item.counter} readOnly />
+                  <i
+                    onClick={() => handleIncrement(item.id)}
+                    className="bx bxs-plus-circle"
+                  ></i>
+                </div>
+              </div>
+            ))}
+          </section>
+          <div className="btn-container new-entry-btn-container">
+            <button className="cancel-btn">Back</button>
+            <button type="submit" className="primary-btn">
+              Add
             </button>
           </div>
-        </section>
-
-        <section className="sales-item-container">
-          <form>
-            <section className="sales-entry-items-list">
-              {addInput?.map((item, index) => (
-                <div key={index} className="sales-entry-item">
-                  <i
-                    onClick={() => handleDelete(item.id)}
-                    class="bx bx-trash del-icon"
-                  ></i>
-                  <select
-                    value={item.category}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "category", event.target.value)
-                    }
-                    name="cat"
-                    className="cat-select"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Plywood">Plywood</option>
-                    <option value="Doors">Doors</option>
-                  </select>
-                  <select
-                    value={item.brand}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "brand", event.target.value)
-                    }
-                    name="cat"
-                    className="brand-select"
-                  >
-                    <option value="">Select Brand</option>
-                    <option value="Mayur">Mayur</option>
-                    <option value="Greenlam">Greenlam</option>
-                  </select>
-                  <select
-                    value={item.rowLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "rowLabel", event.target.value)
-                    }
-                    name="cat"
-                    className="row-select"
-                  >
-                    <option value=""> Select RowLabel</option>
-                    <option value="mayur">mayur</option>
-                    <option value="Greenlam">Greenlam</option>
-                  </select>
-                  <select
-                    value={item.colLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "colLabel", event.target.value)
-                    }
-                    name="cat"
-                    className="column-select"
-                  >
-                    <option value="" disabled selected>Column</option>
-                    <option value="mayur">mayur</option>
-                    <option value="Greenlam">Greenlam</option>
-                  </select>
-                  <div className="sales-entry-qty">
-                    <i
-                      onClick={() => handleDecrement(item.id)}
-                      className="bx bxs-minus-circle"
-                    ></i>
-                    <input
-                      type="number"
-                      id="quantity"
-                      name="qty"
-                      value={item.counter}
-                    />
-                    <i
-                      onClick={() => handleIncrement(item.id)}
-                      className="bx bxs-plus-circle"
-                    ></i>
-                  </div>
-                </div>
-              ))}
-
-              <div className="new-item">
-                <span></span>
-
-              </div>
-            </section>
-            <div className="btn-container new-entry-btn-container">
-              <button className="cancel-btn">Back</button>
-              <button className="primary-btn">Add</button>
-            </div>
-          </form>
-        </section>
-      </div>
-    </>
+        </form>
+      </section>
+    </div>
   );
 }
 
