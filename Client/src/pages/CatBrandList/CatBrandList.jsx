@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import "./CatBrandList.css";
 import AddBrand from "../../popups/AddBrand/AddBrand";
 import { useAuth } from "../../customHooks/useAuth";
@@ -20,6 +20,10 @@ export default function CatBrandList() {
   const newBrand = () => {
     fetchBrandData(catName);
   };
+
+  useEffect(() => {
+    console.log(fetchBrand);
+  }, [fetchBrand]);
 
   useEffect(() => {
     fetchBrandData(catName);
@@ -48,18 +52,24 @@ export default function CatBrandList() {
           <>
             <div className="brand-list">
               {fetchBrand?.map((item) => (
-                <div className="brand-box" key={item._id}>
-                  <h3>
-                    {item.brandName} {item.parentCategory}
-                  </h3>
-                  <p className="brand-stock-availability">
-                    Stock available : 80
-                  </p>
-                  <div className="action-container">
-                    <i className="bx bx-edit-alt edit-icon"></i>
-                    <i className="bx bx-trash del-icon"></i>
+                <Link
+                  key={item._id}
+                  to={`/catband/${item.parentCategory}/${item.brandName}/${item.multiVar}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="brand-box">
+                    <h3>
+                      {item.brandName} {item.parentCategory}
+                    </h3>
+                    <p className="brand-stock-availability">
+                      Stock available: 80
+                    </p>
+                    <div className="action-container">
+                      <i className="bx bx-edit-alt edit-icon"></i>
+                      <i className="bx bx-trash del-icon"></i>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </>
