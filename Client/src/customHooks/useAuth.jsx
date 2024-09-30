@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Error while fetching data");
         return;
       }
-      console.log(data);
+      // console.log(data);
       setCategories(data.cats);
     } catch (error) {
       console.error(error);

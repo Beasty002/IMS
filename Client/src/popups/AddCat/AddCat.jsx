@@ -2,15 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import "./AddCat.css";
 
-function AddCat({
-  isOpen,
-  onClose,
-  addCategory,
-  type,
-  multiVar,
-  catName,
-  brndName,
-}) {
+function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
   const [createCate, setCreateCate] = useState("");
 
   if (!isOpen) return null;
@@ -37,13 +29,12 @@ function AddCat({
       [type]: createCate,
     };
 
-    if (multiVar) {
-      (body.multiVar = multiVar),
-        (body.categoryName = catName),
-        (body.brandName = brndName);
+    if (type === 'item') {
+      body._id = specificId;
     }
 
     try {
+      console.log(JSON.stringify(body));
       const response = await fetch(`http://localhost:3000/api/${type}`, {
         method: "POST",
         headers: {

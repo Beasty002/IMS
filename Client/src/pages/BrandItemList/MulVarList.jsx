@@ -3,10 +3,14 @@ import "./MulVarList.css";
 import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
 import AddCat from "../../popups/AddCat/AddCat";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../customHooks/useAuth";
 
 export default function MulVarList() {
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
+  const [specificId, setSpecificId] = useState();
+
+  const { fetchBrandData, fetchBrand } = useAuth();
 
   const { categoryName, brandName } = useParams();
 
@@ -17,6 +21,30 @@ export default function MulVarList() {
   const enableCatPortal = () => {
     setCatPortal(!catPortal);
   };
+
+  useEffect(() => {
+    if (categoryName) {
+      fetchBrandData(categoryName);
+    }
+  }, [categoryName]);
+
+  useEffect(() => {
+    console.log(fetchBrand);
+  }, [fetchBrand]);
+
+  useEffect(() => {
+    if (fetchBrand && fetchBrand.length > 0) {
+      const requiredId = fetchBrand.find(
+        (item) => item.brandName === brandName
+      );
+      setSpecificId(requiredId._id);
+      console.log(specificId);
+    } else {
+      console.log("No data available or fetchBrand is undefined.");
+    }
+  }, [fetchBrand, brandName]);
+
+
 
   return (
     <>
@@ -83,8 +111,7 @@ export default function MulVarList() {
           onClose={enableCatPortal}
           type="item"
           multiVar="true"
-          catName={categoryName}
-          brndName={brandName}
+          specificId={specificId}
         />
       </section>
     </>

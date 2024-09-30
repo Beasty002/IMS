@@ -1,82 +1,123 @@
-import React from 'react'
-import './SinVarList.css'
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import "./SinVarList.css";
+import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
+import AddCat from "../../popups/AddCat/AddCat";
+import { useAuth } from "../../customHooks/useAuth";
 
 export default function SinVarList() {
-    return (
-        <>
-            <section className='brand-list-page'>
-                <div className="title-customize-cont">
-                    <h1>Mayur Plywoods</h1>
+  const [custPortal, setCustPortal] = useState(false);
+  const [catPortal, setCatPortal] = useState(false);
+  const { fetchBrandData, fetchBrand } = useAuth();
+  const [specificId, setSpecificId] = useState();
 
-                </div>
+  const { categoryName, brandName } = useParams();
 
-                <section className="brand-list-top sp">
-                    <div className="search-select-container">
-                        <div className="search-box">
-                            <i className="bx bx-search-alt"></i>
-                            <input
-                                type="text"
-                                placeholder="Search items..."
-                                aria-label="Search input"
-                            />
-                        </div>
-                        <div className="sel-container">
-                            <select name="" id="">
-                                <option value="">SD</option>
-                                <option value="">MF</option>
-                                <option value="">godawari</option>
-                            </select>
-                        </div>
+  const enableCustPortal = () => {
+    setCustPortal(!custPortal);
+  };
 
-                    </div>
+  const enableCatPortal = () => {
+    setCatPortal(!catPortal);
+  };
 
+  useEffect(() => {
+    if (categoryName) {
+      fetchBrandData(categoryName);
+    }
+  }, [categoryName]);
 
-                    <div className="btn-container sp">
-                        <button className="secondary-btn">
-                            <i className="bx bx-filter-alt"></i>
-                            Customize Types
-                        </button>
-                        <button className="primary-btn">
-                            <i className="bx bx-plus-circle"></i> New Item
-                        </button>
-                    </div>
-                </section>
+  useEffect(() => {
+    if (fetchBrand && fetchBrand.length > 0) {
+      const requiredId = fetchBrand.find(
+        (item) => item.brandName === brandName
+      );
+      setSpecificId(requiredId._id);
+      console.log(specificId);
+    }
+  }, [fetchBrand, brandName]);
 
-            </section>
-            <section>
-                <div className="brand-item-table single-var">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th className='table-checkbox'><input type="checkbox" /></th>
-                                <th>Code</th>
-                                <th className='stock-count-single'>Stock</th>
+  useEffect(() => {
+    console.log(fetchBrand);
+  }, [fetchBrand]);
 
-                                <th className='table-action-container'>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+  return (
+    <>
+      <section className="brand-list-page">
+        <div className="title-customize-cont">
+          <h1>Mayur Plywoods</h1>
+        </div>
 
-                            <tr>
-                                <td className='table-checkbox'>
-                                    <input type="checkbox" />
-                                </td>
-                                <td>1000</td>
-                                <td>1000</td>
+        <section className="brand-list-top sp">
+          <div className="search-select-container">
+            <div className="search-box">
+              <i className="bx bx-search-alt"></i>
+              <input
+                type="text"
+                placeholder="Search items..."
+                aria-label="Search input"
+              />
+            </div>
+            <div className="sel-container">
+              <select name="" id="">
+                <option value="">SD</option>
+                <option value="">MF</option>
+                <option value="">godawari</option>
+              </select>
+            </div>
+          </div>
 
-                                <td className='table-action-container single-table'>
-                                    <div className="action-container">
-                                        <i className="bx bx-edit-alt edit-icon"></i>
-                                        <i className="bx bx-trash del-icon"></i>
-                                    </div>
+          <div className="btn-container sp">
+            <button onClick={enableCustPortal} className="secondary-btn">
+              <i className="bx bx-filter-alt"></i>
+              Customize Types
+            </button>
+            <button onClick={enableCatPortal} className="primary-btn">
+              <i className="bx bx-plus-circle"></i> New Item
+            </button>
+          </div>
+        </section>
+      </section>
+      <section>
+        <div className="brand-item-table single-var">
+          <table>
+            <thead>
+              <tr>
+                <th className="table-checkbox">
+                  <input type="checkbox" />
+                </th>
+                <th>Code</th>
+                <th className="stock-count-single">Stock</th>
 
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <th className="table-action-container">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="table-checkbox">
+                  <input type="checkbox" />
+                </td>
+                <td>1000</td>
+                <td>1000</td>
 
-                </div>
-            </section>
-        </>
-    )
+                <td className="table-action-container single-table">
+                  <div className="action-container">
+                    <i className="bx bx-edit-alt edit-icon"></i>
+                    <i className="bx bx-trash del-icon"></i>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} />
+        <AddCat
+          isOpen={catPortal}
+          onClose={enableCatPortal}
+          type="item"
+          specificId={specificId}
+        />
+      </section>
+    </>
+  );
 }

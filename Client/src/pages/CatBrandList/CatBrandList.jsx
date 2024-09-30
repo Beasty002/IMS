@@ -21,9 +21,9 @@ export default function CatBrandList() {
     fetchBrandData(catName);
   };
 
-  useEffect(() => {
-    console.log(fetchBrand);
-  }, [fetchBrand]);
+  // useEffect(() => {
+  //   console.log(fetchBrand);
+  // }, [fetchBrand]);
 
   useEffect(() => {
     fetchBrandData(catName);
