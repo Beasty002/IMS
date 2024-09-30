@@ -114,7 +114,7 @@ export default function SinVarList() {
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}
-          type="item"
+          type="column"
           specificId={specificId}
         />
       </section>

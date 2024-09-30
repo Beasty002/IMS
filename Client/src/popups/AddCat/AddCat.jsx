@@ -29,7 +29,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
       [type]: createCate,
     };
 
-    if (type === 'item') {
+    if (type === "item") {
       body._id = specificId;
     }
 
@@ -70,7 +70,13 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
             {type === "category" ? (
               <label>Enter a title for category</label>
             ) : (
-              <label>Enter the label for row</label>
+              <>
+                {type === "item" ? (
+                  <label>Enter label for row</label>
+                ) : (
+                  <>Enter label for column</>
+                )}
+              </>
             )}
             <input
               value={createCate}
@@ -78,7 +84,11 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
               onKeyDown={handleEnter}
               type="text"
               placeholder={`e.g ${
-                type === "category" ? "plywood, doors" : "12 MDF"
+                type === "category"
+                  ? "plywood, doors"
+                  : type === "item"
+                  ? "12 FD"
+                  : "JD"
               }`}
               required
             />
