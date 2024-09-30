@@ -92,6 +92,8 @@ table {
         gap: 10px;
         justify-content: center;
         align-items: center;
+        white-space: nowrap;
+
 
     }
 

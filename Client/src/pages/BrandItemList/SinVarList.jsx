@@ -1,20 +1,16 @@
 import React from 'react'
+import './SinVarList.css'
 
 export default function SinVarList() {
     return (
         <>
-            <section>
+            <section className='brand-list-page'>
                 <div className="title-customize-cont">
                     <h1>Mayur Plywoods</h1>
-                    <div className="btn-container">
-                        <button className="secondary-btn">
-                            <i className="bx bx-filter-alt"></i>
-                            Customize Columns
-                        </button>
-                    </div>
+
                 </div>
 
-                <section className="brand-list-top">
+                <section className="brand-list-top sp">
                     <div className="search-select-container">
                         <div className="search-box">
                             <i className="bx bx-search-alt"></i>
@@ -34,8 +30,12 @@ export default function SinVarList() {
 
                     </div>
 
-                    <div className="btn-container">
 
+                    <div className="btn-container sp">
+                        <button className="secondary-btn">
+                            <i className="bx bx-filter-alt"></i>
+                            Customize Types
+                        </button>
                         <button className="primary-btn">
                             <i className="bx bx-plus-circle"></i> New Item
                         </button>

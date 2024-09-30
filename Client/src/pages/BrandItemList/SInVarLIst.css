@@ -1,13 +1,25 @@
 .title-customize-cont {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-right: 15px;
+    flex-wrap: wrap;
+    gap: 20px;
 }
+
+/* .btn-container.sp {
+    position: absolute;
+    width: fit-content;
+    top: -7px;
+    right: 0;
+} */
 
 .search-select-container {
     display: flex;
     gap: 10px;
+    justify-content: center;
+
 
     select {
         cursor: pointer;
@@ -18,19 +30,35 @@
         padding: 0.2em 0.6em;
     }
 
+    .search-box {
+        flex: 1;
+    }
+
+}
+
+
+.brand-list-top.sp {
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 
 .sel-container {
     border: 1px solid rgb(192, 192, 192);
     border-radius: 100px;
-    width: fit-content;
+    /* width: fit-content; */
+    width: 150px;
     padding-right: 10px;
 
     select {
         border-radius: 100px;
         border: none;
+        text-overflow: ellipsis;
     }
+}
+
+.btn-container.sp {
+    gap: 10px;
 }
 
 
@@ -86,4 +114,29 @@
 
 .stock-count-single {
     width: 200px;
+}
+
+@media (width < 940px) {
+    .search-select-container {
+        width: 100%;
+    }
+
+    .brand-list-top.sp {
+        width: 100%;
+    }
+
+    .btn-container.sp {
+        flex: 1;
+        justify-content: space-between;
+        width: 100%;
+    }
+}
+
+@media (width < 550px) {
+    .btn-container.sp {
+        justify-content: space-between;
+        width: 100%;
+        gap: 10px;
+    }
+
 }

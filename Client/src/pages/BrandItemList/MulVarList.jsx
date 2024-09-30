@@ -22,7 +22,7 @@ export default function MulVarList() {
     <>
       <section>
         <h1>Mayur Plywoods</h1>
-        <section className="brand-list-top">
+        <section className="brand-list-top mv">
           <div className="search-box">
             <i className="bx bx-search-alt"></i>
             <input
@@ -31,7 +31,7 @@ export default function MulVarList() {
               aria-label="Search input"
             />
           </div>
-          <div className="btn-container">
+          <div className="btn-container mv">
             <button onClick={enableCustPortal} className="secondary-btn">
               <i className="bx bx-filter-alt"></i>
               Customize Columns

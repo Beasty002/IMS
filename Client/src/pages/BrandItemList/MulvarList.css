@@ -4,6 +4,7 @@
     border-radius: 14px;
 
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    overflow-x: auto;
 
     th {
         font-size: 1.01rem;
@@ -41,6 +42,47 @@
 
         i {
             font-size: 1.6rem;
+        }
+    }
+}
+
+.brand-list-top.mv {
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+@media(width < 810px) {
+
+    .brand-list-top.mv {
+
+
+        .search-box {
+            flex: 1;
+        }
+    }
+
+    .btn-container.mv {
+        gap: 10px;
+        justify-content: space-between;
+        flex: 1;
+
+        button {
+            font-size: 1rem;
+            padding: 0.4em 0.8em;
+        }
+    }
+}
+
+@media(width < 400px) {
+
+
+
+    .btn-container.mv {
+
+
+        button {
+            font-size: .9rem;
+            padding: 0.4em 0.6em;
         }
     }
 }
