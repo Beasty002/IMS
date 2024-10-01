@@ -32,5 +32,8 @@ router.route("/getPastYearSales").get(datac.getPastYearSales);
 // router.route("/getSaturdaySales").get(datac.getSaturdaySales); 
 router.route("/getSalesByWeekday").post(datac.getSalesByWeekday); 
 
+router.route("/item").post(datac.addType); 
+router.route("/column").post(datac.addColumn); 
+
 
 module.exports = router;

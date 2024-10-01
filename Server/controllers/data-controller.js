@@ -3,6 +3,8 @@ const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
 const Sales = require("../models/sales-model");
 const SalesRecord = require("../models/sale-record-model")
+const Type = require("../models/type-model")
+const Column = require("../models/column-model")
 const { Collection } = require("mongoose");
 const { isString } = require("util");
 
@@ -402,6 +404,39 @@ const getSalesByWeekday = async (req, res) => {
 // };
 
 
+const addType = async (req,res) => {
+  try{
+
+    const type = req.body.item
+    const id = req.body._id
+    
+    const newType = new Type({
+      type: type,
+      brandId: id
+    });
+
+    await newType.save();
+
+    return res.json({msg: `${type} added`})
+    
+  }
+  catch(err){
+    console.error("Error sat sales");
+    res.json({ message: "Internal server error!!(addtype)" });
+  
+  }
+}
+
+const addColumn = async (req,res) => {
+  try{
+    console.log(req.body)
+  }
+  catch(err){
+    console.error("Error add col");
+    res.json({ message: "Internal server error!!(addCol)" });
+  }
+}
+
 
 module.exports = {
   getAllCategories,
@@ -423,5 +458,8 @@ module.exports = {
   // getSundaySales,
   // getSaturdaySales,
   getSalesByWeekday,
+
+  addType,
+  addColumn,
 
 };
