@@ -9,6 +9,7 @@ export default function MulVarList() {
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
   const [specificId, setSpecificId] = useState();
+  const [fetchedBdata, setFetchedBdata] = useState({});
 
   const { fetchBrandData, fetchBrand } = useAuth();
 
@@ -44,7 +45,34 @@ export default function MulVarList() {
     }
   }, [fetchBrand, brandName]);
 
+  const fetchRespectiveBrandData = async () => {
+    console.log(JSON.stringify({ brandId: specificId }));
+    try {
+      const response = await fetch("http://localhost:3000/api/getLabels", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ brandId: specificId }),
+      });
 
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+      setFetchedBdata(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (specificId) {
+      fetchRespectiveBrandData();
+    }
+  }, [specificId]);
 
   return (
     <>
@@ -79,10 +107,12 @@ export default function MulVarList() {
                 <th className="table-checkbox">
                   <input type="checkbox" />
                 </th>
-                <th>Size/mm</th>
-                <th>6mm</th>
-                <th>10mm</th>
-                <th>16mm</th>
+                <th>
+                  {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
+                </th>
+                {fetchedBdata?.type?.map((item, index) => (
+                  <th key={item._id}>{item.type}</th>
+                ))}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
@@ -93,8 +123,7 @@ export default function MulVarList() {
                 </td>
                 <td>1000</td>
                 <td>1000</td>
-                <td>12</td>
-                <td>12</td>
+
                 <td className="table-action-container">
                   <div className="action-container">
                     <i className="bx bx-edit-alt edit-icon"></i>

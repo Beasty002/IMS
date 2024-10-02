@@ -49,6 +49,9 @@ export const AuthProvider = ({ children }) => {
       console.error(error);
     }
   };
+
+  
+
   return (
     <AuthContext.Provider
       value={{
