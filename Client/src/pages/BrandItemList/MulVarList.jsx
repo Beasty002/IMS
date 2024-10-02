@@ -110,27 +110,25 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
-                {fetchedBdata?.type?.map((item, index) => (
-                  <th key={item._id}>{item.type}</th>
-                ))}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="table-checkbox">
-                  <input type="checkbox" />
-                </td>
-                <td>1000</td>
-                <td>1000</td>
+              {fetchedBdata?.type?.map((item, index) => (
+                <tr>
+                  <td className="table-checkbox">
+                    <input type="checkbox" />
+                  </td>
+                  <td>{item.type}</td>
 
-                <td className="table-action-container">
-                  <div className="action-container">
-                    <i className="bx bx-edit-alt edit-icon"></i>
-                    <i className="bx bx-trash del-icon"></i>
-                  </div>
-                </td>
-              </tr>
+                  <td className="table-action-container">
+                    <div className="action-container">
+                      <i className="bx bx-edit-alt edit-icon"></i>
+                      <i className="bx bx-trash del-icon"></i>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
