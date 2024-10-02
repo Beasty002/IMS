@@ -58,6 +58,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
       if (type === "category") {
         addCategory(createCate);
       }
+      window.location.reload();
 
       setCreateCate("");
 
