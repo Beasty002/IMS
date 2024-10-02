@@ -31,6 +31,8 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
 
     if (type === "item") {
       body._id = specificId;
+    }else if(type === "column"){
+      body._id = specificId;
     }
 
     try {
@@ -49,7 +51,9 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
         return;
       }
 
-      addCategory(createCate);
+      if (type === "category") {
+        addCategory(createCate);
+      }
 
       setCreateCate("");
 

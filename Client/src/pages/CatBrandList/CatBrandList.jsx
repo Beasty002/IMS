@@ -1,15 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./CatBrandList.css";
 import AddBrand from "../../popups/AddBrand/AddBrand";
 import { useAuth } from "../../customHooks/useAuth";
+import AddCat from "../../popups/AddCat/AddCat";
 
 export default function CatBrandList() {
   //new thing -> we need to use the variable we defined for dynamic routing here to get the param
   const { categoryName } = useParams();
   const catName = categoryName;
+  const brandNameRef = useRef(null);
 
   const [brandIsOpen, setBrandIsOpen] = useState(false);
+  const [brandUpdate, setBrandUpdate] = useState(false);
+
+  const handleBrandUpdate = (event) => {
+    if (brandNameRef.current) {
+      const brandName = brandNameRef.current.textContent.split(" ")[0];   
+      console.log(brandName);
+    }
+    event.preventDefault();
+    setBrandUpdate(!brandUpdate);
+  };
 
   const setBrandModel = () => {
     setBrandIsOpen(!brandIsOpen);
@@ -21,9 +33,7 @@ export default function CatBrandList() {
     fetchBrandData(catName);
   };
 
-  // useEffect(() => {
-  //   console.log(fetchBrand);
-  // }, [fetchBrand]);
+
 
   useEffect(() => {
     fetchBrandData(catName);
@@ -58,14 +68,17 @@ export default function CatBrandList() {
                   style={{ textDecoration: "none" }}
                 >
                   <div className="brand-box">
-                    <h3>
+                    <h3 ref={brandNameRef}>
                       {item.brandName} {item.parentCategory}
                     </h3>
                     <p className="brand-stock-availability">
                       Stock available: 80
                     </p>
                     <div className="action-container">
-                      <i className="bx bx-edit-alt edit-icon"></i>
+                      <i
+                        onClick={handleBrandUpdate}
+                        className="bx bx-edit-alt edit-icon"
+                      ></i>
                       <i className="bx bx-trash del-icon"></i>
                     </div>
                   </div>
@@ -80,6 +93,11 @@ export default function CatBrandList() {
           isOpen={brandIsOpen}
           onClose={setBrandModel}
           newBrand={newBrand}
+        />
+        <AddCat
+          isOpen={brandUpdate}
+          onClose={handleBrandUpdate}
+          type="Brand Name"
         />
       </section>
     </>

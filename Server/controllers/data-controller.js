@@ -409,6 +409,8 @@ const addType = async (req,res) => {
 
     const type = req.body.item
     const id = req.body._id
+
+
     
     const newType = new Type({
       type: type,
@@ -417,7 +419,7 @@ const addType = async (req,res) => {
 
     await newType.save();
 
-    return res.json({msg: `${type} added`})
+    return res.status(202).json({msg: `${type} added`})
     
   }
   catch(err){
@@ -429,18 +431,17 @@ const addType = async (req,res) => {
 
 const addColumn = async (req,res) => {
   try{
-    console.log(req.body)
-    const col = req.body.item
+    const type = req.body.column
     const id = req.body._id
     
     const newCol = new Column({
-      column: col,
+      column: type,
       brandId: id
     });
 
     await newCol.save();
 
-    return res.json({msg: `${col} added`})
+    return res.status(200).json({msg: `${col} added`})
   }
   catch(err){
     console.error("Error add col");
