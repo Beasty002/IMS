@@ -83,20 +83,20 @@ const editCategory = async (req, res) => {
 };
 
 ////////////////////////////////////// BRANDS ///////////////////////////////////////////////////
-// no need for this one
-// const getAllBrands = async (req, res) => {
-//   try {
-//     const brands = await Brand.find();
 
-//     if (!brands || brands.length == 0) {
-//       return res.status(404).json({ err: "No brands found!" });
-//     }
+const getAllBrands = async (req, res) => {
+  try {
+    const brands = await Brand.find();
 
-//     return res.json({ brands: brands });
-//   } catch (err) {
-//     console.log("error in fetching brands!");
-//   }
-// };
+    if (!brands || brands.length == 0) {
+      return res.status(404).json({ err: "No brands found!" });
+    }
+
+    return res.json({ brands: brands });
+  } catch (err) {
+    console.log("error in fetching brands!");
+  }
+};
 
 const getSpecificBrand = async (req, res) => {
   try {
@@ -430,6 +430,17 @@ const addType = async (req,res) => {
 const addColumn = async (req,res) => {
   try{
     console.log(req.body)
+    const col = req.body.item
+    const id = req.body._id
+    
+    const newCol = new Column({
+      column: col,
+      brandId: id
+    });
+
+    await newCol.save();
+
+    return res.json({msg: `${col} added`})
   }
   catch(err){
     console.error("Error add col");
@@ -437,13 +448,54 @@ const addColumn = async (req,res) => {
   }
 }
 
+const getRowLabel = async (req,res) => {
+  try{
+    const brandId = req.body.brandId
+
+    const chosenType = await Type.find({ brandId: brandId })
+    console.log(chosenType)
+
+    if (!chosenType){
+      return res.json({ err: "No such type found!"})
+    }
+
+    return res.json({ msg: chosenType }) // if more than one type chosenType is an ARRAY
+
+
+  }
+  catch(err){
+    console.error("Error get row label");
+    res.json({ message: "Internal server error!!(getRowLabel)" });
+  }
+}
+
+const getColLabel = async (req,res) => {
+  try{
+    const brandId = req.body.brandId
+
+    const chosenColumn = await Column.find({ brandId: brandId })
+    console.log(chosenColumn)
+
+    if (!chosenColumn){
+      return res.json({ err: "No such type found!"})
+    }
+
+    return res.json({ msg: chosenColumn }) // if more than one type chosenType is an ARRAY
+  }
+  catch(err){
+    console.error("Error get col label");
+    res.json({ message: "Internal server error!!(getColLabel)" });
+  }
+}
+
+
 
 module.exports = {
   getAllCategories,
   createCategory,
   delCategory,
   editCategory,
-  //   getAllBrands,
+  getAllBrands,
   createBrand,
   delBrand,
   editBrand,
@@ -461,5 +513,8 @@ module.exports = {
 
   addType,
   addColumn,
+
+  getRowLabel,
+  getColLabel,
 
 };

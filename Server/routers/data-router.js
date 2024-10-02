@@ -17,6 +17,7 @@ router
 router.route("/brandList").post(datac.getSpecificBrand);
 router
   .route("/brand")
+  .get(datac.getAllBrands)
   .post(datac.createBrand)
   .delete(datac.delBrand)
   .patch(datac.editBrand);
@@ -34,6 +35,8 @@ router.route("/getSalesByWeekday").post(datac.getSalesByWeekday);
 
 router.route("/item").post(datac.addType); 
 router.route("/column").post(datac.addColumn); 
+router.route("/getRowLabel").post(datac.getRowLabel); 
+router.route("/getColLabel").post(datac.getColLabel); 
 
 
 module.exports = router;
