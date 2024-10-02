@@ -3,14 +3,26 @@ import "./CustomizeCol.css";
 import ReactDOM from "react-dom";
 
 export default function CustomizeCol({ isOpen, onClose, specificId }) {
-
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
       columnName: "",
-      specificId: specificId,
+      specificId: "", 
     },
   ]);
+
+  
+
+  useEffect(() => {
+    if (specificId) {
+      setFormData((prevFormData) =>
+        prevFormData.map((item) => ({
+          ...item,
+          specificId: specificId,
+        }))
+      );
+    }
+  }, [specificId]);
 
   const handleInputChange = (event, id) => {
     const { name, value } = event.target;
@@ -28,20 +40,22 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
       {
         id: Date.now() + Math.random(),
         columnName: "",
-        specificId: specificId,
+        specificId: specificId, 
       },
     ]);
   };
 
   const fetchColumnData = async (event) => {
     event.preventDefault();
+    console.log(formData);
+
     try {
       const response = await fetch("http://localhost:3000/api/column", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), 
       });
       const data = await response.json();
 
@@ -49,9 +63,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         console.log(response.status);
         return;
       }
-      setFormData("");
       console.log(data);
-      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -71,7 +83,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                 <input
                   type="text"
                   name="columnName"
-                  placeholder="Enter a column name "
+                  placeholder="Enter a column name"
                   value={item.columnName}
                   onChange={(event) => handleInputChange(event, item.id)}
                 />

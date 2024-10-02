@@ -29,42 +29,41 @@ export default function MulVarList() {
     }
   }, [categoryName]);
 
-  useEffect(() => {
-    console.log(fetchBrand);
-  }, [fetchBrand]);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
       const requiredId = fetchBrand.find(
         (item) => item.brandName === brandName
       );
-      setSpecificId(requiredId._id);
-      console.log(specificId);
-    } else {
-      console.log("No data available or fetchBrand is undefined.");
+      if (requiredId) {
+        setSpecificId(requiredId._id);
+      }
     }
   }, [fetchBrand, brandName]);
 
-  const fetchRespectiveBrandData = async () => {
-    console.log(JSON.stringify({ brandId: specificId }));
-    try {
-      const response = await fetch("http://localhost:3000/api/getLabels", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ brandId: specificId }),
-      });
 
-      const data = await response.json();
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
+  const fetchRespectiveBrandData = async () => {
+    if (specificId) {
+      console.log(JSON.stringify({ brandId: specificId }));
+      try {
+        const response = await fetch("http://localhost:3000/api/getLabels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ brandId: specificId }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          console.log(response.statusText);
+          return;
+        }
+        console.log(data);
+        setFetchedBdata(data);
+      } catch (error) {
+        console.error(error);
       }
-      console.log(data);
-      setFetchedBdata(data);
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -115,7 +114,7 @@ export default function MulVarList() {
             </thead>
             <tbody>
               {fetchedBdata?.type?.map((item, index) => (
-                <tr>
+                <tr key={index}>
                   <td className="table-checkbox">
                     <input type="checkbox" />
                   </td>
@@ -132,7 +131,11 @@ export default function MulVarList() {
             </tbody>
           </table>
         </div>
-        <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} specificId={specificId} />
+        <CustomizeCol
+          isOpen={custPortal}
+          onClose={enableCustPortal}
+          specificId={specificId}
+        />
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}
