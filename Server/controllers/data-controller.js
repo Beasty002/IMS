@@ -212,6 +212,25 @@ const editBrand = async (req, res) => {
   }
 };
 
+const renameBrand = async (req, res) => {
+  try{
+    const newBrandName = req.body.rename
+    const renameBrandId = req.body._id
+
+    const renameBrand = await Brand.findById({_id: renameBrandId})
+
+    renameBrand.brandName = newBrandName
+
+    await renameBrand.save()
+
+    return res.json({msg: `${newBrandName} renamed!`})
+  } 
+  catch(err){
+    console.error("Error renaming Brand:");
+    res.status(500).json({ message: "Internal server error!!(renameBrand)" });
+  }
+}
+
 
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
 const salesEntry = async (req,res) => {
@@ -431,11 +450,11 @@ const addType = async (req,res) => {
 
 const addColumn = async (req,res) => {
   try{
-    const type = req.body.column
+    const col = req.body.column
     const id = req.body._id
     
     const newCol = new Column({
-      column: type,
+      column: col,
       brandId: id
     });
 
@@ -496,10 +515,12 @@ module.exports = {
   createCategory,
   delCategory,
   editCategory,
+
   getAllBrands,
   createBrand,
   delBrand,
   editBrand,
+  renameBrand,
   getSpecificBrand,
 
   salesEntry,
