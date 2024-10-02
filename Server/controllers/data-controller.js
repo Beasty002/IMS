@@ -223,11 +223,20 @@ const renameBrand = async (req, res) => {
 
     await renameBrand.save()
 
-    return res.json({msg: `${newBrandName} renamed!`})
+    return res.status(200).json({msg: `${newBrandName} renamed!`})
   } 
   catch(err){
     console.error("Error renaming Brand:");
     res.status(500).json({ message: "Internal server error!!(renameBrand)" });
+  }
+}
+
+const getBrand = async (req,res) => {
+  try{
+
+  }
+  catch(err){
+
   }
 }
 
@@ -468,18 +477,24 @@ const addColumn = async (req,res) => {
   }
 }
 
-const getRowLabel = async (req,res) => {
+const getLabels = async (req,res) => {
   try{
     const brandId = req.body.brandId
 
+    const chosenBrand = await Brand.findById({ _id: brandId })
+    const rowLabel = chosenBrand.rowLabel
+    const colLabel = chosenBrand.colLabel
+
     const chosenType = await Type.find({ brandId: brandId })
+    const chosenColumn = await Column.find({ brandId: brandId })
+
     console.log(chosenType)
 
-    if (!chosenType){
-      return res.json({ err: "No such type found!"})
+    if (!chosenType || !chosenColumn){
+      return res.json({ err: "No such label found!"})
     }
 
-    return res.json({ msg: chosenType }) // if more than one type chosenType is an ARRAY
+    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn }) // if more than one type chosenType is an ARRAY
 
 
   }
@@ -536,7 +551,7 @@ module.exports = {
   addType,
   addColumn,
 
-  getRowLabel,
+  getLabels,
   getColLabel,
 
 };
