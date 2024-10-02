@@ -132,7 +132,7 @@ export default function MulVarList() {
             </tbody>
           </table>
         </div>
-        <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} />
+        <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} specificId={specificId} />
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}

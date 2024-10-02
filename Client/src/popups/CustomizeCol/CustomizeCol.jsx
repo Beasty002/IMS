@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "./CustomizeCol.css";
 import ReactDOM from "react-dom";
 
-export default function CustomizeCol({ isOpen, onClose }) {
+export default function CustomizeCol({ isOpen, onClose, specifiedId }) {
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
       columnName: "",
+      specifiedId: specifiedId,
     },
   ]);
 
@@ -26,6 +27,7 @@ export default function CustomizeCol({ isOpen, onClose }) {
       {
         id: Date.now() + Math.random(),
         columnName: "",
+        specifiedId: specifiedId,
       },
     ]);
   };
@@ -33,7 +35,7 @@ export default function CustomizeCol({ isOpen, onClose }) {
   const fetchColumnData = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/addColumn", {
+      const response = await fetch("http://localhost:3000/api/column", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
