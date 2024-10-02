@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../customHooks/useAuth";
+import { Link } from "react-router-dom";
 
 function SaleEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
@@ -216,7 +217,7 @@ function SaleEntry() {
             ))}
           </section>
           <div className="btn-container new-entry-btn-container">
-            <button className="cancel-btn">Back</button>
+            <Link to='/sales' ><button className="cancel-btn">Back</button></Link>
             <button type="submit" className="primary-btn">
               Add
             </button>

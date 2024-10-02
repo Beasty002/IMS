@@ -31,7 +31,9 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
 
     if (type === "item") {
       body._id = specificId;
-    }else if(type === "column"){
+    } else if (type === "column") {
+      body._id = specificId;
+    } else if (type === "rename") {
       body._id = specificId;
     }
 
@@ -78,7 +80,13 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
                 {type === "item" ? (
                   <label>Enter label for row</label>
                 ) : (
-                  <>Enter label for column</>
+                  <>
+                    {type === "column" ? (
+                      <label>Enter label for column</label>
+                    ) : (
+                      <label>Enter a new name for brand</label>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -87,12 +95,14 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
               onChange={(event) => setCreateCate(event.target.value)}
               onKeyDown={handleEnter}
               type="text"
-              placeholder={`e.g ${
+              placeholder={` ${
                 type === "category"
-                  ? "plywood, doors"
+                  ? " e.g plywood, doors"
                   : type === "item"
-                  ? "12 FD"
-                  : "JD"
+                  ? " e.g 12 FD"
+                  : type === "rename"
+                  ? "Enter a new name"
+                  : ""
               }`}
               required
             />
