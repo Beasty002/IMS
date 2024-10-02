@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CustomizeCol.css";
 import ReactDOM from "react-dom";
 
-export default function CustomizeCol({ isOpen, onClose, specifiedId }) {
+export default function CustomizeCol({ isOpen, onClose, specificId }) {
+
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
       columnName: "",
-      specifiedId: specifiedId,
+      specificId: specificId,
     },
   ]);
 
@@ -27,7 +28,7 @@ export default function CustomizeCol({ isOpen, onClose, specifiedId }) {
       {
         id: Date.now() + Math.random(),
         columnName: "",
-        specifiedId: specifiedId,
+        specificId: specificId,
       },
     ]);
   };
