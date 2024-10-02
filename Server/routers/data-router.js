@@ -20,8 +20,9 @@ router
   .get(datac.getAllBrands)
   .post(datac.createBrand)
   .delete(datac.delBrand)
-  .patch(datac.editBrand)
-  .put(datac.renameBrand);
+  .patch(datac.editBrand);
+
+router.route("/rename").put(datac.renameBrand)
 
 router.route("/sales")
   .get(datac.getAllSales)
