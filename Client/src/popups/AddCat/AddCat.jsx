@@ -29,6 +29,8 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
       [type]: createCate,
     };
 
+    const method = type === "rename" ? "PUT" : "POST";
+
     if (type === "item") {
       body._id = specificId;
     } else if (type === "column") {
@@ -40,7 +42,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
     try {
       console.log(JSON.stringify(body));
       const response = await fetch(`http://localhost:3000/api/${type}`, {
-        method: "POST",
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
