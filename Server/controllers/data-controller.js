@@ -433,13 +433,11 @@ const getSalesByWeekday = async (req, res) => {
 
 
 const addType = async (req,res) => {
-  try{
+  try{  
 
     const type = req.body.item
     const id = req.body._id
 
-
-    
     const newType = new Type({
       type: type,
       brandId: id
@@ -459,17 +457,22 @@ const addType = async (req,res) => {
 
 const addColumn = async (req,res) => {
   try{
-    const col = req.body.column
-    const id = req.body._id
-    
-    const newCol = new Column({
-      column: col,
-      brandId: id
-    });
+    const bodies = req.body
 
-    await newCol.save();
+    for (var body of bodies){
 
-    return res.status(200).json({msg: `${col} added`})
+      const col = body.columnName
+      const id = body.specificId
+  
+      const newCol = new Column({
+        column: col,
+        brandId: id
+      });
+  
+      await newCol.save();
+    }
+
+    return res.status(200).json({msg: `Columns added successfully!`})
   }
   catch(err){
     console.error("Error add col");
