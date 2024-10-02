@@ -4,6 +4,7 @@ import "./CatBrandList.css";
 import AddBrand from "../../popups/AddBrand/AddBrand";
 import { useAuth } from "../../customHooks/useAuth";
 import AddCat from "../../popups/AddCat/AddCat";
+import DelPop from "../../popups/DelPop/DelPop";
 
 export default function CatBrandList() {
   const { categoryName } = useParams();
@@ -15,6 +16,9 @@ export default function CatBrandList() {
   const [brandIsOpen, setBrandIsOpen] = useState(false);
   const [brandUpdate, setBrandUpdate] = useState(false);
   const [selectedBrandId, setSelectedBrandId] = useState(null);
+  const [selDeleteId, setSelDeleteId] = useState(null);
+  const [delPopupOpen, setDelPopupOpen] = useState(false);
+  const [delBrandName, setDelBrandName] = useState(null);
 
   // because of event propagation or bubbling effect we
   //  shifted the use to navigate instead of Link
@@ -32,6 +36,18 @@ export default function CatBrandList() {
       setSelectedBrandId(brandId);
       console.log(brandId);
       setBrandUpdate(true);
+    }
+  };
+
+  const handleDeleteIcon = (index, brandId, delBrand) => (event) => {
+    event.stopPropagation();
+
+    if (brandRefs.current[index]) {
+      setSelDeleteId(brandId);
+      setDelBrandName(delBrand);
+      console.log(brandId);
+      console.log(delBrandName);
+      setDelPopupOpen(true);
     }
   };
 
@@ -83,7 +99,10 @@ export default function CatBrandList() {
                   onClick={handleBrandUpdate(index, item._id)}
                   className="bx bx-edit-alt edit-icon"
                 ></i>
-                <i className="bx bx-trash del-icon"></i>
+                <i
+                  onClick={handleDeleteIcon(index, item._id, item.brandName)}
+                  className="bx bx-trash del-icon"
+                ></i>
               </div>
             </div>
           ))}
@@ -101,6 +120,12 @@ export default function CatBrandList() {
         onClose={() => setBrandUpdate(false)}
         type="rename"
         specificId={selectedBrandId}
+      />
+      <DelPop
+        isOpen={delPopupOpen}
+        onClose={() => setDelPopupOpen(false)}
+        specificId={selDeleteId}
+        delBrandName={delBrandName}
       />
     </section>
   );
