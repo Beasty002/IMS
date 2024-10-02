@@ -13,6 +13,7 @@ export default function MulVarList() {
 
   const { fetchBrandData, fetchBrand } = useAuth();
 
+  const { categoryName, brandName } = useParams();
 
   const enableCustPortal = () => {
     setCustPortal(!custPortal);
