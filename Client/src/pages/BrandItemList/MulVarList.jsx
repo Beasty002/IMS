@@ -29,7 +29,6 @@ export default function MulVarList() {
     }
   }, [categoryName]);
 
-
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
       const requiredId = fetchBrand.find(
@@ -40,7 +39,6 @@ export default function MulVarList() {
       }
     }
   }, [fetchBrand, brandName]);
-
 
   const fetchRespectiveBrandData = async () => {
     if (specificId) {
@@ -109,6 +107,9 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
+                {fetchedBdata?.column?.map((item, index) => (
+                  <th key={item._id}>{item.column}</th>
+                ))}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>

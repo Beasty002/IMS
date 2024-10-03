@@ -13,6 +13,7 @@ function SaleEntry() {
       colLabel: "",
       counter: 0,
       fetchData: [],
+      brandData: [],
     },
   ]);
 
@@ -28,6 +29,7 @@ function SaleEntry() {
         colLabel: "",
         counter: 0,
         fetchData: [],
+        brandData: [],
       },
     ]);
   };
@@ -52,6 +54,37 @@ function SaleEntry() {
             item.id === itemId ? { ...item, fetchData: fetchedData } : item
           )
         );
+      }
+    } else if (field === "brand") {
+      const brandId = addInput.map(
+        (item) => item.fetchData?.find((data) => data.brandName === value)?._id
+      );
+      if (brandId) {
+        const specificId = brandId[0];
+        console.log(specificId);
+        try {
+          const response = await fetch("http://localhost:3000/api/getLabels", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ brandId: specificId }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            console.log("Error occured");
+            return;
+          }
+
+          setAddInput((prevData) =>
+            prevData.map((item) =>
+              item.id === itemId ? { ...item, brandData: data } : item
+            )
+          );
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
@@ -109,6 +142,10 @@ function SaleEntry() {
     setAddInput((prev) => prev.filter((item) => item.id !== itemId));
   };
 
+  useEffect(() => {
+    console.log(addInput);
+  }, [addInput]);
+
   return (
     <div id="newSales">
       <h2>Sales Entry</h2>
@@ -129,7 +166,7 @@ function SaleEntry() {
       </section>
 
       <section className="sales-item-container">
-        <form  onSubmit={handleSubmission}>
+        <form onSubmit={handleSubmission}>
           <section className="sales-entry-items-list">
             {addInput.map((item) => (
               <div key={item.id} className="sales-entry-item">
@@ -178,10 +215,10 @@ function SaleEntry() {
                   className="row-select"
                 >
                   <option value="">Select RowLabel</option>
-                  {Array.isArray(item.fetchData) &&
-                    item.fetchData.map((label) => (
-                      <option key={label._id} value={label.rowLabel}>
-                        {label.rowLabel}
+                  {Array.isArray(item.brandData.type) &&
+                    item.brandData.type.map((label) => (
+                      <option key={label._id} value={label.type}>
+                        {label.type}
                       </option>
                     ))}
                 </select>
@@ -194,10 +231,10 @@ function SaleEntry() {
                   className="column-select"
                 >
                   <option value="">Select ColLabel</option>
-                  {Array.isArray(item.fetchData) &&
-                    item.fetchData.map((label) => (
-                      <option key={label._id} value={label.colLabel}>
-                        {label.colLabel}
+                  {Array.isArray(item.brandData.column) &&
+                    item.brandData.column.map((label) => (
+                      <option key={label._id} value={label.column}>
+                        {label.column}
                       </option>
                     ))}
                 </select>
@@ -217,7 +254,9 @@ function SaleEntry() {
             ))}
           </section>
           <div className="btn-container new-entry-btn-container">
-            <Link to='/sales' ><button className="cancel-btn">Back</button></Link>
+            <Link to="/sales">
+              <button className="cancel-btn">Back</button>
+            </Link>
             <button type="submit" className="primary-btn">
               Add
             </button>

@@ -64,6 +64,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         return;
       }
       console.log(data);
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
