@@ -148,7 +148,7 @@ function PurchaseEntry() {
 
   return (
     <div id="newSales">
-      <h2>Sales Entry</h2>
+      <h2>Purchase Entry</h2>
       <section className="page-top-container">
         <div className="search-box">
           <i className="bx bx-search-alt"></i>
