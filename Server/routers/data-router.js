@@ -28,6 +28,9 @@ router.route("/sales")
   .get(datac.getAllSales)
   .post(datac.salesEntry);
 
+router.route("/purchase")
+  .post(datac.addPurchase)
+
 router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
 router.route("/getPastMonthSales").get(datac.getPastMonthSales); 
 router.route("/getPastYearSales").get(datac.getPastYearSales); 
@@ -38,7 +41,7 @@ router.route("/getSalesByWeekday").post(datac.getSalesByWeekday);
 router.route("/item").post(datac.addType); 
 router.route("/column").post(datac.addColumn); 
 router.route("/getLabels").post(datac.getLabels); 
-router.route("/getColLabel").post(datac.getColLabel); 
+router.route("/getColLabel").post(datac.getColLabel);
 
 
 module.exports = router;

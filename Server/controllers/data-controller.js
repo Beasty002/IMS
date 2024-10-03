@@ -5,6 +5,9 @@ const Sales = require("../models/sales-model");
 const SalesRecord = require("../models/sale-record-model")
 const Type = require("../models/type-model")
 const Column = require("../models/column-model")
+const Stock = require("../models/stock-model")
+const Purchase = require("../models/purchase-model")
+
 const { Collection } = require("mongoose");
 const { isString } = require("util");
 
@@ -27,7 +30,7 @@ const createCategory = async (req, res) => {
   try {
     const cat = req.body.category;
 
-    console.log(cat);
+    // console.log(cat);
 
     const newCat = new Category({
       title: cat,
@@ -119,7 +122,7 @@ const getSpecificBrand = async (req, res) => {
 const createBrand = async (req, res) => {
   try {
     let colLabel;
-    console.log(req.body);
+    // console.log(req.body);
 
     const brandName = req.body.brandName;
     const multiVar = req.body.multiVar;
@@ -491,7 +494,7 @@ const getLabels = async (req,res) => {
     const chosenType = await Type.find({ brandId: brandId })
     const chosenColumn = await Column.find({ brandId: brandId })
 
-    console.log(chosenType)
+    // console.log(chosenType)
 
     if (!chosenType || !chosenColumn){
       return res.json({ err: "No such label found!"})
@@ -512,7 +515,7 @@ const getColLabel = async (req,res) => {
     const brandId = req.body.brandId
 
     const chosenColumn = await Column.find({ brandId: brandId })
-    console.log(chosenColumn)
+    // console.log(chosenColumn)
 
     if (!chosenColumn){
       return res.json({ err: "No such type found!"})
@@ -522,7 +525,59 @@ const getColLabel = async (req,res) => {
   }
   catch(err){
     console.error("Error get col label");
-    res.json({ message: "Internal server error!!(getColLabel)" });
+    res.status(500).json({ message: "Internal server error!!(getColLabel)" });
+  }
+}
+
+const addPurchase = async (req,res) =>  {
+  try{
+    // console.log(req.body);
+    var purchaseIds = [];
+    const bodies = req.body.addInput
+    // console.log(bodies)
+
+    for (var body of bodies){
+
+      // console.log(body)
+  
+      const cat = body.category
+      const brand = body.brand
+  
+      const rowLabel = body.rowLabel
+      const colLabel = body.colLabel
+  
+      const stock = body.counter
+
+      // console.log(stock)
+  
+      const newStock = new Stock({
+        stock: stock,
+        parentCat: cat,
+        parentBrand: brand,
+        rowLabel: rowLabel,
+        colLabel: colLabel
+      });
+  
+  
+      var aStock = await newStock.save();
+
+      // console.log(aStock._id)
+      purchaseIds.push(aStock._id);
+
+    }
+
+    const newPurchase = new Purchase({
+      purchaseIds: purchaseIds,
+    });
+
+    await newPurchase.save()
+
+    return res.json({msg: "New Stocks Added!"})
+
+  }
+  catch(err){
+    console.error("Error add purchase");
+    res.status(500).json({ message: "Internal server error!!(addPurchase)" });
   }
 }
 
@@ -550,6 +605,8 @@ module.exports = {
   // getSundaySales,
   // getSaturdaySales,
   getSalesByWeekday,
+
+  addPurchase,
 
   addType,
   addColumn,
