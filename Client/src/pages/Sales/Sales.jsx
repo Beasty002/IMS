@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./Sales.css";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 function Sales({ title, TableComponent, products }) {
   return (
     <section className="sale-purchase">
-      <h1>{title} </h1>
+      <h1>{title} Summary </h1>
       <div className="sec-sale-head">
         <div className="left-sale">
           <input type="date" />
@@ -17,7 +17,7 @@ function Sales({ title, TableComponent, products }) {
           </button>
           <button className="primary-btn">
             <i class="bx bxs-plus-circle"></i>
-            <Link id="cname" to='/saleEntry'>
+            <Link id="cname" to={`/${title.toLowerCase() + "Entry"}`}>
               <p className="bx-sale">New Entry</p>
             </Link>
           </button>

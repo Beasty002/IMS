@@ -13,6 +13,7 @@ import CatBrandList from "./pages/CatBrandList/CatBrandList";
 import SaleEntry from "./popups/SaleEntry/SaleEntry";
 import MulVarList from "./pages/BrandItemList/MulVarList";
 import SinVarList from "./pages/BrandItemList/SinVarList";
+import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
 
 export default function App() {
   const location = useLocation();
@@ -35,7 +36,6 @@ export default function App() {
 
   const CatBrandPage = () => {
     const { categoryName, brandName, multi } = useParams();
-
 
     if (multi === "true") {
       return <MulVarList />;
@@ -67,7 +67,8 @@ export default function App() {
               <Route path="/cateogry" element={<Category />} />
               <Route path="/report" element={<Report />} />
               <Route path="/sales" element={<SalesPage />} />
-              <Route path="/saleEntry" element={<SaleEntry />} />
+              <Route path="/salesEntry" element={<SaleEntry />} />
+              <Route path="/purchasesEntry" element={<PurchaseEntry />} />
               <Route
                 path="/catband/:categoryName/:brandName/:multi"
                 element={<CatBrandPage />}

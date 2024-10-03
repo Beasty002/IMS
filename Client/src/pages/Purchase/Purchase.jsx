@@ -12,7 +12,7 @@ function Purchase() {
     { id: 6, product: "Creta Plywood 8*4 (6mm)", stockLeft: 20 },
     { id: 7, product: "Asislam laminates 115 (SD)", stockLeft: 40 },
   ];
-  return <Sales title="Purchase Summary" TableComponent={PurchaseTable} products={purchaseList} />;
+  return <Sales title="Purchases" TableComponent={PurchaseTable} products={purchaseList} />;
 }
 
 export default Purchase;
