@@ -593,6 +593,59 @@ const addPurchase = async (req,res) =>  {
   }
 }
 
+const getAllStocks = async (req,res) =>{
+  try{
+    const stocks = await Stock.find();
+
+    return res.json({stocks: stocks})
+  }
+  catch(err){
+    console.error("Error get all stock");
+    res.status(500).json({ message: "Internal server error!!(getAllStocks)" });
+  }
+}
+
+const getTable = async (req,res) => {
+  try{
+    const cat = req.body.cat
+    const brand = req.body.brand
+
+    const allEntries = await Stock.find({ parentCat: cat, parentBrand: brand});
+
+    var matrix = {};
+    // var rowData = [];
+    var checkRow= [];
+    // var checkCol= [];
+
+    for (var row of allEntries){
+      var rowLabel = row.rowLabel
+      var colLabel = row.colLabel
+      var stock = row.stock
+      
+      // console.log(rowLabel)
+
+      // check if rowlabel already exists if not new row created
+      if (!checkRow.includes(rowLabel)) {
+        checkRow.push(rowLabel);
+        matrix[rowLabel] = {}
+      }
+
+
+      if (matrix[rowLabel][colLabel]) {
+        matrix[rowLabel][colLabel] += stock; 
+      } else {
+        matrix[rowLabel][colLabel] = stock
+      }
+      // rowData.push(row.stock)
+    }
+
+    return res.json({matrix:matrix})
+  }
+  catch(err){
+    console.error("Error get table");
+    res.status(500).json({ message: "Internal server error!!(getTable)" });
+  }
+}
 
 
 module.exports = {
@@ -626,4 +679,7 @@ module.exports = {
   getLabels,
   getColLabel,
 
+  getAllStocks,
+
+  getTable,
 };
