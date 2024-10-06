@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 function Sales({ title, TableComponent, products }) {
   const [dateSetter, setDateSetter] = useState("");
 
-  const handleDateSubmission = async () => {
+  const handleDateSubmission = async (event) => {
+    setDateSetter(event.target.value);
+
     try {
+      console.log(JSON.stringify({ day: dateSetter }));
       const response = await fetch(
         "http://localhost:3000/api/getSpecificSale",
         {
