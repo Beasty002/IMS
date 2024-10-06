@@ -18,7 +18,7 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
   const fetchBrandData = async (event) => {
     event.preventDefault();
     try {
-      console.log(categoryName);
+      console.log(formData);
       const response = await fetch("http://localhost:3000/api/brand", {
         method: "POST",
         headers: {

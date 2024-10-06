@@ -65,6 +65,10 @@ export default function CatBrandList() {
     fetchBrandData(catName);
   }, [categoryName]);
 
+  // useEffect(() => {
+  //   console.log("CatName", catName);
+  // }, [catName]);
+
   return (
     <section>
       <h1>{categoryName} Brands</h1>

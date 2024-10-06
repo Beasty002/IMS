@@ -65,11 +65,43 @@ export default function MulVarList() {
     }
   };
 
+  const fetchTableData = async () => {
+    try {
+      console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
+      const response = await fetch("http://localhost:3000/api/getTable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cat: categoryName,
+          brand: brandName,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log("Error:", response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  };
+
   useEffect(() => {
     if (specificId) {
       fetchRespectiveBrandData();
     }
   }, [specificId]);
+
+  useEffect(() => {
+    if (fetchedBdata && categoryName && brandName) {
+      fetchTableData();
+    }
+  }, [fetchedBdata]);
 
   return (
     <>
