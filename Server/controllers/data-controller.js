@@ -130,7 +130,9 @@ const createBrand = async (req, res) => {
 
     if (req.body.colLabel) colLabel = req.body.colLabel;
 
-    const parentCat = req.body.parentCat;
+    var parentCat = req.body.parentCat;
+
+    parentCat = parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
 
     let newBrand;
 
