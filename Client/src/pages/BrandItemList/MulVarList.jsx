@@ -156,8 +156,8 @@ export default function MulVarList() {
               </tr>
             </thead>
             <tbody>
-                  {/* we map the outer variable of the object to dyanmically display the data */}
-              {tableData &&
+              {/* we map the outer variable of the object to dyanmically display the data */}
+               {tableData &&
                 Object.keys(tableData).map((rowKey, rowIndex) => (
                   <tr key={rowIndex}>
                     <td className="table-checkbox">
