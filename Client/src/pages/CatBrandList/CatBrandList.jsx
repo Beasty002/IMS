@@ -96,7 +96,7 @@ export default function CatBrandList() {
         </div>
         <div className="btn-container">
           <button onClick={setBrandModel} className="primary-btn">
-            <i className="bx bx-plus-circle"></i> New Brand
+            <i className="bx bx-plus-circle"></i> New Type
           </button>
         </div>
       </div>
