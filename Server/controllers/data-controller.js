@@ -394,7 +394,6 @@ const getSpecificSale = async (req,res) => {
     const saleRecords = await SaleRecordModel.find();
     
     for (var sale of saleRecords){
-      console.log(sale)
       var dos = sale.dos
       dos = dos.toISOString();
 
@@ -402,24 +401,16 @@ const getSpecificSale = async (req,res) => {
       // console.log(dos)
 
       if (dos === day){
-        // specificSale.push(sale)
         for (var saleId of sale.saleIds){
 
-          console.log(saleId);
-
-          var specificSale = await Sale.findById({ _id: saleId })
+          var specificSale = await Sales.findById( saleId )
 
           specificSales.push(specificSale)
         }
-
-
       }
-
     }
 
-    return res.status(200).json({ msg: specificSale})
-
-
+    return res.status(200).json({ msg: specificSales})
   }
   catch(err){
     console.error("Error get specific sale by day:");
