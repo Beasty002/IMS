@@ -328,17 +328,63 @@ const salesEntry = async (req,res) => {
   }
 }
 
-const getAllSales = async (req,res) => {
-    try{
-        const sales = await Sales.find();
+// const getAllSales = async (req,res) => {
+//     try{
 
-        return res.json({ msg: sales})
+//         const sales = await Sales.find();
+
+//         for (var i=0;i<sales.length;i++){
+//           if (sale.sCategory && sale.sBrand && sRowLabel && sColLabel ){
+//             sales[i] =+ sale.sQty
+//           }
+//         }
+
+//         return res.json({ msg: sales})
+//     }
+//     catch(err){
+//       console.error("Error getallsales :");
+//       res.status(500).json({ message: "Internal server error!!(getAllSales)" });
+//     }
+// }
+
+const getAllSales = async (req, res) => {
+  try {
+    const sales = await Sales.find();
+
+    // Create a dictionary to accumulate quantities by category, brand, row, and column
+    const salesMap = {};
+
+    for (var i = 0; i < sales.length; i++) {
+      const sale = sales[i];
+      
+      // Construct a unique key based on sCategory, sBrand, sRowLabel, and sColLabel
+      const key = `${sale.sCategory}-${sale.sBrand}-${sale.sRowLabel}-${sale.sColLabel}`;
+      
+      // Initialize the quantity for this combination if not already done
+      if (!salesMap[key]) {
+        salesMap[key] = {
+          sCategory: sale.sCategory,
+          sBrand: sale.sBrand,
+          sRowLabel: sale.sRowLabel,
+          sColLabel: sale.sColLabel,
+          sQty: 0,
+        };
+      }
+      
+      // Add the current sale's quantity to the accumulated total
+      salesMap[key].sQty += sale.sQty;
     }
-    catch(err){
-      console.error("Error getallsales :");
-      res.status(500).json({ message: "Internal server error!!(getAllSales)" });
-    }
-}
+
+    // Convert the salesMap back into an array of objects
+    const aggregatedSales = Object.values(salesMap);
+
+    return res.json({ msg: aggregatedSales });
+  } catch (err) {
+    console.error("Error getAllSales:");
+    res.status(500).json({ message: "Internal server error!!(getAllSales)" });
+  }
+};
+
 
 const getPastWeekSales = async (req,res) => {
   try{
