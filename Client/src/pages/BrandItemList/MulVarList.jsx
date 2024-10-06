@@ -148,16 +148,16 @@ export default function MulVarList() {
                 </th>
                 {/* object.keys returns the variable name that the value is assigned to  */}
                 {tableData &&
-                  tableData.firstRow &&
-                  Object.keys(tableData.firstRow).map((colName, index) => (
-                    <th key={index}>{colName}</th>
-                  ))}
+                  Object.keys(tableData).length > 0 &&
+                  Object.keys(Object.values(tableData)[0]).map(
+                    (colName, index) => <th key={index}>{colName}</th>
+                  )}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
             <tbody>
               {/* we map the outer variable of the object to dyanmically display the data */}
-               {tableData &&
+              {tableData &&
                 Object.keys(tableData).map((rowKey, rowIndex) => (
                   <tr key={rowIndex}>
                     <td className="table-checkbox">
