@@ -110,7 +110,11 @@ export default function SinVarList() {
             </tbody>
           </table>
         </div>
-        <CustomizeCol isOpen={custPortal} onClose={enableCustPortal} specificId={specificId}/>
+        <CustomizeCol
+          isOpen={custPortal}
+          onClose={enableCustPortal}
+          specificId={specificId}
+        />
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}

@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
 
   const fetchBrandData = async (catName) => {
-    const categoryName = catName.toLowerCase();
+    const categoryName = catName;
     try {
       const response = await fetch(`http://localhost:3000/api/brandList`, {
         method: "POST",
@@ -49,8 +49,6 @@ export const AuthProvider = ({ children }) => {
       console.error(error);
     }
   };
-
-  
 
   return (
     <AuthContext.Provider
