@@ -115,6 +115,10 @@ const getSpecificBrand = async (req, res) => {
     const allStockData = await Stock.find({parentCat: categoryName})
     var stockByBrand = {};
 
+    for (var brand of requiredBrand) {
+      stockByBrand[brand.brandName] = 0
+    }
+
     for (var stock of allStockData) {
       const brand = stock.parentBrand;
       
