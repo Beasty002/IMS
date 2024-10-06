@@ -103,7 +103,7 @@ const getAllBrands = async (req, res) => {
 
 const getSpecificBrand = async (req, res) => {
   try {
-    const { categoryName } = req.body;
+    const { categoryName } = req.body;  
     const requiredBrand = await Brand.find({ parentCategory: categoryName });
 
     if (requiredBrand.length === 0) {
@@ -112,7 +112,24 @@ const getSpecificBrand = async (req, res) => {
         .json({ msg: "No data related to given brand found" });
     }
 
-    return res.status(202).json({ brands: requiredBrand });
+    const allStockData = await Stock.find({parentCat: categoryName})
+    var stockByBrand = {};
+
+    for (var stock of allStockData) {
+      const brand = stock.parentBrand;
+      
+      // Initialize the object for the brand if it doesn't exist
+      if (!stockByBrand[brand]) {
+        stockByBrand[brand] = 0;
+      }
+      
+      // Accumulate the stock for each brand
+      stockByBrand[brand] += stock.stock;
+    }
+
+    console.log(stockByBrand)
+
+    return res.status(202).json({ brands: requiredBrand , stockByBrand: stockByBrand});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Server error" });
