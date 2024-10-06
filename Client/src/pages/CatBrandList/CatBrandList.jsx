@@ -19,10 +19,8 @@ export default function CatBrandList() {
   const [selDeleteId, setSelDeleteId] = useState(null);
   const [delPopupOpen, setDelPopupOpen] = useState(false);
   const [delBrandName, setDelBrandName] = useState(null);
-  const [searchData, setSearchData] = useState(null);
+  const [searchData, setSearchData] = useState("");
 
-  // because of event propagation or bubbling effect we
-  //  shifted the use to navigate instead of Link
   const handleBrandNavigation = (item) => {
     navigate(
       `/catband/${item.parentCategory}/${item.brandName}/${item.multiVar}`
@@ -30,12 +28,9 @@ export default function CatBrandList() {
   };
 
   const handleBrandUpdate = (index, brandId) => (event) => {
-    // this prevent the parent navigation function to be triggered
-    // and isolated the children event
     event.stopPropagation();
     if (brandRefs.current[index]) {
       setSelectedBrandId(brandId);
-      console.log(brandId);
       setBrandUpdate(true);
     }
   };
@@ -46,8 +41,6 @@ export default function CatBrandList() {
     if (brandRefs.current[index]) {
       setSelDeleteId(brandId);
       setDelBrandName(delBrand);
-      console.log(brandId);
-      console.log(delBrandName);
       setDelPopupOpen(true);
     }
   };
@@ -67,18 +60,14 @@ export default function CatBrandList() {
   }, [categoryName]);
 
   useEffect(() => {
-    console.log(stockData);
-  }, [stockData]);
-
-  useEffect(() => {
     if (searchData) {
       console.log(searchData);
     }
   }, [searchData]);
 
-  // useEffect(() => {
-  //   console.log("CatName", catName);
-  // }, [catName]);
+  const filteredBrands = fetchBrand.filter((item) =>
+    item.brandName.toLowerCase().includes(searchData.toLowerCase())
+  );
 
   return (
     <section>
@@ -100,9 +89,9 @@ export default function CatBrandList() {
           </button>
         </div>
       </div>
-      {fetchBrand.length !== 0 ? (
-        <div className="brand-list" id={``}>
-          {fetchBrand.map((item, index) => (
+      {filteredBrands.length !== 0 ? (
+        <div className="brand-list">
+          {filteredBrands.map((item, index) => (
             <div key={item._id} className="brand-box">
               <h3
                 ref={(el) => (brandRefs.current[index] = el)}

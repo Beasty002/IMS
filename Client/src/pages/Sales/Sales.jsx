@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Sales.css";
 import { Link } from "react-router-dom";
 
 function Sales({ title, TableComponent, products }) {
+  const [dateSetter, setDateSetter] = useState("");
+
+  useEffect(() => {
+    console.log(dateSetter);
+  }, [dateSetter]);
+
   return (
     <section className="sale-purchase">
       <h1>{title} Summary </h1>
       <div className="sec-sale-head">
         <div className="left-sale">
-          <input type="date" />
+          <input
+            type="date"
+            value={dateSetter}
+            onChange={(e) => setDateSetter(e.target.value)}
+          />
         </div>
         <div className="btn-container">
           <button className="secondary-btn">

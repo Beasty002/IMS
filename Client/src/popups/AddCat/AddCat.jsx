@@ -84,7 +84,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
                   <label>Enter label for row</label>
                 ) : (
                   <>
-                    {specialCase === "column" ? (
+                    {type === "column" ? (
                       <label>Enter label for column</label>
                     ) : (
                       <label>Enter a new name for brand</label>
