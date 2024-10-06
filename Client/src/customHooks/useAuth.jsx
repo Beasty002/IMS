@@ -7,7 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
 
   const fetchBrandData = async (catName) => {
-    const categoryName = catName;
+    const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
+    console.log(categoryName);
     try {
       const response = await fetch(`http://localhost:3000/api/brandList`, {
         method: "POST",
