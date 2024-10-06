@@ -5,6 +5,28 @@ import { Link } from "react-router-dom";
 function Sales({ title, TableComponent, products }) {
   const [dateSetter, setDateSetter] = useState("");
 
+  const handleDateSubmission = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/getSpecificSale",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ day: dateSetter }),
+        }
+      );
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     console.log(dateSetter);
   }, [dateSetter]);
@@ -17,7 +39,7 @@ function Sales({ title, TableComponent, products }) {
           <input
             type="date"
             value={dateSetter}
-            onChange={(e) => setDateSetter(e.target.value)}
+            onChange={(event) => handleDateSubmission(event)}
           />
         </div>
         <div className="btn-container">
