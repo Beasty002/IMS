@@ -30,7 +30,12 @@ function SalesPage() {
   }, []);
 
   return (
-    <Sales title="Sales" TableComponent={SaleTable} products={salesData} />
+    <Sales
+      title="Sales"
+      TableComponent={SaleTable}
+      products={salesData}
+      setSaleData={setSalesData}
+    />
   );
 }
 
