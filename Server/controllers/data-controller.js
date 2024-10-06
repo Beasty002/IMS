@@ -443,17 +443,18 @@ const addType = async (req,res) => {
     const type = req.body.item
     const id = req.body._id
 
-    const checkType = await Type.findOne({type: type})
+    const checkType = await Type.findOne({type: type, brandId: id})
 
-    if (checkType){
+    if (checkType || checkType != null){
+      console.log("not working")
       return res.status(409).json({err: "Type already exists"})
     }
-
+    
     const newType = new Type({
       type: type,
       brandId: id
     });
-
+    
     await newType.save();
 
     return res.status(202).json({msg: `${type} added`})
@@ -475,7 +476,7 @@ const addColumn = async (req,res) => {
       const col = body.columnName
       const id = body.specificId
 
-      const checkCol = await Column.findOne({ column: col })
+      const checkCol = await Column.findOne({ column: col, brandId: id })
 
       if (checkCol){
         return res.status(409).json({ err: "Column already exists"})
