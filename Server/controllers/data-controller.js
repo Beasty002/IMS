@@ -10,6 +10,7 @@ const Purchase = require("../models/purchase-model")
 
 const { Collection } = require("mongoose");
 const { isString } = require("util");
+const SaleRecordModel = require("../models/sale-record-model");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -384,6 +385,47 @@ const getAllSales = async (req, res) => {
     res.status(500).json({ message: "Internal server error!!(getAllSales)" });
   }
 };
+
+const getSpecificSale = async (req,res) => {
+  try{
+    const { day } = req.body
+    var specificSales = []
+
+    const saleRecords = await SaleRecordModel.find();
+    
+    for (var sale of saleRecords){
+      console.log(sale)
+      var dos = sale.dos
+      dos = dos.toISOString();
+
+      dos = dos.split('T')[0]
+      // console.log(dos)
+
+      if (dos === day){
+        // specificSale.push(sale)
+        for (var saleId of sale.saleIds){
+
+          console.log(saleId);
+
+          var specificSale = await Sale.findById({ _id: saleId })
+
+          specificSales.push(specificSale)
+        }
+
+
+      }
+
+    }
+
+    return res.status(200).json({ msg: specificSale})
+
+
+  }
+  catch(err){
+    console.error("Error get specific sale by day:");
+    res.status(500).json({ message: "Internal server error!!(getSpecificSale)" });
+  }
+}
 
 
 const getPastWeekSales = async (req,res) => {
@@ -812,6 +854,7 @@ module.exports = {
 
   salesEntry,
   getAllSales,
+  getSpecificSale,
   getPastWeekSales,
   getPastMonthSales,
   getPastYearSales,

@@ -28,6 +28,8 @@ router.route("/sales")
   .get(datac.getAllSales)
   .post(datac.salesEntry);
 
+router.route("/getSpecificSale").post(datac.getSpecificSale)
+
 router.route("/purchase")
   .post(datac.addPurchase)
 
