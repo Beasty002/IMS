@@ -8,6 +8,12 @@ function SaleTable({ data }) {
     0
   );
 
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
+
   return (
     <>
       <div className="sale-quantity-table">
@@ -21,10 +27,12 @@ function SaleTable({ data }) {
           </thead>
           <tbody>
             {data?.map((item, index) => (
-              <tr key={index}>
-                <td className="table-sn">{item.id}</td>
-                <td className="sales-table-prod">{item.product}</td>
-                <td>{item.stockLeft}</td>
+              <tr key={item._id}>
+                <td className="table-sn">{index + 1}</td>
+                <td className="sales-table-prod">
+                  {item.sBrand} {item.sRowLabel} ( {item.sColLabel} )
+                </td>
+                <td>{item.sQty}</td>
               </tr>
             ))}
           </tbody>

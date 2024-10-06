@@ -4,14 +4,49 @@ import "./SinVarList.css";
 import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
 import AddCat from "../../popups/AddCat/AddCat";
 import { useAuth } from "../../customHooks/useAuth";
+import SingleVarTable from "../../components/SingleVarTable/SingleVarTable";
 
 export default function SinVarList() {
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
   const { fetchBrandData, fetchBrand } = useAuth();
   const [specificId, setSpecificId] = useState();
+  const [tableData, setTableData] = useState({});
 
   const { categoryName, brandName } = useParams();
+
+  const fetchTableData = async () => {
+    try {
+      console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
+      const response = await fetch("http://localhost:3000/api/getTable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cat: categoryName,
+          brand: brandName,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log("Error:", response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setTableData(data.matrix);
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (categoryName && brandName) {
+      fetchTableData();
+    }
+  }, [categoryName, brandName]);
 
   const enableCustPortal = () => {
     setCustPortal(!custPortal);
@@ -79,37 +114,7 @@ export default function SinVarList() {
         </section>
       </section>
       <section>
-        <div className="brand-item-table single-var">
-          <table>
-            <thead>
-              <tr>
-                <th className="table-checkbox">
-                  <input type="checkbox" />
-                </th>
-                <th>Code</th>
-                <th className="stock-count-single">Stock</th>
-
-                <th className="table-action-container">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="table-checkbox">
-                  <input type="checkbox" />
-                </td>
-                <td>1000</td>
-                <td>1000</td>
-
-                <td className="table-action-container single-table">
-                  <div className="action-container">
-                    <i className="bx bx-edit-alt edit-icon"></i>
-                    <i className="bx bx-trash del-icon"></i>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <SingleVarTable />
         <CustomizeCol
           isOpen={custPortal}
           onClose={enableCustPortal}
@@ -118,7 +123,8 @@ export default function SinVarList() {
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}
-          type="column"
+          type="item"
+          specialCase="column"
           specificId={specificId}
         />
       </section>

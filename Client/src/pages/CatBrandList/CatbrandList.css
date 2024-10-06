@@ -1,81 +1,80 @@
 /* --------------------------------------------Category brand page----------------------------------------------------- */
 .brand-list-top {
-    background-color: var(--default-color);
-    padding: 15px 16px;
-    border-radius: 14px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  background-color: var(--default-color);
+  padding: 15px 16px;
+  border-radius: 14px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 15px;
 
-    .btn-container {
-        button {
-            i {
-                font-size: 1.4rem;
-            }
-        }
+  .btn-container {
+    button {
+      i {
+        font-size: 1.4rem;
+      }
     }
+  }
 }
 
 .search-box {
-    background-color: var(--default-color);
+  background-color: var(--default-color);
 }
 
 .brand-list {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  visibility: visible;
 }
 
 .brand-box {
-    display: grid;
-    grid-template-rows: span 3;
-    gap: 10px;
-    padding: 20px 18px;
-    min-height: 150px;
-    background-color: var(--default-color);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    border-radius: 14px;
-    transition: 0.2s;
-    text-align: center;
-
+  display: grid;
+  grid-template-rows: span 3;
+  gap: 10px;
+  padding: 20px 18px;
+  min-height: 150px;
+  background-color: var(--default-color);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border-radius: 14px;
+  transition: 0.2s;
+  text-align: center;
 }
 
-.brand-box>* {
-    width: 100%;
+.brand-box > * {
+  width: 100%;
 }
 
 .brand-box:hover {
-    cursor: pointer;
-    transform: scale(1.01);
+  cursor: pointer;
+  transform: scale(1.01);
 }
 
 .brand-stock-availability {
-    color: gray;
+  color: gray;
 }
 
 .action-container {
-    display: flex;
-    gap: 10px;
-    font-size: 1.6rem;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  font-size: 1.6rem;
+  justify-content: center;
 
-    i {
-        cursor: pointer;
-    }
+  i {
+    cursor: pointer;
+  }
 
-    .edit-icon {
-        color: #115ce6;
-    }
+  .edit-icon {
+    color: #115ce6;
+  }
 
-    .del-icon {
-        color: red;
-    }
+  .del-icon {
+    color: red;
+  }
 }
-.brand-box h3{
-    color: black;
+.brand-box h3 {
+  color: black;
 }

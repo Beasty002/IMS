@@ -61,6 +61,10 @@
     gap: 10px;
 }
 
+.single-var h1{
+    text-align: center;
+    padding: 10px;
+}
 
 
 .brand-item-table.single-var {

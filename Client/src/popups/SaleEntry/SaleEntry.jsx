@@ -104,6 +104,18 @@ function SaleEntry() {
       const data = await response.json();
       if (response.ok) {
         console.log(data);
+        setAddInput([
+          {
+            id: Date.now(),
+            category: "",
+            brand: "",
+            rowLabel: "",
+            colLabel: "",
+            counter: 0,
+            fetchData: [],
+            brandData: [],
+          },
+        ]);
       } else {
         console.log("Error");
         return;
@@ -158,10 +170,8 @@ function SaleEntry() {
             aria-label="Search input"
           />
         </div>
-        <div className="btn-container">
-          <button onClick={addNewList} className="secondary-btn">
-            + New Item
-          </button>
+        <div onClick={addNewList} className="btn-container">
+          <button className="secondary-btn">+ New Item</button>
         </div>
       </section>
 

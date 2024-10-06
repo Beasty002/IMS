@@ -104,6 +104,18 @@ function PurchaseEntry() {
       const data = await response.json();
       if (response.ok) {
         console.log(data);
+        setAddInput([
+          {
+            id: Date.now(),
+            category: "",
+            brand: "",
+            rowLabel: "",
+            colLabel: "",
+            counter: 0,
+            fetchData: [],
+            brandData: [],
+          },
+        ]);
       } else {
         console.log("Error");
         return;

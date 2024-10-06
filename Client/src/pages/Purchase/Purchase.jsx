@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sales from "../Sales/Sales";
 import PurchaseTable from "../../components/PurchaseTable/PurchaseTable";
 
 function Purchase() {
+
+
   const purchaseList = [
     { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },
     { id: 2, product: "Mayur Door 80*89 (Ganesh Coffee)", stockLeft: 30 },
@@ -12,7 +14,13 @@ function Purchase() {
     { id: 6, product: "Creta Plywood 8*4 (6mm)", stockLeft: 20 },
     { id: 7, product: "Asislam laminates 115 (SD)", stockLeft: 40 },
   ];
-  return <Sales title="Purchases" TableComponent={PurchaseTable} products={purchaseList} />;
+  return (
+    <Sales
+      title="Purchases"
+      TableComponent={PurchaseTable}
+      products={purchaseList}
+    />
+  );
 }
 
 export default Purchase;

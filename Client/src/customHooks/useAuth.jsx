@@ -5,7 +5,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [fetchBrand, setFetchBrand] = useState([]);
   const [categories, setCategories] = useState([]);
-
+  const [categoryLength, setCategoryLength] = useState([]);
+  const [stockData, setStockData] = useState({});
   const fetchBrandData = async (catName) => {
     const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
     console.log(categoryName);
@@ -25,6 +26,7 @@ export const AuthProvider = ({ children }) => {
       }
       console.log(data);
       setFetchBrand(data.brands);
+      setStockData(data.stockByBrand);
       return data.brands;
     } catch (error) {
       console.error(error);
@@ -45,6 +47,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       // console.log(data);
+      setCategoryLength(data.cats.length);
       setCategories(data.cats);
     } catch (error) {
       console.error(error);
@@ -59,6 +62,8 @@ export const AuthProvider = ({ children }) => {
         categories,
         setCategories,
         fetchBrandData,
+        categoryLength,
+        stockData,
       }}
     >
       {children}

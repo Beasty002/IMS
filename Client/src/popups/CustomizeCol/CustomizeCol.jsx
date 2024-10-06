@@ -7,11 +7,11 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     {
       id: Date.now(),
       columnName: "",
-      specificId: "", 
+      specificId: "",
     },
   ]);
 
-  
+  const [brandLabelData, setBrandLabelData] = useState();
 
   useEffect(() => {
     if (specificId) {
@@ -40,9 +40,13 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
       {
         id: Date.now() + Math.random(),
         columnName: "",
-        specificId: specificId, 
+        specificId: specificId,
       },
     ]);
+  };
+
+  const handleDeleteColumn = (id) => {
+    setFormData((prevState) => prevState.filter((item) => item.id !== id));
   };
 
   const fetchColumnData = async (event) => {
@@ -55,7 +59,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), 
+        body: JSON.stringify(formData),
       });
       const data = await response.json();
 
@@ -69,6 +73,48 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
       console.error(error);
     }
   };
+
+  const fetchLabelData = async () => {
+    if (specificId) {
+      console.log(JSON.stringify({ brandId: specificId }));
+      try {
+        const response = await fetch("http://localhost:3000/api/getLabels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ brandId: specificId }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          console.log(response.statusText);
+          return;
+        }
+        console.log(data);
+        setBrandLabelData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (specificId) {
+      fetchLabelData();
+    }
+  }, [specificId]);
+
+  useEffect(() => {
+    if (brandLabelData && brandLabelData.column) {
+      const updatedFormData = brandLabelData.column.map((item) => ({
+        id: item._id,
+        columnName: item.column,
+        specificId: specificId,
+      }));
+      setFormData(updatedFormData);
+    }
+  }, [brandLabelData, specificId]);
 
   if (!isOpen) return null;
 
@@ -89,9 +135,16 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   onChange={(event) => handleInputChange(event, item.id)}
                 />
                 <div className="action-edit-col">
-                  <i className="fa-regular fa-eye"></i>
-                  <i className="bx bxs-edit-alt edit-icon"></i>
-                  <i className="bx bx-trash del-icon"></i>
+                  {/* Edit button */}
+                  <i
+                    className="bx bxs-edit-alt edit-icon"
+                    onClick={() => console.log(`Editing column ${item.id}`)}
+                  ></i>
+                  {/* Delete button */}
+                  <i
+                    className="bx bx-trash del-icon"
+                    onClick={() => handleDeleteColumn(item.id)}
+                  ></i>
                 </div>
               </div>
             </div>

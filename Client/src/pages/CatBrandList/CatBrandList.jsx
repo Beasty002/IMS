@@ -19,6 +19,7 @@ export default function CatBrandList() {
   const [selDeleteId, setSelDeleteId] = useState(null);
   const [delPopupOpen, setDelPopupOpen] = useState(false);
   const [delBrandName, setDelBrandName] = useState(null);
+  const [searchData, setSearchData] = useState(null);
 
   // because of event propagation or bubbling effect we
   //  shifted the use to navigate instead of Link
@@ -55,7 +56,7 @@ export default function CatBrandList() {
     setBrandIsOpen(!brandIsOpen);
   };
 
-  const { fetchBrand, fetchBrandData } = useAuth();
+  const { fetchBrand, fetchBrandData, stockData } = useAuth();
 
   const newBrand = () => {
     fetchBrandData(catName);
@@ -64,6 +65,16 @@ export default function CatBrandList() {
   useEffect(() => {
     fetchBrandData(catName);
   }, [categoryName]);
+
+  useEffect(() => {
+    console.log(stockData);
+  }, [stockData]);
+
+  useEffect(() => {
+    if (searchData) {
+      console.log(searchData);
+    }
+  }, [searchData]);
 
   // useEffect(() => {
   //   console.log("CatName", catName);
@@ -78,6 +89,8 @@ export default function CatBrandList() {
           <input
             type="text"
             placeholder="Search brands..."
+            value={searchData}
+            onChange={(event) => setSearchData(event.target.value)}
             aria-label="Search input"
           />
         </div>
@@ -88,7 +101,7 @@ export default function CatBrandList() {
         </div>
       </div>
       {fetchBrand.length !== 0 ? (
-        <div className="brand-list">
+        <div className="brand-list" id={``}>
           {fetchBrand.map((item, index) => (
             <div key={item._id} className="brand-box">
               <h3
@@ -97,7 +110,9 @@ export default function CatBrandList() {
               >
                 {item.brandName} {item.parentCategory}
               </h3>
-              <p className="brand-stock-availability">Stock available: 80</p>
+              <p className="brand-stock-availability">
+                Stock available: {stockData[item.brandName]}
+              </p>
               <div className="action-container">
                 <i
                   onClick={handleBrandUpdate(index, item._id)}
