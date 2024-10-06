@@ -593,6 +593,138 @@ const addPurchase = async (req,res) =>  {
   }
 }
 
+const getAllStocks = async (req,res) =>{
+  try{
+    const stocks = await Stock.find();
+
+    return res.json({stocks: stocks})
+  }
+  catch(err){
+    console.error("Error get all stock");
+    res.status(500).json({ message: "Internal server error!!(getAllStocks)" });
+  }
+}
+
+// const getTable = async (req,res) => {
+//   try{
+//     const cat = req.body.cat
+//     const brand = req.body.brand
+
+//     const brandName = await Brand.findOne({brandName:brand, parentCategory:cat})
+//     const brandId = brandName._id
+    
+//     const allTypes = await Type.find({ brandId: brandId})
+//     const allCols = await Column.find({ brandId: brandId})
+//     // console.log(allCols)
+
+//     const allEntries = await Stock.find({ parentCat: cat, parentBrand: brand});
+
+//     var matrix = {};
+//     // var rowData = [];
+//     // var checkRow= [];
+//     // var checkCol= [];
+
+//     // for (var row of allEntries){
+//     //   var rowLabel = row.rowLabel
+//     //   var colLabel = row.colLabel
+//     //   var stock = row.stock
+      
+//     //   // console.log(rowLabel)
+
+//     //   // check if rowlabel already exists if not new row created
+//     //   if (!checkRow.includes(rowLabel)) {
+//     //     checkRow.push(rowLabel);
+//     //     matrix[rowLabel] = {}
+//     //   }
+
+
+//     //   if (matrix[rowLabel][colLabel]) {
+//     //     matrix[rowLabel][colLabel] += stock; 
+//     //   } else {
+//     //     matrix[rowLabel][colLabel] = stock
+//     //   }
+//     //   // rowData.push(row.stock)
+//     // }
+
+//     allTypes.forEach(type => {
+//         matrix[type.rowLabel] = {};  // Create an object for each type
+//         allCols.forEach(col => {
+//             matrix[type.rowLabel][col.colLabel] = 0;  // Initialize each cell with 0 to aggregate stock values
+//         });
+//     });
+
+    
+    
+//     // Populate the matrix with stock data and aggregate if necessary
+//     allEntries.forEach(entry => {
+//         const rowLabel = entry.rowLabel;  // Assuming this refers to the type
+//         const colLabel = entry.colLabel;  // Assuming this refers to the column
+//         const stock = entry.stock;        // The stock value to be added to the matrix
+    
+//         if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
+//             // If the matrix already has a stock value, aggregate (add) the new stock value
+//             matrix[rowLabel][colLabel] += stock;
+//         } else {
+//             // Otherwise, set the stock value directly
+//             matrix[rowLabel][colLabel] = stock;
+//         }
+//     });
+
+//     return res.json({matrix:matrix})
+//   }
+//   catch(err){
+//     console.error("Error get table");
+//     res.status(500).json({ message: "Internal server error!!(getTable)" });
+//   }
+// }
+
+const getTable = async (req, res) => {
+  try {
+    const cat = req.body.cat;
+    const brand = req.body.brand;
+
+    const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
+    const brandId = brandName._id;
+
+    const allTypes = await Type.find({ brandId: brandId });
+    const allCols = await Column.find({ brandId: brandId });
+
+    const allEntries = await Stock.find({ parentCat: cat, parentBrand: brand });
+
+    var matrix = {};
+
+    for (let i = 0; i < allTypes.length; i++) {
+      const type = allTypes[i];
+      matrix[type.type] = {}; // create a row for each type
+
+      
+      for (let j = 0; j < allCols.length; j++) {
+        const col = allCols[j];
+        matrix[type.type][col.column] = 0; // init each cell to 0
+      }
+    }
+    console.log(allEntries)
+
+    for (let i = 0; i < allEntries.length; i++) {
+      const entry = allEntries[i];
+      const rowLabel = entry.rowLabel
+      const colLabel = entry.colLabel
+      const stock = entry.stock
+
+      if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
+        matrix[rowLabel][colLabel] += stock;
+      } else {
+        matrix[rowLabel][colLabel] = stock;
+      }
+    }
+
+    return res.json({ matrix: matrix });
+  } catch (err) {
+    console.error("Error get table");
+    res.status(500).json({ message: "Internal server error!!(getTable)" });
+  }
+};
+
 
 
 module.exports = {
@@ -626,4 +758,7 @@ module.exports = {
   getLabels,
   getColLabel,
 
+  getAllStocks,
+
+  getTable,
 };

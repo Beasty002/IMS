@@ -43,5 +43,8 @@ router.route("/column").post(datac.addColumn);
 router.route("/getLabels").post(datac.getLabels); 
 router.route("/getColLabel").post(datac.getColLabel);
 
+router.route("/getAllStocks").get(datac.getAllStocks)
+router.route("/getTable").post(datac.getTable)
+
 
 module.exports = router;
