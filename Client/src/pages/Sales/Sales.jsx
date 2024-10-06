@@ -17,6 +17,7 @@ function Sales({ title, TableComponent, products }) {
           body: JSON.stringify({ day: dateSetter }),
         }
       );
+      const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);
         return;
