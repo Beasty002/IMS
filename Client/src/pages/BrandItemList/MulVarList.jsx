@@ -10,9 +10,9 @@ export default function MulVarList() {
   const [catPortal, setCatPortal] = useState(false);
   const [specificId, setSpecificId] = useState();
   const [fetchedBdata, setFetchedBdata] = useState({});
+  const [tableData, setTableData] = useState({});
 
   const { fetchBrandData, fetchBrand } = useAuth();
-
   const { categoryName, brandName } = useParams();
 
   const enableCustPortal = () => {
@@ -86,6 +86,7 @@ export default function MulVarList() {
 
       const data = await response.json();
       console.log(data);
+      setTableData(data.matrix);
     } catch (error) {
       console.error("Fetch error: ", error);
     }
@@ -102,6 +103,12 @@ export default function MulVarList() {
       fetchTableData();
     }
   }, [fetchedBdata]);
+
+  useEffect(() => {
+    if (tableData) {
+      console.log(tableData);
+    }
+  }, [tableData]);
 
   return (
     <>
@@ -139,28 +146,37 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
-                {fetchedBdata?.column?.map((item, index) => (
-                  <th key={item._id}>{item.column}</th>
-                ))}
+                {/* object.keys returns the variable name that the value is assigned to  */}
+                {tableData &&
+                  tableData.firstRow &&
+                  Object.keys(tableData.firstRow).map((colName, index) => (
+                    <th key={index}>{colName}</th>
+                  ))}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {fetchedBdata?.type?.map((item, index) => (
-                <tr key={index}>
-                  <td className="table-checkbox">
-                    <input type="checkbox" />
-                  </td>
-                  <td>{item.type}</td>
-
-                  <td className="table-action-container">
-                    <div className="action-container">
-                      <i className="bx bx-edit-alt edit-icon"></i>
-                      <i className="bx bx-trash del-icon"></i>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                  {/* we map the outer variable of the object to dyanmically display the data */}
+              {tableData &&
+                Object.keys(tableData).map((rowKey, rowIndex) => (
+                  <tr key={rowIndex}>
+                    <td className="table-checkbox">
+                      <input type="checkbox" />
+                    </td>
+                    <td>{rowKey}</td>
+                    {/* Loop through each row's values and display in respective columns */}
+                    {tableData[rowKey] &&
+                      Object.values(tableData[rowKey]).map(
+                        (value, colIndex) => <td key={colIndex}>{value}</td>
+                      )}
+                    <td className="table-action-container">
+                      <div className="action-container">
+                        <i className="bx bx-edit-alt edit-icon"></i>
+                        <i className="bx bx-trash del-icon"></i>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
