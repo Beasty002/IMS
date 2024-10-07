@@ -11,6 +11,8 @@ export default function MulVarList() {
   const [specificId, setSpecificId] = useState();
   const [fetchedBdata, setFetchedBdata] = useState({});
   const [tableData, setTableData] = useState({});
+  const [editRowIndex, setEditRowIndex] = useState(null);
+  const [editableData, setEditableData] = useState({});
 
   const { fetchBrandData, fetchBrand } = useAuth();
   const { categoryName, brandName } = useParams();
@@ -42,7 +44,6 @@ export default function MulVarList() {
 
   const fetchRespectiveBrandData = async () => {
     if (specificId) {
-      console.log(JSON.stringify({ brandId: specificId }));
       try {
         const response = await fetch("http://localhost:3000/api/getLabels", {
           method: "POST",
@@ -54,10 +55,8 @@ export default function MulVarList() {
 
         const data = await response.json();
         if (!response.ok) {
-          console.log(response.statusText);
           return;
         }
-        console.log(data);
         setFetchedBdata(data);
       } catch (error) {
         console.error(error);
@@ -67,7 +66,6 @@ export default function MulVarList() {
 
   const fetchTableData = async () => {
     try {
-      console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
       const response = await fetch("http://localhost:3000/api/getTable", {
         method: "POST",
         headers: {
@@ -80,12 +78,10 @@ export default function MulVarList() {
       });
 
       if (!response.ok) {
-        console.log("Error:", response.statusText);
         return;
       }
 
       const data = await response.json();
-      console.log(data);
       setTableData(data.matrix);
     } catch (error) {
       console.error("Fetch error: ", error);
@@ -109,6 +105,48 @@ export default function MulVarList() {
       console.log(tableData);
     }
   }, [tableData]);
+
+  const handleEditClick = (index) => {
+    setEditRowIndex(index);
+    setEditableData({ ...tableData });
+  };
+
+  const handleValueChange = (rowKey, colKey, value) => {
+    const updatedTableData = { ...editableData };
+    updatedTableData[rowKey][colKey] = value;
+    setEditableData(updatedTableData);
+  };
+
+  const handleSave = async () => {
+    const rowKey = Object.keys(editableData)[editRowIndex];
+    const updatedRowData = editableData[rowKey];
+
+    const payload = {
+      rowKey: rowKey,
+      updatedData: updatedRowData,
+    };
+
+    console.log(JSON.stringify(payload));
+    try {
+      const response = await fetch("http://localhost:3000/api/editStock", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        console.error("Error saving the data:", response.statusText);
+        return;
+      }
+
+      setTableData(editableData);
+      setEditRowIndex(null);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -146,7 +184,6 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
-                {/* object.keys returns the variable name that the value is assigned to  */}
                 {tableData &&
                   Object.keys(tableData).length > 0 &&
                   Object.keys(Object.values(tableData)[0]).map(
@@ -156,7 +193,6 @@ export default function MulVarList() {
               </tr>
             </thead>
             <tbody>
-              {/* we map the outer variable of the object to dyanmically display the data */}
               {tableData &&
                 Object.keys(tableData).map((rowKey, rowIndex) => (
                   <tr key={rowIndex}>
@@ -164,14 +200,41 @@ export default function MulVarList() {
                       <input type="checkbox" />
                     </td>
                     <td>{rowKey}</td>
-                    {/* Loop through each row's values and display in respective columns */}
                     {tableData[rowKey] &&
-                      Object.values(tableData[rowKey]).map(
-                        (value, colIndex) => <td key={colIndex}>{value}</td>
+                      Object.entries(tableData[rowKey]).map(
+                        ([colKey, value], colIndex) => (
+                          <td key={colIndex}>
+                            {editRowIndex === rowIndex ? (
+                              <input
+                                type="text"
+                                value={editableData[rowKey][colKey]}
+                                className="edit-input"
+                                onChange={(e) =>
+                                  handleValueChange(
+                                    rowKey,
+                                    colKey,
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            ) : (
+                              value
+                            )}
+                          </td>
+                        )
                       )}
                     <td className="table-action-container">
                       <div className="action-container">
-                        <i className="bx bx-edit-alt edit-icon"></i>
+                        {editRowIndex === rowIndex ? (
+                          <button className="edit-input" onClick={handleSave}>
+                            Save
+                          </button>
+                        ) : (
+                          <i
+                            className="bx bx-edit-alt edit-icon"
+                            onClick={() => handleEditClick(rowIndex)}
+                          ></i>
+                        )}
                         <i className="bx bx-trash del-icon"></i>
                       </div>
                     </td>

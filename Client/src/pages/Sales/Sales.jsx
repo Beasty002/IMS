@@ -24,7 +24,7 @@ function Sales({ title, TableComponent, products, setSaleData }) {
             return;
           }
           console.log(data);
-          setSaleData(data.msg); // use setSaleData here
+          setSaleData(data.msg); 
         } catch (error) {
           console.error(error);
         }
