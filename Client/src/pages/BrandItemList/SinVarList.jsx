@@ -10,25 +10,57 @@ export default function SinVarList() {
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
   const { fetchBrandData, fetchBrand } = useAuth();
-  const { categoryName, brandName } = useParams();
+  const [specificId, setSpecificId] = useState();
   const [tableData, setTableData] = useState({});
-  const [selectedBrand, setSelectedBrand] = useState("");
+  const [dropdownOptions, setDropdownOptions] = useState([]); 
+  const [selectedKey, setSelectedKey] = useState("");
+
+  const { categoryName, brandName } = useParams();
+
+  const fetchTableData = async () => {
+    try {
+      console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
+      const response = await fetch("http://localhost:3000/api/getTable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cat: categoryName,
+          brand: brandName,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log("Error:", response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setTableData(data.matrix);
+
+      const options = Object.keys(data.matrix);
+      setDropdownOptions(options);
+      setSelectedKey(options[0]); 
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  };
 
   useEffect(() => {
     if (categoryName && brandName) {
-      fetch("http://localhost:3000/api/getTable", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cat: categoryName, brand: brandName }),
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error(response.statusText);
-          return response.json();
-        })
-        .then((data) => setTableData(data.matrix))
-        .catch((error) => console.error("Fetch error:", error));
+      fetchTableData();
     }
   }, [categoryName, brandName]);
+
+  const enableCustPortal = () => {
+    setCustPortal(!custPortal);
+  };
+
+  const enableCatPortal = () => {
+    setCatPortal(!catPortal);
+  };
 
   useEffect(() => {
     if (categoryName) {
@@ -36,9 +68,15 @@ export default function SinVarList() {
     }
   }, [categoryName]);
 
-  const handleBrandChange = (event) => {
-    setSelectedBrand(event.target.value);
-  };
+  useEffect(() => {
+    if (fetchBrand && fetchBrand.length > 0) {
+      const requiredId = fetchBrand.find(
+        (item) => item.brandName === brandName
+      );
+      setSpecificId(requiredId._id);
+      console.log(specificId);
+    }
+  }, [fetchBrand, brandName]);
 
   return (
     <>
@@ -46,37 +84,58 @@ export default function SinVarList() {
         <div className="title-customize-cont">
           <h1>Mayur Plywoods</h1>
         </div>
+
         <section className="brand-list-top sp">
           <div className="search-select-container">
             <div className="search-box">
               <i className="bx bx-search-alt"></i>
-              <input type="text" placeholder="Search items..." aria-label="Search input" />
+              <input
+                type="text"
+                placeholder="Search items..."
+                aria-label="Search input"
+              />
             </div>
             <div className="sel-container">
-              <select onChange={handleBrandChange} value={selectedBrand}>
-                <option value="">Select Brand</option>
-                {Object.keys(tableData).map((key) => (
-                  <option key={key} value={key}>
-                    {key}
+              <select 
+                value={selectedKey} 
+                onChange={(e) => setSelectedKey(e.target.value)} 
+              >
+                {dropdownOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
             </div>
           </div>
+
           <div className="btn-container sp">
-            <button onClick={() => setCustPortal(!custPortal)} className="secondary-btn">
-              <i className="bx bx-filter-alt"></i> Customize Types
+            <button onClick={enableCustPortal} className="secondary-btn">
+              <i className="bx bx-filter-alt"></i>
+              Customize Types
             </button>
-            <button onClick={() => setCatPortal(!catPortal)} className="primary-btn">
+            <button onClick={enableCatPortal} className="primary-btn">
               <i className="bx bx-plus-circle"></i> New Item
             </button>
           </div>
         </section>
       </section>
       <section>
-        <SingleVarTable data={selectedBrand ? tableData[selectedBrand] : {}} />
-        <CustomizeCol isOpen={custPortal} onClose={() => setCustPortal(false)} />
-        <AddCat isOpen={catPortal} onClose={() => setCatPortal(false)} type="item" specialCase="column" />
+        <SingleVarTable 
+          data={tableData[selectedKey]} 
+        />
+        <CustomizeCol
+          isOpen={custPortal}
+          onClose={enableCustPortal}
+          specificId={specificId}
+        />
+        <AddCat
+          isOpen={catPortal}
+          onClose={enableCatPortal}
+          type="item"
+          specialCase="column"
+          specificId={specificId}
+        />
       </section>
     </>
   );

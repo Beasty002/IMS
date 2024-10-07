@@ -8,6 +8,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
       id: Date.now(),
       columnName: "",
       specificId: "",
+      isEditing: false,
     },
   ]);
 
@@ -41,6 +42,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         id: Date.now() + Math.random(),
         columnName: "",
         specificId: specificId,
+        isEditing: false,
       },
     ]);
   };
@@ -74,36 +76,61 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     }
   };
 
-  // const fetchLabelData = async () => {
-  //   if (specificId) {
-  //     console.log(JSON.stringify({ brandId: specificId }));
-  //     try {
-  //       const response = await fetch("http://localhost:3000/api/getLabels", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ brandId: specificId }),
-  //       });
+  const fetchLabelData = async () => {
+    if (specificId) {
+      console.log(JSON.stringify({ brandId: specificId }));
+      try {
+        const response = await fetch("http://localhost:3000/api/getLabels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ brandId: specificId }),
+        });
 
-  //       const data = await response.json();
-  //       if (!response.ok) {
-  //         console.log(response.statusText);
-  //         return;
-  //       }
-  //       console.log(data);
-  //       setBrandLabelData(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // };
+        const data = await response.json();
+        if (!response.ok) {
+          console.log(response.statusText);
+          return;
+        }
+        console.log(data);
+        setBrandLabelData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
-  // useEffect(() => {
-  //   if (specificId) {
-  //     fetchLabelData();
-  //   }
-  // }, [specificId]);
+  useEffect(() => {
+    if (specificId) {
+      fetchLabelData();
+    }
+  }, [specificId]);
+
+  const fetchColUpdateData = async (id, brandId, columnName) => {
+    console.log(JSON.stringify({ id, brandId, columnName }));
+    try {
+      const response = await fetch("http://localhost:3000/api/editCol", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, brandId, columnName }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to update column:", data);
+        return;
+      }
+      console.log("Column updated successfully:", data);
+
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (brandLabelData && brandLabelData.column) {
@@ -111,10 +138,19 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         id: item._id,
         columnName: item.column,
         specificId: specificId,
+        isEditing: false, 
       }));
       setFormData(updatedFormData);
     }
   }, [brandLabelData, specificId]);
+
+  const toggleEditMode = (id) => {
+    setFormData((prevState) =>
+      prevState.map((item) =>
+        item.id === id ? { ...item, isEditing: !item.isEditing } : item
+      )
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -133,12 +169,27 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   placeholder="Enter a column name"
                   value={item.columnName}
                   onChange={(event) => handleInputChange(event, item.id)}
+                  disabled={!item.isEditing} 
                 />
                 <div className="action-edit-col">
-                  <i
-                    className="bx bxs-edit-alt edit-icon"
-                    onClick={() => console.log(`Editing column ${item.id}`)}
-                  ></i>
+                  {item.isEditing ? (
+                    <i
+                      className="bx bxs-save save-icon"
+                      onClick={() => {
+                        fetchColUpdateData(
+                          item.id,
+                          specificId,
+                          item.columnName
+                        );
+                        toggleEditMode(item.id);
+                      }}
+                    ></i>
+                  ) : (
+                    <i
+                      className="bx bxs-edit-alt edit-icon"
+                      onClick={() => toggleEditMode(item.id)} 
+                    ></i>
+                  )}
                   <i
                     className="bx bx-trash del-icon"
                     onClick={() => handleDeleteColumn(item.id)}
@@ -153,12 +204,17 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
               + New Column
             </button>
           </div>
+
           <div className="btn-container main-col-btn">
-            <button onClick={onClose} className="cancel-btn">
-              Cancel
+            <button
+              type="button"
+              onClick={fetchColumnData}
+              className="save-btn"
+            >
+              Save 
             </button>
-            <button onClick={fetchColumnData} className="primary-btn">
-              Save
+            <button type="button" onClick={onClose} className="cancel-btn">
+              Cancel
             </button>
           </div>
         </form>
