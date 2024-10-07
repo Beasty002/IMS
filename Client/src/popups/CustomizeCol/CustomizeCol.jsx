@@ -173,8 +173,8 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                 />
                 <div className="action-edit-col">
                   {item.isEditing ? (
-                    <i
-                      className="bx bxs-save save-icon"
+                    <button
+                    className="edit-input"
                       onClick={() => {
                         fetchColUpdateData(
                           item.id,
@@ -183,7 +183,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                         );
                         toggleEditMode(item.id);
                       }}
-                    ></i>
+                    >Save</button>
                   ) : (
                     <i
                       className="bx bxs-edit-alt edit-icon"

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
+  const [brandId, setBrandId] = useState(null);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -61,6 +62,7 @@ function PurchaseEntry() {
       );
       if (brandId) {
         const specificId = brandId[0];
+        setBrandId(specificId);
         console.log(specificId);
         try {
           const response = await fetch("http://localhost:3000/api/getLabels", {
@@ -91,14 +93,14 @@ function PurchaseEntry() {
 
   const handleSubmission = async (event) => {
     event.preventDefault();
-    console.log(JSON.stringify(addInput));
+    console.log(JSON.stringify({ addInput, brandId: brandId }));
     try {
       const response = await fetch("http://localhost:3000/api/purchase", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ addInput }),
+        body: JSON.stringify({ addInput, brandId: brandId }),
       });
 
       const data = await response.json();
