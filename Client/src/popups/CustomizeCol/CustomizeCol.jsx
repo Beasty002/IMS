@@ -110,8 +110,8 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
   const fetchColUpdateData = async (id, brandId, columnName) => {
     console.log(JSON.stringify({ id, brandId, columnName }));
     try {
-      const response = await fetch("http://localhost:3000/api/editCol", {
-        method: "POST",
+      const response = await fetch("http://localhost:3000/api/column", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -138,7 +138,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         id: item._id,
         columnName: item.column,
         specificId: specificId,
-        isEditing: false, 
+        isEditing: false,
       }));
       setFormData(updatedFormData);
     }
@@ -169,7 +169,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   placeholder="Enter a column name"
                   value={item.columnName}
                   onChange={(event) => handleInputChange(event, item.id)}
-                  disabled={!item.isEditing} 
+                  disabled={!item.isEditing}
                 />
                 <div className="action-edit-col">
                   {item.isEditing ? (
@@ -187,7 +187,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   ) : (
                     <i
                       className="bx bxs-edit-alt edit-icon"
-                      onClick={() => toggleEditMode(item.id)} 
+                      onClick={() => toggleEditMode(item.id)}
                     ></i>
                   )}
                   <i
@@ -211,7 +211,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
               onClick={fetchColumnData}
               className="save-btn"
             >
-              Save 
+              Save
             </button>
             <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
