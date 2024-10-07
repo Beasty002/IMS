@@ -41,7 +41,9 @@ router.route("/getPastYearSales").get(datac.getPastYearSales);
 router.route("/getSalesByWeekday").post(datac.getSalesByWeekday); 
 
 router.route("/item").post(datac.addType); 
-router.route("/column").post(datac.addColumn); 
+router.route("/column")
+    .post(datac.addColumn)
+    .put(datac.editColumn); 
 router.route("/getLabels").post(datac.getLabels); 
 router.route("/getColLabel").post(datac.getColLabel);
 

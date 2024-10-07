@@ -14,7 +14,10 @@ const stockSchema = new Schema({
         type:String,
         required:true,
     },
-
+    parentBrandId:{
+        type:String,
+        required: true
+    },
     rowLabel:{
         type: String,
         required: true,

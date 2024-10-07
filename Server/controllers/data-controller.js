@@ -284,6 +284,10 @@ const salesEntry = async (req,res) => {
 
         const sCat = sale.category;
         const sBrand = sale.brand;
+
+        const forBrandId = await Brand.findOne({ parentCategory: sCat, brandName: sBrand})
+        const brandId = forBrandId._id
+
         const sRow = sale.rowLabel;
         const sCol = sale.colLabel;
         const sQty = sale.counter;
@@ -297,6 +301,7 @@ const salesEntry = async (req,res) => {
         var newSaleEntry = new Sales({
           sCategory: sCat,
           sBrand:sBrand,
+          sBrandId: brandId,
           sRowLabel:sRow,
           sColLabel:sCol,
           sQty:sQty
@@ -598,6 +603,23 @@ const addColumn = async (req,res) => {
   }
 }
 
+const editColumn = async (req,res) => {
+  try{
+    // console.log(req.body)
+    const { id, columnName } = req.body
+
+    await Column.findByIdAndUpdate(id, { column: columnName })
+
+    // await updateCol.save();
+
+    return res.status(200).json({msg: `${columnName} updated`})
+  }
+  catch(err){
+    console.error("Error edit col");
+    res.json({ message: "Internal server error!!(editCol)" });
+  }
+}
+
 const getLabels = async (req,res) => {
   try{
     const brandId = req.body.brandId
@@ -650,25 +672,27 @@ const addPurchase = async (req,res) =>  {
     var purchaseIds = [];
     const bodies = req.body.addInput
     // console.log(bodies)
+    // return
 
     for (var body of bodies){
-
-      // console.log(body)
   
       const cat = body.category
       const brand = body.brand
+
+      const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand})
+      const brandId = forBrandId._id
   
       const rowLabel = body.rowLabel
       const colLabel = body.colLabel
   
       const stock = body.counter
 
-      // console.log(stock)
   
       const newStock = new Stock({
         stock: stock,
         parentCat: cat,
         parentBrand: brand,
+        parentBrandId: brandId,
         rowLabel: rowLabel,
         colLabel: colLabel
       });
@@ -676,7 +700,6 @@ const addPurchase = async (req,res) =>  {
   
       var aStock = await newStock.save();
 
-      // console.log(aStock._id)
       purchaseIds.push(aStock._id);
 
     }
@@ -893,6 +916,7 @@ module.exports = {
 
   addType,
   addColumn,
+  editColumn,
 
   getLabels,
   getColLabel,
