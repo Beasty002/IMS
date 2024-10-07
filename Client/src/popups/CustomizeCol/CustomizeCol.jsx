@@ -74,36 +74,36 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     }
   };
 
-  const fetchLabelData = async () => {
-    if (specificId) {
-      console.log(JSON.stringify({ brandId: specificId }));
-      try {
-        const response = await fetch("http://localhost:3000/api/getLabels", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ brandId: specificId }),
-        });
+  // const fetchLabelData = async () => {
+  //   if (specificId) {
+  //     console.log(JSON.stringify({ brandId: specificId }));
+  //     try {
+  //       const response = await fetch("http://localhost:3000/api/getLabels", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ brandId: specificId }),
+  //       });
 
-        const data = await response.json();
-        if (!response.ok) {
-          console.log(response.statusText);
-          return;
-        }
-        console.log(data);
-        setBrandLabelData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
+  //       const data = await response.json();
+  //       if (!response.ok) {
+  //         console.log(response.statusText);
+  //         return;
+  //       }
+  //       console.log(data);
+  //       setBrandLabelData(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    if (specificId) {
-      fetchLabelData();
-    }
-  }, [specificId]);
+  // useEffect(() => {
+  //   if (specificId) {
+  //     fetchLabelData();
+  //   }
+  // }, [specificId]);
 
   useEffect(() => {
     if (brandLabelData && brandLabelData.column) {
@@ -135,12 +135,10 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   onChange={(event) => handleInputChange(event, item.id)}
                 />
                 <div className="action-edit-col">
-                  {/* Edit button */}
                   <i
                     className="bx bxs-edit-alt edit-icon"
                     onClick={() => console.log(`Editing column ${item.id}`)}
                   ></i>
-                  {/* Delete button */}
                   <i
                     className="bx bx-trash del-icon"
                     onClick={() => handleDeleteColumn(item.id)}
