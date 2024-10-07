@@ -93,14 +93,14 @@ function PurchaseEntry() {
 
   const handleSubmission = async (event) => {
     event.preventDefault();
-    console.log(JSON.stringify({ addInput, brandId: brandId }));
+    // console.log(JSON.stringify({ addInput, brandId: brandId }));
     try {
       const response = await fetch("http://localhost:3000/api/purchase", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ addInput, brandId: brandId }),
+        body: JSON.stringify({ addInput}),
       });
 
       const data = await response.json();
