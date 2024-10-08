@@ -11,6 +11,10 @@ const saleSchema = new Schema({
         type: String,
         required: true
     },
+    sBrandId:{
+        type:String,
+
+    },
     sRowLabel:{
         type: String,
         required: true
