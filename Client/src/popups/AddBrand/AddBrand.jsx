@@ -41,7 +41,7 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
         multiVar: "",
         rowLabel: "",
         colLabel: "",
-        parentCat: "",
+        parentCat: categoryName,
       });
       onClose();
     } catch (error) {

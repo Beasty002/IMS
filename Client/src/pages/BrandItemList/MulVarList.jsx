@@ -125,7 +125,7 @@ export default function MulVarList() {
       rowKey: rowKey,
       updatedData: updatedRowData,
       categoryName: categoryName,
-      brandName:brandName
+      brandName: brandName,
     };
 
     console.log(JSON.stringify(payload));
