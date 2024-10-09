@@ -145,6 +145,7 @@ const createBrand = async (req, res) => {
   try {
     let colLabel;
     // console.log(req.body);
+    // return
 
     const brandName = req.body.brandName;
     const multiVar = req.body.multiVar;
@@ -156,6 +157,11 @@ const createBrand = async (req, res) => {
 
     parentCat = parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
 
+    const checkBrand = await Brand.findOne({ brandName: brandName, parentCategory: parentCat})
+    if (checkBrand){
+      return res.json({err:  `${brandName} already exists`})
+    }
+    
     let newBrand;
 
     if (multiVar === "yes") {
@@ -575,24 +581,21 @@ const addType = async (req,res) => {
 const addColumn = async (req,res) => {
   try{
     const bodies = req.body
-
+    
     for (var body of bodies){
-
       const col = body.columnName
       const id = body.specificId
 
       const checkCol = await Column.findOne({ column: col, brandId: id })
 
-      if (checkCol){
-        return res.status(409).json({ err: "Column already exists"})
+      if (!checkCol){
+        const newCol = new Column({
+          column: col,
+          brandId: id
+        });
+        
+        await newCol.save();
       }
-  
-      const newCol = new Column({
-        column: col,
-        brandId: id
-      });
-  
-      await newCol.save();
     }
 
     return res.status(200).json({msg: `Columns added successfully!`})
@@ -605,12 +608,21 @@ const addColumn = async (req,res) => {
 
 const editColumn = async (req,res) => {
   try{
-    // console.log(req.body)
-    const { id, columnName } = req.body
+    console.log(req.body)
+    
+    const { id, brandId, columnName } = req.body
+
+    const oldCol = await Column.findById(id)
+    const oldColName = oldCol.column
 
     await Column.findByIdAndUpdate(id, { column: columnName })
 
-    // await updateCol.save();
+    const updateCorrStock = await Stock.findOne({ colLabel: oldColName, parentBrandId: brandId})
+    
+    updateCorrStock.colLabel = columnName
+    // console.log(updateCorrStock)
+    // return
+    await updateCorrStock.save();
 
     return res.status(200).json({msg: `${columnName} updated`})
   }
