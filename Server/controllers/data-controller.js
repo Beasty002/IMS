@@ -865,12 +865,12 @@ const getTable = async (req, res) => {
 
 const editStock = async (req,res) =>{
   try{
-
-    const { rowKey, updatedData,categoryName, brandName} = req.body
-
+    
+    const { rowKey, updatedData,categoryName, brandId,brandName} = req.body
+    
     for (var col in updatedData){
-      var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, rowLabel:rowKey,colLabel:col })
-      
+      var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
+
       if (specificStock){
         specificStock.stock = updatedData[col]
 
@@ -882,13 +882,14 @@ const editStock = async (req,res) =>{
           stock: updatedData[col],
           parentCat: categoryName, 
           parentBrand: brandName, 
+          parentBrandId: brandId,
           rowLabel:rowKey,
           colLabel:col
         });
 
         await newStock.save()
       }
-
+ 
     }
     return res.status(200).json({msg: "Stock updated successfully!"})
   }
