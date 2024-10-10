@@ -126,6 +126,7 @@ export default function MulVarList() {
       updatedData: updatedRowData,
       categoryName: categoryName,
       brandName: brandName,
+      brandId: specificId,
     };
 
     console.log(JSON.stringify(payload));
@@ -149,6 +150,9 @@ export default function MulVarList() {
       console.error("Error:", error);
     }
   };
+  if (specificId) {
+    console.log(specificId);
+  }
 
   return (
     <>
