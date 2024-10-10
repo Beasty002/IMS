@@ -572,9 +572,32 @@ const addType = async (req,res) => {
     
   }
   catch(err){
-    console.error("Error sat sales");
+    console.error("Error add type");
     res.json({ message: "Internal server error!!(addtype)" });
   
+  }
+}
+
+const delType = async (req,res) => {
+  try{
+    console.log(req.body)
+
+    const { rowKey, brandId } = req.body
+
+    const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
+
+    if (!delRow){
+      return res.status(404).json({ err: `${rowKey} not found!`})
+    }
+
+    await delRow.deleteOne({ type: rowKey, brandId: brandId })
+    await Stock.deleteOne({ parentBrandId: brandId, rowLabel: rowKey})
+
+    return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
+  }
+  catch(err){
+    console.error("Error del type");
+    res.json({ message: "Internal server error!!(deltype)" });
   }
 }
 
@@ -956,6 +979,8 @@ module.exports = {
   addPurchase,
 
   addType,
+  delType,
+
   addColumn,
   editColumn,
   delColumn,
