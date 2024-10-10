@@ -57,6 +57,8 @@ export default function MulVarList() {
         if (!response.ok) {
           return;
         }
+
+        console.log(data);
         setFetchedBdata(data);
       } catch (error) {
         console.error(error);
@@ -133,6 +135,10 @@ export default function MulVarList() {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    console.log(fetchedBdata);
+  }, [fetchedBdata]);
 
   const handleValueChange = (rowKey, colKey, value) => {
     const updatedTableData = { ...editableData };

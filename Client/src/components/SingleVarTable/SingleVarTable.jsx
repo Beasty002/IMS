@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-function SingleVarTable({ data, onValueChange, categoryName, brandName }) {
+function SingleVarTable({ data, onValueChange, categoryName, brandName , specificId}) {
+  console.log(specificId);
   const hasData = data && Object.keys(data).length > 0;
 
   const [editIndex, setEditIndex] = useState(null);
@@ -28,6 +29,7 @@ function SingleVarTable({ data, onValueChange, categoryName, brandName }) {
       updatedData: updatedRowData,
       categoryName: categoryName,
       brandName: brandName,
+      brandId: specificId
     };
 
     console.log(JSON.stringify(payload));

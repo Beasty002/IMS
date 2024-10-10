@@ -31,6 +31,7 @@ export default function SinVarList() {
       }
 
       const data = await response.json();
+      console.log(data);
       setTableData(data.matrix);
 
       const options = Object.keys(data.matrix);
@@ -122,6 +123,7 @@ export default function SinVarList() {
           <SingleVarTable
             data={tableData[selectedKey]}
             onValueChange={handleValueChange}
+            specificId={specificId}
           />
         )}
         <CustomizeCol
