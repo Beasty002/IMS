@@ -47,8 +47,27 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     ]);
   };
 
-  const handleDeleteColumn = (id) => {
+  const handleDeleteColumn = async (id, brandId) => {
     setFormData((prevState) => prevState.filter((item) => item.id !== id));
+    try {
+      const response = await fetch("http://localhost:3000/api/column", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ columnId: id, brandId: brandId }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchColumnData = async (event) => {
@@ -197,7 +216,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
 
                   <i
                     className="bx bx-trash del-icon"
-                    onClick={() => handleDeleteColumn(item.id)}
+                    onClick={() => handleDeleteColumn(item.id,item.specificId)}
                   ></i>
                 </div>
               </div>
