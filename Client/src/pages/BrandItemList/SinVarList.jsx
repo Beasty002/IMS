@@ -17,6 +17,10 @@ export default function SinVarList() {
 
   const { categoryName, brandName } = useParams();
 
+  useEffect(() => {
+    console.log("Data is ", dropdownOptions);
+  }, [dropdownOptions]);
+
   const fetchTableData = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/getTable", {
@@ -57,6 +61,30 @@ export default function SinVarList() {
     }
   }, [categoryName]);
 
+  const fetchSelectedData = async (event) => {
+    const selectedData = event.target.value;
+    console.log(
+      JSON.stringify({ rowValue: selectedData, brandId: specificId })
+    );
+    try {
+      const response = await fetch("http://localhost:3000/api/code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rowValue: selectedData, brandId: specificId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
       const requiredId = fetchBrand.find(
@@ -96,7 +124,7 @@ export default function SinVarList() {
             <div className="sel-container">
               <select
                 value={selectedKey}
-                onChange={(e) => setSelectedKey(e.target.value)}
+                onChange={(e) => fetchSelectedData(e)}
               >
                 {dropdownOptions.map((option) => (
                   <option key={option} value={option}>

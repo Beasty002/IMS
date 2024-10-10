@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 import "./DelPop.css";
 
 export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
-  useEffect(() => {
-    console.log(delBrandName);
-  }, [delBrandName]);
+  // useEffect(() => {
+  //   console.log(delBrandName);
+  // }, [delBrandName]);
 
   const handleBrandDeletion = async () => {
     const body = {

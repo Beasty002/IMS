@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [stockData, setStockData] = useState({});
   const fetchBrandData = async (catName) => {
     const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
-    console.log(categoryName);
+    // console.log(categoryName);
     try {
       const response = await fetch(`http://localhost:3000/api/brandList`, {
         method: "POST",
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Network error occurred", response.statusText);
         return;
       }
-      console.log(data);
+      // console.log(data);
       setFetchBrand(data.brands);
       setStockData(data.stockByBrand);
       return data.brands;
