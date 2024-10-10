@@ -677,7 +677,7 @@ const getLabels = async (req,res) => {
       return res.json({ err: "No such label found!"})
     }
 
-    return res.json({ brandId: brandId, rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn }) // if more than one type chosenType is an ARRAY
+    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn }) // if more than one type chosenType is an ARRAY
 
 
   }
