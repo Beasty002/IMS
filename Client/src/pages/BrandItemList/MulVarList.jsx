@@ -128,6 +128,7 @@ export default function MulVarList() {
         return;
       }
       console.log(data);
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
