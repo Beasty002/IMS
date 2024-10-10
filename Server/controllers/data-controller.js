@@ -608,7 +608,6 @@ const addColumn = async (req,res) => {
 
 const editColumn = async (req,res) => {
   try{
-    console.log(req.body)
     
     const { id, brandId, columnName } = req.body
 
@@ -629,6 +628,35 @@ const editColumn = async (req,res) => {
   catch(err){
     console.error("Error edit col");
     res.json({ message: "Internal server error!!(editCol)" });
+  }
+}
+
+const delColumn = async (req,res) => {
+  try{
+    // console.log(req.body)
+    const { columnId, brandId } = req.body
+
+
+    const forDelColName = await Column.findById(columnId)
+
+    const delCol = await Column.deleteOne( { _id: columnId})
+
+    const delColName = forDelColName.column
+    console.log(delColName)
+    const toDelStock = await Stock.findOne({ parentBrandId: brandId, colLabel: delColName})
+    if (toDelStock){
+
+      const delStock = await Stock.deleteOne({ parentBrandId: brandId, colLabel: delColName})
+      console.log("delsto: ",delStock)
+    }
+
+    await delCol.deleteOne({ })
+
+
+  }
+  catch(err){
+    console.error("Error del col");
+    res.json({ message: "Internal server error!!(delCol)" });
   }
 }
 
@@ -866,7 +894,7 @@ const getTable = async (req, res) => {
 const editStock = async (req,res) =>{
   try{
     
-    const { rowKey, updatedData,categoryName, brandId,brandName} = req.body
+    const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
     
     for (var col in updatedData){
       var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
@@ -930,6 +958,7 @@ module.exports = {
   addType,
   addColumn,
   editColumn,
+  delColumn,
 
   getLabels,
   getColLabel,
