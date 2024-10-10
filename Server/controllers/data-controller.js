@@ -673,7 +673,7 @@ const delColumn = async (req,res) => {
       console.log("delsto: ",delStock)
     }
 
-    await delCol.deleteOne({ })
+    await delCol.deleteOne({ _id: columnId})
 
 
   }
