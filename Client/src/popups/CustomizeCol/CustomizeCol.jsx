@@ -113,7 +113,6 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
           console.log(response.statusText);
           return;
         }
-        console.log(data);
         setBrandLabelData(data);
       } catch (error) {
         console.error(error);

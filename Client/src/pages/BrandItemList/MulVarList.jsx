@@ -111,6 +111,27 @@ export default function MulVarList() {
     setEditableData({ ...tableData });
   };
 
+  const handleDeleteClick = async (rowKey) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/type", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rowKey: rowKey, brandId: specificId }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleValueChange = (rowKey, colKey, value) => {
     const updatedTableData = { ...editableData };
     updatedTableData[rowKey][colKey] = value;
@@ -173,7 +194,7 @@ export default function MulVarList() {
               Customize Columns
             </button>
             <button onClick={enableCatPortal} className="primary-btn">
-              <i className="bx bx-plus-circle"></i> New Brand
+              <i className="bx bx-plus-circle"></i> New Type
             </button>
           </div>
         </section>
@@ -241,7 +262,10 @@ export default function MulVarList() {
                             onClick={() => handleEditClick(rowIndex)}
                           ></i>
                         )}
-                        <i className="bx bx-trash del-icon"></i>
+                        <i
+                          onClick={() => handleDeleteClick(rowKey)}
+                          className="bx bx-trash del-icon"
+                        ></i>
                       </div>
                     </td>
                   </tr>
