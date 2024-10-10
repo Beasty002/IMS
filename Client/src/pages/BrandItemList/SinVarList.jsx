@@ -12,37 +12,30 @@ export default function SinVarList() {
   const { fetchBrandData, fetchBrand } = useAuth();
   const [specificId, setSpecificId] = useState();
   const [tableData, setTableData] = useState({});
-  const [dropdownOptions, setDropdownOptions] = useState([]); 
+  const [dropdownOptions, setDropdownOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
 
   const { categoryName, brandName } = useParams();
 
   const fetchTableData = async () => {
     try {
-      console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
       const response = await fetch("http://localhost:3000/api/getTable", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cat: categoryName,
-          brand: brandName,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cat: categoryName, brand: brandName }),
       });
 
       if (!response.ok) {
-        console.log("Error:", response.statusText);
+        console.error("Error:", response.statusText);
         return;
       }
 
       const data = await response.json();
-      console.log(data);
       setTableData(data.matrix);
 
       const options = Object.keys(data.matrix);
       setDropdownOptions(options);
-      setSelectedKey(options[0]); 
+      setSelectedKey(options[0]);
     } catch (error) {
       console.error("Fetch error: ", error);
     }
@@ -54,13 +47,8 @@ export default function SinVarList() {
     }
   }, [categoryName, brandName]);
 
-  const enableCustPortal = () => {
-    setCustPortal(!custPortal);
-  };
-
-  const enableCatPortal = () => {
-    setCatPortal(!catPortal);
-  };
+  const enableCustPortal = () => setCustPortal(!custPortal);
+  const enableCatPortal = () => setCatPortal(!catPortal);
 
   useEffect(() => {
     if (categoryName) {
@@ -73,16 +61,25 @@ export default function SinVarList() {
       const requiredId = fetchBrand.find(
         (item) => item.brandName === brandName
       );
-      setSpecificId(requiredId._id);
-      console.log(specificId);
+      setSpecificId(requiredId ? requiredId._id : null);
     }
   }, [fetchBrand, brandName]);
+
+  const handleValueChange = (key, newValue) => {
+    setTableData((prevData) => ({
+      ...prevData,
+      [selectedKey]: {
+        ...prevData[selectedKey],
+        [key]: { ...prevData[selectedKey][key], dfd: newValue },
+      },
+    }));
+  };
 
   return (
     <>
       <section className="brand-list-page">
         <div className="title-customize-cont">
-          <h1>Mayur Plywoods</h1>
+          <h1>{brandName || "No Brand Selected"}</h1>
         </div>
 
         <section className="brand-list-top sp">
@@ -96,9 +93,9 @@ export default function SinVarList() {
               />
             </div>
             <div className="sel-container">
-              <select 
-                value={selectedKey} 
-                onChange={(e) => setSelectedKey(e.target.value)} 
+              <select
+                value={selectedKey}
+                onChange={(e) => setSelectedKey(e.target.value)}
               >
                 {dropdownOptions.map((option) => (
                   <option key={option} value={option}>
@@ -111,8 +108,7 @@ export default function SinVarList() {
 
           <div className="btn-container sp">
             <button onClick={enableCustPortal} className="secondary-btn">
-              <i className="bx bx-filter-alt"></i>
-              Customize Types
+              <i className="bx bx-filter-alt"></i> Customize Types
             </button>
             <button onClick={enableCatPortal} className="primary-btn">
               <i className="bx bx-plus-circle"></i> New Item
@@ -120,10 +116,14 @@ export default function SinVarList() {
           </div>
         </section>
       </section>
+
       <section>
-        <SingleVarTable 
-          data={tableData[selectedKey]} 
-        />
+        {selectedKey && (
+          <SingleVarTable
+            data={tableData[selectedKey]}
+            onValueChange={handleValueChange}
+          />
+        )}
         <CustomizeCol
           isOpen={custPortal}
           onClose={enableCustPortal}
