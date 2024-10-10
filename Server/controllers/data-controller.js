@@ -48,13 +48,29 @@ const createCategory = async (req, res) => {
 
 const delCategory = async (req, res) => {
   try {
-    const delCat = req.body.delCat;
+    const {delCat} = req.body;
 
     if (!delCat) {
       console.log("No such category found!");
       return res.json({ err: "No such category found!" });
     }
 
+    const delBrands = await Brand.find({ parentCategory: delCat });
+    
+    if (delBrands.length > 0) {
+      // Iterate over each brand and delete related data
+      for (const brand of delBrands) {
+        const brandId = brand._id;
+        await Column.deleteMany({ brandId });
+        await Type.deleteMany({ brandId });
+        await Stock.deleteMany({ parentBrandId: brandId });
+        await Sales.deleteMany({ sBrandId: brandId });
+        
+        // Delete the brand itself
+        await Brand.deleteOne({ _id: brandId });
+      }
+    }
+    
     await Category.deleteOne({ title: delCat });
 
     return res.json({ msg: delCat + " category deleted!" });
