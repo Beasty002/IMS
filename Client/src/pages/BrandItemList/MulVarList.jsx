@@ -112,6 +112,7 @@ export default function MulVarList() {
   };
 
   const handleDeleteClick = async (rowKey) => {
+    // console.log(JSON.stringify({ rowKey: rowKey, brandId: specificId }));
     try {
       const response = await fetch("http://localhost:3000/api/type", {
         method: "DELETE",
@@ -178,7 +179,7 @@ export default function MulVarList() {
   return (
     <>
       <section>
-        <h1>Mayur Plywoods</h1>
+        <h1>{brandName} Plywoods</h1>
         <section className="brand-list-top mv">
           <div className="search-box">
             <i className="bx bx-search-alt"></i>
