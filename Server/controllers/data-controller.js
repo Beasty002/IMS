@@ -205,6 +205,10 @@ const delBrand = async (req, res) => {
     const delBrandName = delBrand.brandName;
 
     await Brand.deleteOne({ _id: delBrandId });
+    await Column.deleteMany({ brandId: delBrandId})
+    await Type.deleteMany({ brandId: delBrandId})
+    await Stock.deleteMany({ parentBrandId: delBrandId})
+    await Sales.deleteMany({ sBrandId: delBrandId})
 
     return res.json({ msg: delBrandName + " brand deleted!" });
   } catch (err) {
