@@ -56,5 +56,7 @@ router.route("/getTable").post(datac.getTable)
 
 router.route("/editStock").post(datac.editStock)
 
+router.route("/code").post(datac.getCodes)
+
 
 module.exports = router;

@@ -58,7 +58,6 @@ const delCategory = async (req, res) => {
     const delBrands = await Brand.find({ parentCategory: delCat });
     
     if (delBrands.length > 0) {
-      // Iterate over each brand and delete related data
       for (const brand of delBrands) {
         const brandId = brand._id;
         await Column.deleteMany({ brandId });
@@ -66,7 +65,6 @@ const delCategory = async (req, res) => {
         await Stock.deleteMany({ parentBrandId: brandId });
         await Sales.deleteMany({ sBrandId: brandId });
         
-        // Delete the brand itself
         await Brand.deleteOne({ _id: brandId });
       }
     }
@@ -970,6 +968,33 @@ const editStock = async (req,res) =>{
   }
 }
 
+const getCodes = async(req,res) => {
+  try{
+    console.log(req.body)
+    const {rowValue, brandId} = req.body
+
+    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
+    if (!forTypeId){
+      return res.status(404).json({ err: `${rowValue} does not exist!`})
+    }
+
+    const typeId = forTypeId._id
+
+    const codes = await Column.find({brandId: brandId, typeId: typeId})
+    if (!codes){
+      return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
+    }
+
+    return res.status(200).json({ msg: codes, typeId: typeId })
+  }
+  catch(err){
+    console.error("Error get codes");
+    res.status(500).json({ message: "Internal server error!!(getCodes)" });
+  }
+}
+
+
+
 
 
 module.exports = {
@@ -1013,4 +1038,6 @@ module.exports = {
   getTable,
 
   editStock,
+
+  getCodes,
 };

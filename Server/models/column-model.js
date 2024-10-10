@@ -9,6 +9,9 @@ const columnSchema = new Schema({
     brandId:{
         type:String,
         required:true,
+    },
+    typeId:{
+        type: String,
     }
 
 })
