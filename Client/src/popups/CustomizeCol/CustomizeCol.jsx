@@ -43,6 +43,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
         columnName: "",
         specificId: specificId,
         isEditing: true,
+        isNew: true,
       },
     ]);
   };
@@ -186,37 +187,37 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                   placeholder="Enter a column name"
                   value={item.columnName}
                   onChange={(event) => handleInputChange(event, item.id)}
-                  disabled={item.columnName !== "" && !item.isEditing}
+                  disabled={!item.isEditing && !item.isNew}
                 />
                 <div className="action-edit-col">
-                  {item.columnName !== "" && !item.isEditing ? (
-                    <i
-                      className="bx bxs-edit-alt edit-icon"
-                      onClick={() => toggleEditMode(item.id)}
-                    ></i>
-                  ) : (
-                    item.columnName !== "" &&
-                    item.id &&
-                    !item.isEditing && (
-                      <button
-                        className="edit-input"
-                        onClick={() => {
-                          fetchColUpdateData(
-                            item.id,
-                            specificId,
-                            item.columnName
-                          );
-                          toggleEditMode(item.id);
-                        }}
-                      >
-                        Save
-                      </button>
-                    )
+                  {!item.isNew && (
+                    <>
+                      {item.isEditing ? (
+                        <button
+                          className="edit-input"
+                          onClick={() => {
+                            fetchColUpdateData(
+                              item.id,
+                              specificId,
+                              item.columnName
+                            );
+                            toggleEditMode(item.id);
+                          }}
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <i
+                          className="bx bxs-edit-alt edit-icon"
+                          onClick={() => toggleEditMode(item.id)}
+                        ></i>
+                      )}
+                    </>
                   )}
 
                   <i
                     className="bx bx-trash del-icon"
-                    onClick={() => handleDeleteColumn(item.id,item.specificId)}
+                    onClick={() => handleDeleteColumn(item.id, item.specificId)}
                   ></i>
                 </div>
               </div>
