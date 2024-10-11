@@ -622,18 +622,34 @@ const delType = async (req,res) => {
 const addColumn = async (req,res) => {
   try{
     const bodies = req.body
+    // console.log(bodies)
     
     for (var body of bodies){
+      console.log(body)
       const col = body.columnName
       const id = body.specificId
-
+      
       const checkCol = await Column.findOne({ column: col, brandId: id })
-
+      console.log(checkCol) 
+      
+      const typeId = body.typeId
+      // only create those column which do not exist already
       if (!checkCol){
-        const newCol = new Column({
-          column: col,
-          brandId: id
-        });
+        var newCol;
+        
+        if (typeId){
+          newCol = new Column({
+            column: col,
+            brandId: id,
+            typeId: typeId
+          });
+          
+        }else{
+          newCol = new Column({
+            column: col,
+            brandId: id
+          });
+        }
         
         await newCol.save();
       }
@@ -992,6 +1008,8 @@ const getCodes = async(req,res) => {
     res.status(500).json({ message: "Internal server error!!(getCodes)" });
   }
 }
+
+
 
 
 
