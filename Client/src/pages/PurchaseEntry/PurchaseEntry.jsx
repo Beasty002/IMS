@@ -60,6 +60,7 @@ function PurchaseEntry() {
       const brandId = addInput.map(
         (item) => item.fetchData?.find((data) => data.brandName === value)?._id
       );
+      console.log(brandId);
       if (brandId) {
         const specificId = brandId[0];
         setBrandId(specificId);
@@ -88,6 +89,36 @@ function PurchaseEntry() {
           console.error(error);
         }
       }
+    } else if (field === "rowLabel") {
+      console.log("addInput data: ", addInput);
+
+      // just skip the complicated object entries cuz yele key value pair banaunthyuo
+      // jasle garxa extract garna ko lagi extra key value mapping garna parthyo
+      //  so vanam kinda shortcut
+      const brndId = addInput.map(
+        (item) =>
+          item.brandData?.type?.find((data) => data.type === value)?.brandId
+      );
+
+      try {
+        console.log(JSON.stringify({ rowLabel: value, brandId: brndId }));
+        const response = await fetch("http://localhost:3000/api/colData", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rowLabel: value, brandId: brndId }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.log(response.statusText);
+          return;
+        }
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -100,7 +131,7 @@ function PurchaseEntry() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ addInput}),
+        body: JSON.stringify({ addInput }),
       });
 
       const data = await response.json();
