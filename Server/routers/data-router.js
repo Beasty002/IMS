@@ -30,7 +30,6 @@ router.route("/sales")
 
 
 router.route("/getSpecificSale").post(datac.getSpecificSale)
-router.route("/getSpeCol").post(datac.getSpecificColumn)
 
 router.route("/purchase")
   .post(datac.addPurchase)

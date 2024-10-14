@@ -614,7 +614,8 @@ const delType = async (req, res) => {
 const addColumn = async (req, res) => {
   try {
     const bodies = req.body;
-    // console.log(bodies)
+    console.log("adcol",bodies)
+    // return
 
     for (var body of bodies) {
       console.log(body);
@@ -624,12 +625,15 @@ const addColumn = async (req, res) => {
       const checkCol = await Column.findOne({ column: col, brandId: id });
       console.log(checkCol);
 
-      const typeId = body.typeId;
+      const typeName = body.typeName;
       // only create those column which do not exist already
       if (!checkCol) {
         var newCol;
 
-        if (typeId) {
+        if (typeName) {
+          const forTypeId = await Type.findOne({type: typeName, brandId: id})
+          const typeId = forTypeId._id
+
           newCol = new Column({
             column: col,
             brandId: id,
@@ -999,20 +1003,11 @@ const getCodes = async (req, res) => {
   }
 };
 
-const getSpecificColumn = async (req, res) => {
-  try {
-    console.log(req.body);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 module.exports = {
   getAllCategories,
   createCategory,
   delCategory,
   editCategory,
-  getSpecificColumn,
 
   getAllBrands,
   createBrand,
