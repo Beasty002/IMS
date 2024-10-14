@@ -1069,10 +1069,28 @@ const getCodes = async(req,res) => {
   }
 }
 
+const getSpecCol = async (req,res) => {
+  try{
+    const {rowLabel, brandId} = req.body
+    
+    const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId[0]})
+    const typeId = forTypeId._id
+    
+    const forColArr = await Column.find({ brandId: brandId, typeId: typeId})
+    
+    var colArr = [];
+    for (var col of forColArr){
+      colArr.push(col.column)
+    }
 
+    return res.json(200).json({msg: colArr})
 
-
-
+  }
+  catch(err){
+    console.error("Error get specific columns");
+    res.status(500).json({ message: "Internal server error!!(getSpecCol)" });
+  }
+}
 
 
 module.exports = {
@@ -1118,4 +1136,5 @@ module.exports = {
   editStock,
 
   getCodes,
+  getSpecCol,
 };

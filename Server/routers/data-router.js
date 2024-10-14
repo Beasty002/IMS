@@ -59,5 +59,7 @@ router.route("/editStock").post(datac.editStock)
 
 router.route("/code").post(datac.getCodes)
 
+router.route("/colData").post(datac.getSpecCol)
+
 
 module.exports = router;
