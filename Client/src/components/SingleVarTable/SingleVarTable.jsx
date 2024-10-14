@@ -9,7 +9,14 @@ function SingleVarTable({
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
+  const [typeId, setTypeId] = useState(null);
 
+  useEffect(() => {
+    if (fetchSingleVarData) {
+      setTypeId(fetchSingleVarData.typeId);
+      console.log(typeId);
+    }
+  }, [fetchSingleVarData]);
 
   useEffect(() => {
     if (fetchSingleVarData && fetchSingleVarData.codeStocks) {
@@ -21,7 +28,7 @@ function SingleVarTable({
     const newValue = event.target.value;
     setEditableData((prevData) => ({
       ...prevData,
-      [key]: newValue, 
+      [key]: newValue,
     }));
   };
 
@@ -36,9 +43,8 @@ function SingleVarTable({
     const payload = {
       rowKey: rowKey,
       updatedData: updatedRowData,
-      categoryName: categoryName,
-      brandName: brandName,
       brandId: specificId,
+      typeId: typeId,
     };
 
     console.log("Saving payload:", JSON.stringify(payload));
@@ -57,7 +63,7 @@ function SingleVarTable({
       }
 
       onValueChange(rowKey, updatedRowData);
-      setEditIndex(null); 
+      setEditIndex(null);
     } catch (error) {
       console.error("Error saving data:", error);
     }
