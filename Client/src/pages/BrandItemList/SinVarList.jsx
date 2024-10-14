@@ -41,7 +41,7 @@ export default function SinVarList() {
 
       const options = Object.keys(data.matrix);
       setDropdownOptions(options);
-      setSelectedKey(options[0]);
+
     } catch (error) {
       console.error("Fetch error: ", error);
     }
@@ -133,12 +133,13 @@ export default function SinVarList() {
                 value={selectedKey}
                 onChange={(e) => fetchSelectedData(e)}
               >
+                <option value="" disabled>
+                  -- Select an option --
+                </option>
                 {dropdownOptions.map((option) => (
-                  <>
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  </>
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
                 ))}
               </select>
             </div>
