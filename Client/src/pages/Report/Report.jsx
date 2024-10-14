@@ -1,39 +1,61 @@
-import React from 'react'
-import './Report.css'
+import React, { useState, useEffect } from "react";
+import "./Report.css";
+import { useAuth } from "../../customHooks/useAuth";
+import { Link } from "react-router-dom";
+import ReportPrint from "../../popups/ReportPrint/ReportPrint";
 
 function Report() {
-  return (
+  const { fetchCategory, categories } = useAuth();
+  const [enablePortal, setEnablePortal] = useState(false);
 
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
+  useEffect(() => {
+    if (categories) {
+      console.log(categories);
+    }
+  }, [categories]);
+
+  return (
     <section>
       <h1>Categories</h1>
       <div className="cat-list-top">
         <div className="search-box">
-          <i className='bx bx-search-alt'></i>
+          <i className="bx bx-search-alt"></i>
           <input
             type="text"
             placeholder="Search categories..."
             aria-label="Search input"
           />
         </div>
-        <div className="btn-container">
-          <button className="primary-btn"><i class='bx bxs-printer'></i> Print</button>
+        <div
+          onClick={() => setEnablePortal(!enablePortal)}
+          className="btn-container"
+        >
+          <button className="primary-btn">
+            <i class="bx bxs-printer"></i> Print
+          </button>
         </div>
-
-
       </div>
       <div className="cat-list">
-        <div className="cat-box">
-          <h3>Plywood</h3>
-          <p className="cat-stock-availability">Stock available : 80</p>
-          <div className="action-container">
-            <i class='bx bx-printer print-icon' ></i>
-
+        {categories?.map((item) => (
+          <div key={item._id} className="cat-box">
+            <h3>{item.title}</h3>
+            <p className="cat-stock-availability">Stock available : 80</p>
+            <div className="action-container">
+              <i class="bx bx-printer print-icon"></i>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
+      <ReportPrint
+        isOpen={enablePortal}
+        onClose={() => setEnablePortal(!enablePortal)}
+      />
     </section>
-
-  )
+  );
 }
 
-export default Report
+export default Report;

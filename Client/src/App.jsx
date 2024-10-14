@@ -14,6 +14,7 @@ import SaleEntry from "./popups/SaleEntry/SaleEntry";
 import MulVarList from "./pages/BrandItemList/MulVarList";
 import SinVarList from "./pages/BrandItemList/SinVarList";
 import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
+import ReportPrint from "./popups/ReportPrint/ReportPrint";
 
 export default function App() {
   const location = useLocation();

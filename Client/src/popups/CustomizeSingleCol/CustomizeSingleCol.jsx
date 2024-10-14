@@ -111,41 +111,41 @@ export default function CustomizeSingleCol({
     }
   };
 
-  const fetchLabelData = async () => {
-    if (specificId) {
-      console.log(
-        JSON.stringify({ brandId: specificId, selectedKey: selectedKey })
-      );
-      try {
-        const response = await fetch("http://localhost:3000/api/getSpeCol", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            brandId: specificId,
-            selectedKey: selectedKey,
-          }),
-        });
+  // const fetchLabelData = async () => {
+  //   if (specificId) {
+  //     console.log(
+  //       JSON.stringify({ brandId: specificId, selectedKey: selectedKey })
+  //     );
+  //     try {
+  //       const response = await fetch("http://localhost:3000/api/getSpeCol", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           brandId: specificId,
+  //           selectedKey: selectedKey,
+  //         }),
+  //       });
 
-        const data = await response.json();
-        if (!response.ok) {
-          console.log(response.statusText);
-          return;
-        }
-        console.log("Data is fucking", data);
-        setBrandLabelData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
+  //       const data = await response.json();
+  //       if (!response.ok) {
+  //         console.log(response.statusText);
+  //         return;
+  //       }
+  //       console.log("Data is fucking", data);
+  //       setBrandLabelData(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    if (specificId && selectedKey) {
-      fetchLabelData();
-    }
-  }, [specificId, selectedKey]);
+  // useEffect(() => {
+  //   if (specificId && selectedKey) {
+  //     fetchLabelData();
+  //   }
+  // }, [specificId, selectedKey]);
 
   const fetchColUpdateData = async (id, brandId, columnName) => {
     console.log(JSON.stringify({ id, brandId, columnName }));
