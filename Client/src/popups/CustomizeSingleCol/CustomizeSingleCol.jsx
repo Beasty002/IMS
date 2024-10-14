@@ -105,7 +105,7 @@ export default function CustomizeSingleCol({
         return;
       }
       console.log(data);
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error(error);
     }

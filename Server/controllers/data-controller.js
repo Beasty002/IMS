@@ -986,17 +986,18 @@ const editStock = async (req,res) =>{
 
 const getCodes = async(req,res) => {
   try{
-    console.log(req.body)
+    // console.log(req.body)
     const {rowValue, brandId} = req.body
 
     const stockArr = await Stock.find({ parentBrandId: brandId, rowLabel: rowValue})
-    // console.log('stock',stockArr)
+    console.log('stock',stockArr);
+
     var codeArr = []
     var codeStocks = {};
     for (var stock of stockArr){
       
       var checkCol = stock.colLabel
-      console.log(checkCol)
+      // console.log(checkCol)
       if (!codeArr.includes(checkCol)){
         codeArr.push(checkCol)
       }

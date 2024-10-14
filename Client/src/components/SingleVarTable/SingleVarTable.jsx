@@ -7,20 +7,22 @@ function SingleVarTable({
   specificId,
   fetchSingleVarData,
 }) {
-  useEffect(() => {
-    console.log("Data is", fetchSingleVarData);
-  }, [fetchSingleVarData]);
-
   const [editIndex, setEditIndex] = useState(null);
-  const [editableData, setEditableData] = useState(fetchSingleVarData);
+  const [editableData, setEditableData] = useState({});
+
+
+  useEffect(() => {
+    if (fetchSingleVarData && fetchSingleVarData.codeStocks) {
+      setEditableData(fetchSingleVarData.codeStocks);
+    }
+  }, [fetchSingleVarData]);
 
   const handleInputChange = (key, event) => {
     const newValue = event.target.value;
     setEditableData((prevData) => ({
       ...prevData,
-      [key]: { ...prevData[key], dfd: newValue },
+      [key]: newValue, 
     }));
-    onValueChange(key, newValue);
   };
 
   const handleEditClick = (index) => {
@@ -39,7 +41,7 @@ function SingleVarTable({
       brandId: specificId,
     };
 
-    console.log(JSON.stringify(payload));
+    console.log("Saving payload:", JSON.stringify(payload));
     try {
       const response = await fetch("http://localhost:3000/api/editStock", {
         method: "POST",
@@ -54,11 +56,10 @@ function SingleVarTable({
         return;
       }
 
-      // Update the data state with editableData if needed
-      onValueChange(rowKey, updatedRowData.dfd); // Update parent state with new value
-      setEditIndex(null);
+      onValueChange(rowKey, updatedRowData);
+      setEditIndex(null); 
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error saving data:", error);
     }
   };
 
@@ -77,22 +78,23 @@ function SingleVarTable({
           </tr>
         </thead>
         <tbody>
-          {fetchSingleVarData ? (
-            fetchSingleVarData.msg?.map((item, index) => (
-              <tr key={item._id}>
+          {fetchSingleVarData && fetchSingleVarData.codeStocks ? (
+            Object.entries(editableData).map(([key, value], index) => (
+              <tr key={index}>
                 <td className="table-checkbox">
                   <input type="checkbox" />
                 </td>
-                <td>{item.column}</td>
+                <td>{key}</td>
                 <td>
                   {editIndex === index ? (
                     <input
                       className="edit-input"
                       type="number"
-                      value={item.column}
+                      value={value}
+                      onChange={(e) => handleInputChange(key, e)}
                     />
                   ) : (
-                    <span>stock</span>
+                    <span>{value}</span>
                   )}
                 </td>
                 <td className="table-action-container single-table">
