@@ -622,16 +622,16 @@ const delType = async (req,res) => {
 const addColumn = async (req, res) => {
   try {
     const bodies = req.body;
-    console.log("adcol",bodies)
-    // return
+    // console.log("adcol",bodies)
+    // // return
 
     for (var body of bodies) {
-      console.log(body);
+      // console.log(body);
       const col = body.columnName;
       const id = body.specificId;
 
       const checkCol = await Column.findOne({ column: col, brandId: id });
-      console.log(checkCol);
+      // console.log(checkCol);
 
       const typeName = body.typeName;
       // only create those column which do not exist already
@@ -653,10 +653,11 @@ const addColumn = async (req, res) => {
             brandId: id,
           });
         }
+        
+        await newCol.save();
 
       }
     }
-    await newCol.save();
 
     return res.status(200).json({ msg: `Columns added successfully!` });
   } catch (err) {
@@ -994,8 +995,26 @@ const getCodes = async(req,res) => {
     const stockArr = await Stock.find({ parentBrandId: brandId, rowLabel: rowValue})
     console.log('stock',stockArr);
 
+    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
+    if (!forTypeId){
+      return res.status(404).json({ err: `${rowValue} does not exist!`})
+    }
+
+    const typeId = forTypeId._id
+
+    const codes = await Column.find({brandId: brandId, typeId: typeId})
+    if (!codes || codes.length ===0){
+      return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
+    }
+    
     var codeArr = []
     var codeStocks = {};
+
+    for (let i = 0; i < codes.length; i++) {
+      const col = codes[i];
+      codeStocks[col.column] = "0";  // Initialize each column with stock value 0
+    }
+
     for (var stock of stockArr){
       
       var checkCol = stock.colLabel
@@ -1012,17 +1031,6 @@ const getCodes = async(req,res) => {
     // console.log(codeStocks)
 
 
-    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
-    if (!forTypeId){
-      return res.status(404).json({ err: `${rowValue} does not exist!`})
-    }
-
-    const typeId = forTypeId._id
-
-    const codes = await Column.find({brandId: brandId, typeId: typeId})
-    if (!codes){
-      return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
-    }
 
 
     return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks })
