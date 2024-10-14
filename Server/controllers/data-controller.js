@@ -619,49 +619,51 @@ const delType = async (req,res) => {
   }
 }
 
-const addColumn = async (req,res) => {
-  try{
-    const bodies = req.body
-    // console.log(bodies)
-    
-    for (var body of bodies){
-      console.log(body)
-      const col = body.columnName
-      const id = body.specificId
-      
-      const checkCol = await Column.findOne({ column: col, brandId: id })
-      console.log(checkCol) 
-      
-      const typeId = body.typeId
+const addColumn = async (req, res) => {
+  try {
+    const bodies = req.body;
+    console.log("adcol",bodies)
+    // return
+
+    for (var body of bodies) {
+      console.log(body);
+      const col = body.columnName;
+      const id = body.specificId;
+
+      const checkCol = await Column.findOne({ column: col, brandId: id });
+      console.log(checkCol);
+
+      const typeName = body.typeName;
       // only create those column which do not exist already
-      if (!checkCol){
+      if (!checkCol) {
         var newCol;
-        
-        if (typeId){
+
+        if (typeName) {
+          const forTypeId = await Type.findOne({type: typeName, brandId: id})
+          const typeId = forTypeId._id
+
           newCol = new Column({
             column: col,
             brandId: id,
-            typeId: typeId
+            typeId: typeId,
           });
-          
-        }else{
+        } else {
           newCol = new Column({
             column: col,
-            brandId: id
+            brandId: id,
           });
         }
-        
-        await newCol.save();
+
       }
     }
+    await newCol.save();
 
-    return res.status(200).json({msg: `Columns added successfully!`})
-  }
-  catch(err){
+    return res.status(200).json({ msg: `Columns added successfully!` });
+  } catch (err) {
     console.error("Error add col");
     res.json({ message: "Internal server error!!(addCol)" });
   }
-}
+};
 
 const editColumn = async (req,res) => {
   try{
