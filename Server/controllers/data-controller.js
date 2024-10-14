@@ -953,33 +953,61 @@ const getTable = async (req, res) => {
 
 const editStock = async (req,res) =>{
   try{
-    
-    const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
-    
-    for (var col in updatedData){
-      var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
+    if(req.body.typeName){
+      console.log(req.body.typeName)
+      
+      const { rowKey, updatedData,brandId,categoryName,brandName,typeName} = req.body
 
+      var specificStock = await Stock.findOne({parentBrandId: brandId,rowLabel:typeName,colLabel:rowKey })
+  
       if (specificStock){
-        specificStock.stock = updatedData[col]
+        specificStock.stock = updatedData
 
         await specificStock.save()
       }
       // if no previous stock of the column, create one
-      else if (!specificStock && updatedData[col] !=0){
+      else if (!specificStock && updatedData !=0){
         const newStock = new Stock({
-          stock: updatedData[col],
-          parentCat: categoryName, 
-          parentBrand: brandName, 
+          stock: updatedData,
+          parentCat:categoryName,
+          parentBrand:brandName,
           parentBrandId: brandId,
           rowLabel:rowKey,
-          colLabel:col
+          colLabel:typeName
         });
 
         await newStock.save()
       }
- 
+      return res.status(200).json({msg: "Stock updated successfully!"})
+
+    }else{
+      const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
+      for (var col in updatedData){
+        var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
+  
+        if (specificStock){
+          specificStock.stock = updatedData[col]
+  
+          await specificStock.save()
+        }
+        // if no previous stock of the column, create one
+        else if (!specificStock && updatedData[col] !=0){
+          const newStock = new Stock({
+            stock: updatedData[col],
+            parentCat: categoryName, 
+            parentBrand: brandName, 
+            parentBrandId: brandId,
+            rowLabel:rowKey,
+            colLabel:col
+          });
+  
+          await newStock.save()
+        }
+   
+      }
+      return res.status(200).json({msg: "Stock/s updated successfully!"})
     }
-    return res.status(200).json({msg: "Stock updated successfully!"})
+    
   }
   catch(err){
     console.error("Error edit stock");
@@ -1006,7 +1034,7 @@ const getCodes = async(req,res) => {
     if (!codes || codes.length ===0){
       return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
     }
-    
+
     var codeArr = []
     var codeStocks = {};
 
