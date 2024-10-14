@@ -989,6 +989,26 @@ const getCodes = async(req,res) => {
     console.log(req.body)
     const {rowValue, brandId} = req.body
 
+    const stockArr = await Stock.find({ parentBrandId: brandId, rowLabel: rowValue})
+    // console.log('stock',stockArr)
+    var codeArr = []
+    var codeStocks = {};
+    for (var stock of stockArr){
+      
+      var checkCol = stock.colLabel
+      console.log(checkCol)
+      if (!codeArr.includes(checkCol)){
+        codeArr.push(checkCol)
+      }
+      if (codeStocks[checkCol]) {
+        codeStocks[checkCol] = (parseInt(codeStocks[checkCol]) + stock.stock).toString();
+      } else {
+        codeStocks[checkCol] = stock.stock.toString();
+      }
+    }
+    // console.log(codeStocks)
+
+
     const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
     if (!forTypeId){
       return res.status(404).json({ err: `${rowValue} does not exist!`})
@@ -1001,7 +1021,8 @@ const getCodes = async(req,res) => {
       return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
     }
 
-    return res.status(200).json({ msg: codes, typeId: typeId })
+
+    return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks })
   }
   catch(err){
     console.error("Error get codes");
