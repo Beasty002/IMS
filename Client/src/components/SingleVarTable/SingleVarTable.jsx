@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-function SingleVarTable({
-  onValueChange,
-  categoryName,
-  brandName,
-  specificId,
-  fetchSingleVarData,
-}) {
+function SingleVarTable({ onValueChange, specificId, fetchSingleVarData }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
   const [typeId, setTypeId] = useState(null);
+
+  const { categoryName, brandName } = useParams();
+  useEffect(() => {
+    if (categoryName && brandName) {
+      console.log(categoryName, brandName);
+    }
+  }, [categoryName, brandName]);
 
   useEffect(() => {
     if (fetchSingleVarData) {
@@ -39,11 +41,14 @@ function SingleVarTable({
   const handleSave = async () => {
     const rowKey = Object.keys(editableData)[editIndex];
     const updatedRowData = editableData[rowKey];
+    console.log(categoryName);
 
     const payload = {
       rowKey: rowKey,
       updatedData: updatedRowData,
       brandId: specificId,
+      categoryName: categoryName,
+      brandName: brandName,
       typeId: typeId,
     };
 
