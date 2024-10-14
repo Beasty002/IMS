@@ -47,9 +47,9 @@ export default function SinVarList() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(fetchSingleVarData);
-  },[fetchSingleVarData]);
+  }, [fetchSingleVarData]);
 
   useEffect(() => {
     if (categoryName && brandName) {
@@ -85,7 +85,7 @@ export default function SinVarList() {
         console.log(response.statusText);
         return;
       }
-      console.log("Singlevar selected data",data);
+      console.log("Singlevar selected data", data);
       setFetchSingleVarData(data);
     } catch (error) {
       console.error(error);
@@ -161,14 +161,14 @@ export default function SinVarList() {
             onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
-            
           />
         )}
         <CustomizeSingleCol
           isOpen={custPortal}
           onClose={enableCustPortal}
           specificId={specificId}
-          selectedKey ={selectedKey}
+          selectedKey={selectedKey}
+          fetchSingleVarData={fetchSingleVarData}
         />
         <AddCat
           isOpen={catPortal}

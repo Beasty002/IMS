@@ -7,8 +7,6 @@ function SingleVarTable({
   specificId,
   fetchSingleVarData,
 }) {
-  const hasData =  Object.keys(fetchSingleVarData).length > 0;
-
   useEffect(() => {
     console.log("Data is", fetchSingleVarData);
   }, [fetchSingleVarData]);
@@ -66,7 +64,7 @@ function SingleVarTable({
 
   return (
     <div className="brand-item-table single-var">
-      <h1>{hasData ? "Brand Data" : "No Data Available"}</h1>
+      <h1>{fetchSingleVarData ? "Brand Data" : "No Data Available"}</h1>
       <table>
         <thead>
           <tr>
@@ -79,23 +77,22 @@ function SingleVarTable({
           </tr>
         </thead>
         <tbody>
-          {hasData ? (
-            Object.entries(editableData).map(([key, value], index) => (
-              <tr key={key}>
+          {fetchSingleVarData ? (
+            fetchSingleVarData.msg?.map((item, index) => (
+              <tr key={item._id}>
                 <td className="table-checkbox">
                   <input type="checkbox" />
                 </td>
-                <td>{key}</td>
+                <td>{item.column}</td>
                 <td>
                   {editIndex === index ? (
                     <input
                       className="edit-input"
                       type="number"
-                      value={value.dfd !== undefined ? value.dfd : 0}
-                      onChange={(e) => handleInputChange(key, e)}
+                      value={item.column}
                     />
                   ) : (
-                    <span>{value.dfd !== undefined ? value.dfd : 0}</span>
+                    <span>stock</span>
                   )}
                 </td>
                 <td className="table-action-container single-table">

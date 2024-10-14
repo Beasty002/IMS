@@ -6,16 +6,24 @@ export default function CustomizeSingleCol({
   onClose,
   specificId,
   selectedKey,
+  fetchSingleVarData,
 }) {
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
       columnName: "",
       specificId: "",
-      isEditing: true,
-      typeName: ""
+      isEditing: false,
+      typeName: "",
+      isNew: true,
     },
   ]);
+
+  useEffect(() => {
+    if (fetchSingleVarData) {
+      console.log("SIngle data yo ho", fetchSingleVarData);
+    }
+  }, [fetchSingleVarData]);
 
   const [brandLabelData, setBrandLabelData] = useState();
 
@@ -25,7 +33,7 @@ export default function CustomizeSingleCol({
         prevFormData.map((item) => ({
           ...item,
           specificId: specificId,
-          typeName:selectedKey
+          typeName: selectedKey,
         }))
       );
     }
@@ -50,7 +58,7 @@ export default function CustomizeSingleCol({
         specificId: specificId,
         isEditing: true,
         isNew: true,
-        typeName:selectedKey
+        typeName: selectedKey,
       },
     ]);
   };
@@ -97,7 +105,7 @@ export default function CustomizeSingleCol({
         return;
       }
       console.log(data);
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -162,17 +170,31 @@ export default function CustomizeSingleCol({
     }
   };
 
+  // useEffect(() => {
+  //   if (brandLabelData && brandLabelData.column) {
+  //     const updatedFormData = brandLabelData.column.map((item) => ({
+  //       id: item._id,
+  //       columnName: item.column,
+  //       specificId: specificId,
+  //       isEditing: false,
+  //     }));
+  //     setFormData(updatedFormData);
+  //   }
+  // }, [brandLabelData, specificId]);
+
   useEffect(() => {
-    if (brandLabelData && brandLabelData.column) {
-      const updatedFormData = brandLabelData.column.map((item) => ({
+    if (fetchSingleVarData && fetchSingleVarData.msg) {
+      const updatedFormData = fetchSingleVarData.msg.map((item) => ({
         id: item._id,
         columnName: item.column,
-        specificId: specificId,
+        specificId: item.brandId,
+        typeId: item.typeId,
         isEditing: false,
+        isNew: false,
       }));
       setFormData(updatedFormData);
     }
-  }, [brandLabelData, specificId]);
+  }, [fetchSingleVarData]);
 
   const toggleEditMode = (id) => {
     setFormData((prevState) =>
