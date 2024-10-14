@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./SinVarList.css";
-import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
 import AddCat from "../../popups/AddCat/AddCat";
 import { useAuth } from "../../customHooks/useAuth";
 import SingleVarTable from "../../components/SingleVarTable/SingleVarTable";
+import CustomizeSingleCol from "../../popups/CustomizeSingleCol/CustomizeSingleCol";
 
 export default function SinVarList() {
   const [custPortal, setCustPortal] = useState(false);
@@ -14,6 +14,7 @@ export default function SinVarList() {
   const [tableData, setTableData] = useState({});
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
+  const [fetchSingleVarData, setFetchSingleVarData] = useState({});
 
   const { categoryName, brandName } = useParams();
 
@@ -46,6 +47,10 @@ export default function SinVarList() {
     }
   };
 
+  useEffect(()=>{
+    console.log(fetchSingleVarData);
+  },[fetchSingleVarData]);
+
   useEffect(() => {
     if (categoryName && brandName) {
       fetchTableData();
@@ -63,6 +68,7 @@ export default function SinVarList() {
 
   const fetchSelectedData = async (event) => {
     const selectedData = event.target.value;
+    setSelectedKey(selectedData);
     console.log(
       JSON.stringify({ rowValue: selectedData, brandId: specificId })
     );
@@ -79,7 +85,8 @@ export default function SinVarList() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+      console.log("Singlevar selected data",data);
+      setFetchSingleVarData(data);
     } catch (error) {
       console.error(error);
     }
@@ -127,9 +134,11 @@ export default function SinVarList() {
                 onChange={(e) => fetchSelectedData(e)}
               >
                 {dropdownOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+                  <>
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  </>
                 ))}
               </select>
             </div>
@@ -149,15 +158,17 @@ export default function SinVarList() {
       <section>
         {selectedKey && (
           <SingleVarTable
-            data={tableData[selectedKey]}
             onValueChange={handleValueChange}
             specificId={specificId}
+            fetchSingleVarData={fetchSingleVarData}
+            
           />
         )}
-        <CustomizeCol
+        <CustomizeSingleCol
           isOpen={custPortal}
           onClose={enableCustPortal}
           specificId={specificId}
+          selectedKey ={selectedKey}
         />
         <AddCat
           isOpen={catPortal}

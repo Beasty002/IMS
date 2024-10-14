@@ -1,19 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-function SingleVarTable({ data, onValueChange, categoryName, brandName , specificId}) {
-  console.log(specificId);
-  const hasData = data && Object.keys(data).length > 0;
+function SingleVarTable({
+  onValueChange,
+  categoryName,
+  brandName,
+  specificId,
+  fetchSingleVarData,
+}) {
+  const hasData =  Object.keys(fetchSingleVarData).length > 0;
+
+  useEffect(() => {
+    console.log("Data is", fetchSingleVarData);
+  }, [fetchSingleVarData]);
 
   const [editIndex, setEditIndex] = useState(null);
-  const [editableData, setEditableData] = useState(data); // Store editable data
+  const [editableData, setEditableData] = useState(fetchSingleVarData);
 
   const handleInputChange = (key, event) => {
     const newValue = event.target.value;
     setEditableData((prevData) => ({
       ...prevData,
-      [key]: { ...prevData[key], dfd: newValue }, // Update the editable data
+      [key]: { ...prevData[key], dfd: newValue },
     }));
-    onValueChange(key, newValue); // Optional: Notify parent about the change
+    onValueChange(key, newValue);
   };
 
   const handleEditClick = (index) => {
@@ -29,7 +38,7 @@ function SingleVarTable({ data, onValueChange, categoryName, brandName , specifi
       updatedData: updatedRowData,
       categoryName: categoryName,
       brandName: brandName,
-      brandId: specificId
+      brandId: specificId,
     };
 
     console.log(JSON.stringify(payload));

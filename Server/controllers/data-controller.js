@@ -2,11 +2,11 @@ const path = require("path");
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
 const Sales = require("../models/sales-model");
-const SalesRecord = require("../models/sale-record-model")
-const Type = require("../models/type-model")
-const Column = require("../models/column-model")
-const Stock = require("../models/stock-model")
-const Purchase = require("../models/purchase-model")
+const SalesRecord = require("../models/sale-record-model");
+const Type = require("../models/type-model");
+const Column = require("../models/column-model");
+const Stock = require("../models/stock-model");
+const Purchase = require("../models/purchase-model");
 
 const { Collection } = require("mongoose");
 const { isString } = require("util");
@@ -48,7 +48,7 @@ const createCategory = async (req, res) => {
 
 const delCategory = async (req, res) => {
   try {
-    const {delCat} = req.body;
+    const { delCat } = req.body;
 
     if (!delCat) {
       console.log("No such category found!");
@@ -56,7 +56,7 @@ const delCategory = async (req, res) => {
     }
 
     const delBrands = await Brand.find({ parentCategory: delCat });
-    
+
     if (delBrands.length > 0) {
       for (const brand of delBrands) {
         const brandId = brand._id;
@@ -64,11 +64,11 @@ const delCategory = async (req, res) => {
         await Type.deleteMany({ brandId });
         await Stock.deleteMany({ parentBrandId: brandId });
         await Sales.deleteMany({ sBrandId: brandId });
-        
+
         await Brand.deleteOne({ _id: brandId });
       }
     }
-    
+
     await Category.deleteOne({ title: delCat });
 
     return res.json({ msg: delCat + " category deleted!" });
@@ -118,7 +118,7 @@ const getAllBrands = async (req, res) => {
 
 const getSpecificBrand = async (req, res) => {
   try {
-    const { categoryName } = req.body;  
+    const { categoryName } = req.body;
     const requiredBrand = await Brand.find({ parentCategory: categoryName });
 
     if (requiredBrand.length === 0) {
@@ -127,28 +127,30 @@ const getSpecificBrand = async (req, res) => {
         .json({ msg: "No data related to given brand found" });
     }
 
-    const allStockData = await Stock.find({parentCat: categoryName})
+    const allStockData = await Stock.find({ parentCat: categoryName });
     var stockByBrand = {};
 
     for (var brand of requiredBrand) {
-      stockByBrand[brand.brandName] = 0
+      stockByBrand[brand.brandName] = 0;
     }
 
     for (var stock of allStockData) {
       const brand = stock.parentBrand;
-      
+
       // Initialize the object for the brand if it doesn't exist
       if (!stockByBrand[brand]) {
         stockByBrand[brand] = 0;
       }
-      
+
       // Accumulate the stock for each brand
       stockByBrand[brand] += stock.stock;
     }
 
-    console.log(stockByBrand)
+    console.log(stockByBrand);
 
-    return res.status(202).json({ brands: requiredBrand , stockByBrand: stockByBrand});
+    return res
+      .status(202)
+      .json({ brands: requiredBrand, stockByBrand: stockByBrand });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Server error" });
@@ -169,13 +171,17 @@ const createBrand = async (req, res) => {
 
     var parentCat = req.body.parentCat;
 
-    parentCat = parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
+    parentCat =
+      parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
 
-    const checkBrand = await Brand.findOne({ brandName: brandName, parentCategory: parentCat})
-    if (checkBrand){
-      return res.json({err:  `${brandName} already exists`})
+    const checkBrand = await Brand.findOne({
+      brandName: brandName,
+      parentCategory: parentCat,
+    });
+    if (checkBrand) {
+      return res.json({ err: `${brandName} already exists` });
     }
-    
+
     let newBrand;
 
     if (multiVar === "yes") {
@@ -219,10 +225,10 @@ const delBrand = async (req, res) => {
     const delBrandName = delBrand.brandName;
 
     await Brand.deleteOne({ _id: delBrandId });
-    await Column.deleteMany({ brandId: delBrandId})
-    await Type.deleteMany({ brandId: delBrandId})
-    await Stock.deleteMany({ parentBrandId: delBrandId})
-    await Sales.deleteMany({ sBrandId: delBrandId})
+    await Column.deleteMany({ brandId: delBrandId });
+    await Type.deleteMany({ brandId: delBrandId });
+    await Stock.deleteMany({ parentBrandId: delBrandId });
+    await Sales.deleteMany({ sBrandId: delBrandId });
 
     return res.json({ msg: delBrandName + " brand deleted!" });
   } catch (err) {
@@ -264,99 +270,90 @@ const editBrand = async (req, res) => {
 };
 
 const renameBrand = async (req, res) => {
-  try{
-    const newBrandName = req.body.rename
-    const renameBrandId = req.body._id
+  try {
+    const newBrandName = req.body.rename;
+    const renameBrandId = req.body._id;
 
-    const renameBrand = await Brand.findById({_id: renameBrandId})
+    const renameBrand = await Brand.findById({ _id: renameBrandId });
 
-    renameBrand.brandName = newBrandName
+    renameBrand.brandName = newBrandName;
 
-    await renameBrand.save()
+    await renameBrand.save();
 
-    return res.status(200).json({msg: `${newBrandName} renamed!`})
-  } 
-  catch(err){
+    return res.status(200).json({ msg: `${newBrandName} renamed!` });
+  } catch (err) {
     console.error("Error renaming Brand:");
     res.status(500).json({ message: "Internal server error!!(renameBrand)" });
   }
-}
+};
 
-const getBrand = async (req,res) => {
-  try{
-
-  }
-  catch(err){
-
-  }
-}
-
+const getBrand = async (req, res) => {
+  try {
+  } catch (err) {}
+};
 
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
-const salesEntry = async (req,res) => {
-  try{
-      // console.log(req.body);
-      var saleIds = [];
-      var count =0;
+const salesEntry = async (req, res) => {
+  try {
+    // console.log(req.body);
+    var saleIds = [];
+    var count = 0;
 
-      const sales = req.body;
+    const sales = req.body;
 
-      console.log(sales)
+    console.log(sales);
 
-      for(var sale of sales.addInput){
-        count++;
+    for (var sale of sales.addInput) {
+      count++;
 
-        const sCat = sale.category;
-        const sBrand = sale.brand;
+      const sCat = sale.category;
+      const sBrand = sale.brand;
 
-        const forBrandId = await Brand.findOne({ parentCategory: sCat, brandName: sBrand})
-        const brandId = forBrandId._id
+      const forBrandId = await Brand.findOne({
+        parentCategory: sCat,
+        brandName: sBrand,
+      });
+      const brandId = forBrandId._id;
 
-        const sRow = sale.rowLabel;
-        const sCol = sale.colLabel;
-        const sQty = sale.counter;
+      const sRow = sale.rowLabel;
+      const sCol = sale.colLabel;
+      const sQty = sale.counter;
 
-        
-        
-        if (isNaN(sQty)){
-          return res.json({err: `Quantity of sale no.${count} is not a number`})
-        }
-        
-        var newSaleEntry = new Sales({
-          sCategory: sCat,
-          sBrand:sBrand,
-          sBrandId: brandId,
-          sRowLabel:sRow,
-          sColLabel:sCol,
-          sQty:sQty
+      if (isNaN(sQty)) {
+        return res.json({
+          err: `Quantity of sale no.${count} is not a number`,
         });
-
-
-        // return res.json(sQty)
-
-        var newSale = await newSaleEntry.save();
-
-        saleIds.push(newSale._id)
-
-        
       }
-      // console.log(saleIds)
 
+      var newSaleEntry = new Sales({
+        sCategory: sCat,
+        sBrand: sBrand,
+        sBrandId: brandId,
+        sRowLabel: sRow,
+        sColLabel: sCol,
+        sQty: sQty,
+      });
 
-      const newSalesEntry = new SalesRecord({
-        saleIds: saleIds
-      });     
-      
+      // return res.json(sQty)
 
-      await newSalesEntry.save()
+      var newSale = await newSaleEntry.save();
 
-      return res.json({msg: "New Sale Added!"})
+      saleIds.push(newSale._id);
+    }
+    // console.log(saleIds)
+
+    const newSalesEntry = new SalesRecord({
+      saleIds: saleIds,
+    });
+
+    await newSalesEntry.save();
+
+    return res.json({ msg: "New Sale Added!" });
+  } catch (err) {
+    console.error("Error sales entry:");
+    res.status(500).json({ message: "Internal server error!!(salesEntry)" });
   }
-  catch(err){
-      console.error("Error sales entry:");
-      res.status(500).json({ message: "Internal server error!!(salesEntry)" });
-  }
-}
+};
 
 // const getAllSales = async (req,res) => {
 //     try{
@@ -386,10 +383,10 @@ const getAllSales = async (req, res) => {
 
     for (var i = 0; i < sales.length; i++) {
       const sale = sales[i];
-      
+
       // Construct a unique key based on sCategory, sBrand, sRowLabel, and sColLabel
       const key = `${sale.sCategory}-${sale.sBrand}-${sale.sRowLabel}-${sale.sColLabel}`;
-      
+
       // Initialize the quantity for this combination if not already done
       if (!salesMap[key]) {
         salesMap[key] = {
@@ -400,7 +397,7 @@ const getAllSales = async (req, res) => {
           sQty: 0,
         };
       }
-      
+
       // Add the current sale's quantity to the accumulated total
       salesMap[key].sQty += sale.sQty;
     }
@@ -415,127 +412,128 @@ const getAllSales = async (req, res) => {
   }
 };
 
-const getSpecificSale = async (req,res) => {
-  try{
-    const { day } = req.body
-    var specificSales = []
+const getSpecificSale = async (req, res) => {
+  try {
+    const { day } = req.body;
+    var specificSales = [];
 
     const saleRecords = await SaleRecordModel.find();
-    
-    for (var sale of saleRecords){
-      var dos = sale.dos
+
+    for (var sale of saleRecords) {
+      var dos = sale.dos;
       dos = dos.toISOString();
 
-      dos = dos.split('T')[0]
+      dos = dos.split("T")[0];
       // console.log(dos)
 
-      if (dos === day){
-        for (var saleId of sale.saleIds){
+      if (dos === day) {
+        for (var saleId of sale.saleIds) {
+          var specificSale = await Sales.findById(saleId);
 
-          var specificSale = await Sales.findById( saleId )
-
-          specificSales.push(specificSale)
+          specificSales.push(specificSale);
         }
       }
     }
 
-    return res.status(200).json({ msg: specificSales})
-  }
-  catch(err){
+    return res.status(200).json({ msg: specificSales });
+  } catch (err) {
     console.error("Error get specific sale by day:");
-    res.status(500).json({ message: "Internal server error!!(getSpecificSale)" });
+    res
+      .status(500)
+      .json({ message: "Internal server error!!(getSpecificSale)" });
   }
-}
+};
 
-
-const getPastWeekSales = async (req,res) => {
-  try{
+const getPastWeekSales = async (req, res) => {
+  try {
     var soldQty = 0;
     const currDate = new Date();
 
     const aWeekAgo = new Date();
     aWeekAgo.setDate(currDate.getDate() - 7);
-      
+
     const pastWeekSales = await SalesRecord.find({
-      dos: { $gte: aWeekAgo}
+      dos: { $gte: aWeekAgo },
     });
 
     // console.log(pastWeekSales)
-    const saleIds = pastWeekSales.map(sale => sale.saleIds).flat();
+    const saleIds = pastWeekSales.map((sale) => sale.saleIds).flat();
     // return res.json({saleIds: saleIds})
 
-    for (var saleId of saleIds){
-      const sale = await Sales.findById({_id: saleId});
+    for (var saleId of saleIds) {
+      const sale = await Sales.findById({ _id: saleId });
 
       ////////////////////// TOOO BEEE CONTTINUUUEEEDDD //////////////////////////////
-
     }
 
-    return res.json({pastWeekSales: pastWeekSales})
-  }
-  catch(err){
+    return res.json({ pastWeekSales: pastWeekSales });
+  } catch (err) {
     console.error("Error past week sales");
     res.json({ message: "Internal server error!!(getPastWeekSales)" });
   }
-}
+};
 
-const getPastMonthSales = async (req,res) => {
-  try{
+const getPastMonthSales = async (req, res) => {
+  try {
     const currDate = new Date();
 
     const aMonthAgo = new Date();
     aMonthAgo.setDate(currDate.getDate() - 30);
-      
+
     const pastMonthSales = await SalesRecord.find({
-      dos: { $gte: aMonthAgo}
+      dos: { $gte: aMonthAgo },
     });
 
-    return res.json({pastMonthSales: pastMonthSales})
-  }
-  catch(err){
+    return res.json({ pastMonthSales: pastMonthSales });
+  } catch (err) {
     console.error("Error past month sales");
     res.json({ message: "Internal server error!!(getPastMonthSales)" });
   }
-}
+};
 
-const getPastYearSales = async (req,res) => {
-  try{
+const getPastYearSales = async (req, res) => {
+  try {
     const currDate = new Date();
 
     const aYearAgo = new Date();
     aYearAgo.setDate(currDate.getDate() - 365);
-      
+
     const pastYearSales = await SalesRecord.find({
-      dos: { $gte: aYearAgo}
+      dos: { $gte: aYearAgo },
     });
 
-    return res.json({pastYearSales: pastYearSales})
-  }
-  catch(err){
+    return res.json({ pastYearSales: pastYearSales });
+  } catch (err) {
     console.error("Error past year sales");
     res.json({ message: "Internal server error!!(getPastYearSales)" });
   }
-}
+};
 
 const getSalesByWeekday = async (req, res) => {
   try {
     const weekday = req.body.weekday;
 
     if (!weekday || weekday < 1 || weekday > 7) {
-      return res.status(400).json({ message: "Invalid weekday. Please provide a value between 1 (Sunday) and 7 (Saturday)." });
+      return res
+        .status(400)
+        .json({
+          message:
+            "Invalid weekday. Please provide a value between 1 (Sunday) and 7 (Saturday).",
+        });
     }
 
     const salesByWeekday = await SalesRecord.find({
-      $expr: { $eq: [{ $dayOfWeek: "$dos" }, parseInt(weekday)] }
+      $expr: { $eq: [{ $dayOfWeek: "$dos" }, parseInt(weekday)] },
     });
 
     return res.json({ salesByWeekday });
   } catch (err) {
     console.error("Error fetching sales by weekday");
-    res.status(500).json({ message: "Internal server error!! (getSalesByWeekday)" });
+    res
+      .status(500)
+      .json({ message: "Internal server error!! (getSalesByWeekday)" });
   }
 };
-
 
 // const getSundaySales = async (req,res) => {
 //   try{
@@ -565,268 +563,259 @@ const getSalesByWeekday = async (req, res) => {
 //   }
 // };
 
+const addType = async (req, res) => {
+  try {
+    const type = req.body.item;
+    const id = req.body._id;
 
-const addType = async (req,res) => {
-  try{  
+    const checkType = await Type.findOne({ type: type, brandId: id });
 
-    const type = req.body.item
-    const id = req.body._id
-
-    const checkType = await Type.findOne({type: type, brandId: id})
-
-    if (checkType || checkType != null){
-      console.log("not working")
-      return res.status(409).json({err: "Type already exists"})
+    if (checkType || checkType != null) {
+      console.log("not working");
+      return res.status(409).json({ err: "Type already exists" });
     }
-    
+
     const newType = new Type({
       type: type,
-      brandId: id
+      brandId: id,
     });
-    
+
     await newType.save();
 
-    return res.status(202).json({msg: `${type} added`})
-    
-  }
-  catch(err){
+    return res.status(202).json({ msg: `${type} added` });
+  } catch (err) {
     console.error("Error add type");
     res.json({ message: "Internal server error!!(addtype)" });
-  
   }
-}
+};
 
-const delType = async (req,res) => {
-  try{
-    console.log(req.body)
+const delType = async (req, res) => {
+  try {
+    console.log(req.body);
 
-    const { rowKey, brandId } = req.body
+    const { rowKey, brandId } = req.body;
 
-    const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
+    const delRow = await Type.findOne({ type: rowKey, brandId: brandId });
 
-    if (!delRow){
-      return res.status(404).json({ err: `${rowKey} not found!`})
+    if (!delRow) {
+      return res.status(404).json({ err: `${rowKey} not found!` });
     }
 
-    await delRow.deleteOne({ type: rowKey, brandId: brandId })
-    await Stock.deleteOne({ parentBrandId: brandId, rowLabel: rowKey})
+    await delRow.deleteOne({ type: rowKey, brandId: brandId });
+    await Stock.deleteOne({ parentBrandId: brandId, rowLabel: rowKey });
 
-    return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
-  }
-  catch(err){
+    return res.status(200).json({ msg: `${rowKey} deleted successfully!` });
+  } catch (err) {
     console.error("Error del type");
     res.json({ message: "Internal server error!!(deltype)" });
   }
-}
+};
 
-const addColumn = async (req,res) => {
-  try{
-    const bodies = req.body
+const addColumn = async (req, res) => {
+  try {
+    const bodies = req.body;
     // console.log(bodies)
-    
-    for (var body of bodies){
-      console.log(body)
-      const col = body.columnName
-      const id = body.specificId
-      
-      const checkCol = await Column.findOne({ column: col, brandId: id })
-      console.log(checkCol) 
-      
-      const typeId = body.typeId
+
+    for (var body of bodies) {
+      console.log(body);
+      const col = body.columnName;
+      const id = body.specificId;
+
+      const checkCol = await Column.findOne({ column: col, brandId: id });
+      console.log(checkCol);
+
+      const typeId = body.typeId;
       // only create those column which do not exist already
-      if (!checkCol){
+      if (!checkCol) {
         var newCol;
-        
-        if (typeId){
+
+        if (typeId) {
           newCol = new Column({
             column: col,
             brandId: id,
-            typeId: typeId
+            typeId: typeId,
           });
-          
-        }else{
+        } else {
           newCol = new Column({
             column: col,
-            brandId: id
+            brandId: id,
           });
         }
-        
+
         await newCol.save();
       }
     }
 
-    return res.status(200).json({msg: `Columns added successfully!`})
-  }
-  catch(err){
+    return res.status(200).json({ msg: `Columns added successfully!` });
+  } catch (err) {
     console.error("Error add col");
     res.json({ message: "Internal server error!!(addCol)" });
   }
-}
+};
 
-const editColumn = async (req,res) => {
-  try{
-    
-    const { id, brandId, columnName } = req.body
+const editColumn = async (req, res) => {
+  try {
+    const { id, brandId, columnName } = req.body;
 
-    const oldCol = await Column.findById(id)
-    const oldColName = oldCol.column
+    const oldCol = await Column.findById(id);
+    const oldColName = oldCol.column;
 
-    await Column.findByIdAndUpdate(id, { column: columnName })
+    await Column.findByIdAndUpdate(id, { column: columnName });
 
-    const updateCorrStock = await Stock.findOne({ colLabel: oldColName, parentBrandId: brandId})
-    
-    updateCorrStock.colLabel = columnName
+    const updateCorrStock = await Stock.findOne({
+      colLabel: oldColName,
+      parentBrandId: brandId,
+    });
+
+    updateCorrStock.colLabel = columnName;
     // console.log(updateCorrStock)
     // return
     await updateCorrStock.save();
 
-    return res.status(200).json({msg: `${columnName} updated`})
-  }
-  catch(err){
+    return res.status(200).json({ msg: `${columnName} updated` });
+  } catch (err) {
     console.error("Error edit col");
     res.json({ message: "Internal server error!!(editCol)" });
   }
-}
+};
 
-const delColumn = async (req,res) => {
-  try{
+const delColumn = async (req, res) => {
+  try {
     // console.log(req.body)
-    const { columnId, brandId } = req.body
+    const { columnId, brandId } = req.body;
 
+    const forDelColName = await Column.findById(columnId);
 
-    const forDelColName = await Column.findById(columnId)
+    const delCol = await Column.deleteOne({ _id: columnId });
 
-    const delCol = await Column.deleteOne( { _id: columnId})
-
-    const delColName = forDelColName.column
-    console.log(delColName)
-    const toDelStock = await Stock.findOne({ parentBrandId: brandId, colLabel: delColName})
-    if (toDelStock){
-
-      const delStock = await Stock.deleteOne({ parentBrandId: brandId, colLabel: delColName})
-      console.log("delsto: ",delStock)
+    const delColName = forDelColName.column;
+    console.log(delColName);
+    const toDelStock = await Stock.findOne({
+      parentBrandId: brandId,
+      colLabel: delColName,
+    });
+    if (toDelStock) {
+      const delStock = await Stock.deleteOne({
+        parentBrandId: brandId,
+        colLabel: delColName,
+      });
+      console.log("delsto: ", delStock);
     }
 
-    await delCol.deleteOne({ _id: columnId})
-
-
-  }
-  catch(err){
+    await delCol.deleteOne({ _id: columnId });
+  } catch (err) {
     console.error("Error del col");
     res.json({ message: "Internal server error!!(delCol)" });
   }
-}
+};
 
-const getLabels = async (req,res) => {
-  try{
-    const brandId = req.body.brandId
+const getLabels = async (req, res) => {
+  try {
+    const brandId = req.body.brandId;
 
-    const chosenBrand = await Brand.findById({ _id: brandId })
-    const rowLabel = chosenBrand.rowLabel
-    const colLabel = chosenBrand.colLabel
+    const chosenBrand = await Brand.findById({ _id: brandId });
+    const rowLabel = chosenBrand.rowLabel;
+    const colLabel = chosenBrand.colLabel;
 
-    const chosenType = await Type.find({ brandId: brandId })
-    const chosenColumn = await Column.find({ brandId: brandId })
+    const chosenType = await Type.find({ brandId: brandId });
+    const chosenColumn = await Column.find({ brandId: brandId });
 
     // console.log(chosenType)
 
-    if (!chosenType || !chosenColumn){
-      return res.json({ err: "No such label found!"})
+    if (!chosenType || !chosenColumn) {
+      return res.json({ err: "No such label found!" });
     }
 
-    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn }) // if more than one type chosenType is an ARRAY
-
-
-  }
-  catch(err){
+    return res.json({
+      rowLabel: rowLabel,
+      colLabel: colLabel,
+      type: chosenType,
+      column: chosenColumn,
+    }); // if more than one type chosenType is an ARRAY
+  } catch (err) {
     console.error("Error get row label");
     res.json({ message: "Internal server error!!(getRowLabel)" });
   }
-}
+};
 
-const getColLabel = async (req,res) => {
-  try{
-    const brandId = req.body.brandId
+const getColLabel = async (req, res) => {
+  try {
+    const brandId = req.body.brandId;
 
-    const chosenColumn = await Column.find({ brandId: brandId })
+    const chosenColumn = await Column.find({ brandId: brandId });
     // console.log(chosenColumn)
 
-    if (!chosenColumn){
-      return res.json({ err: "No such type found!"})
+    if (!chosenColumn) {
+      return res.json({ err: "No such type found!" });
     }
 
-    return res.json({ msg: chosenColumn }) // if more than one type chosenType is an ARRAY
-  }
-  catch(err){
+    return res.json({ msg: chosenColumn }); // if more than one type chosenType is an ARRAY
+  } catch (err) {
     console.error("Error get col label");
     res.status(500).json({ message: "Internal server error!!(getColLabel)" });
   }
-}
+};
 
-const addPurchase = async (req,res) =>  {
-  try{
+const addPurchase = async (req, res) => {
+  try {
     // console.log(req.body);
     var purchaseIds = [];
-    const bodies = req.body.addInput
+    const bodies = req.body.addInput;
     // console.log(bodies)
     // return
 
-    for (var body of bodies){
-  
-      const cat = body.category
-      const brand = body.brand
+    for (var body of bodies) {
+      const cat = body.category;
+      const brand = body.brand;
 
-      const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand})
-      const brandId = forBrandId._id
-  
-      const rowLabel = body.rowLabel
-      const colLabel = body.colLabel
-  
-      const stock = body.counter
+      const forBrandId = await Brand.findOne({
+        parentCategory: cat,
+        brandName: brand,
+      });
+      const brandId = forBrandId._id;
 
-  
+      const rowLabel = body.rowLabel;
+      const colLabel = body.colLabel;
+
+      const stock = body.counter;
+
       const newStock = new Stock({
         stock: stock,
         parentCat: cat,
         parentBrand: brand,
         parentBrandId: brandId,
         rowLabel: rowLabel,
-        colLabel: colLabel
+        colLabel: colLabel,
       });
-  
-  
+
       var aStock = await newStock.save();
 
       purchaseIds.push(aStock._id);
-
     }
 
     const newPurchase = new Purchase({
       purchaseIds: purchaseIds,
     });
 
-    await newPurchase.save()
+    await newPurchase.save();
 
-    return res.json({msg: "New Stocks Added!"})
-
-  }
-  catch(err){
+    return res.json({ msg: "New Stocks Added!" });
+  } catch (err) {
     console.error("Error add purchase");
     res.status(500).json({ message: "Internal server error!!(addPurchase)" });
   }
-}
+};
 
-const getAllStocks = async (req,res) =>{
-  try{
+const getAllStocks = async (req, res) => {
+  try {
     const stocks = await Stock.find();
 
-    return res.json({stocks: stocks})
-  }
-  catch(err){
+    return res.json({ stocks: stocks });
+  } catch (err) {
     console.error("Error get all stock");
     res.status(500).json({ message: "Internal server error!!(getAllStocks)" });
   }
-}
+};
 
 // const getTable = async (req,res) => {
 //   try{
@@ -835,7 +824,7 @@ const getAllStocks = async (req,res) =>{
 
 //     const brandName = await Brand.findOne({brandName:brand, parentCategory:cat})
 //     const brandId = brandName._id
-    
+
 //     const allTypes = await Type.find({ brandId: brandId})
 //     const allCols = await Column.find({ brandId: brandId})
 //     // console.log(allCols)
@@ -851,7 +840,7 @@ const getAllStocks = async (req,res) =>{
 //     //   var rowLabel = row.rowLabel
 //     //   var colLabel = row.colLabel
 //     //   var stock = row.stock
-      
+
 //     //   // console.log(rowLabel)
 
 //     //   // check if rowlabel already exists if not new row created
@@ -860,9 +849,8 @@ const getAllStocks = async (req,res) =>{
 //     //     matrix[rowLabel] = {}
 //     //   }
 
-
 //     //   if (matrix[rowLabel][colLabel]) {
-//     //     matrix[rowLabel][colLabel] += stock; 
+//     //     matrix[rowLabel][colLabel] += stock;
 //     //   } else {
 //     //     matrix[rowLabel][colLabel] = stock
 //     //   }
@@ -876,14 +864,12 @@ const getAllStocks = async (req,res) =>{
 //         });
 //     });
 
-    
-    
 //     // Populate the matrix with stock data and aggregate if necessary
 //     allEntries.forEach(entry => {
 //         const rowLabel = entry.rowLabel;  // Assuming this refers to the type
 //         const colLabel = entry.colLabel;  // Assuming this refers to the column
 //         const stock = entry.stock;        // The stock value to be added to the matrix
-    
+
 //         if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
 //             // If the matrix already has a stock value, aggregate (add) the new stock value
 //             matrix[rowLabel][colLabel] += stock;
@@ -906,7 +892,10 @@ const getTable = async (req, res) => {
     const cat = req.body.cat;
     const brand = req.body.brand;
 
-    const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
+    const brandName = await Brand.findOne({
+      brandName: brand,
+      parentCategory: cat,
+    });
     const brandId = brandName._id;
 
     const allTypes = await Type.find({ brandId: brandId });
@@ -920,19 +909,18 @@ const getTable = async (req, res) => {
       const type = allTypes[i];
       matrix[type.type] = {}; // create a row for each type
 
-      
       for (let j = 0; j < allCols.length; j++) {
         const col = allCols[j];
         matrix[type.type][col.column] = 0; // init each cell to 0
       }
     }
-    console.log(allEntries)
+    console.log(allEntries);
 
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
-      const rowLabel = entry.rowLabel
-      const colLabel = entry.colLabel
-      const stock = entry.stock
+      const rowLabel = entry.rowLabel;
+      const colLabel = entry.colLabel;
+      const stock = entry.stock;
 
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
         matrix[rowLabel][colLabel] += stock;
@@ -948,78 +936,83 @@ const getTable = async (req, res) => {
   }
 };
 
-const editStock = async (req,res) =>{
-  try{
-    
-    const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
-    
-    for (var col in updatedData){
-      var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
+const editStock = async (req, res) => {
+  try {
+    const { rowKey, updatedData, categoryName, brandName, brandId } = req.body;
 
-      if (specificStock){
-        specificStock.stock = updatedData[col]
+    for (var col in updatedData) {
+      var specificStock = await Stock.findOne({
+        parentCat: categoryName,
+        parentBrand: brandName,
+        parentBrandId: brandId,
+        rowLabel: rowKey,
+        colLabel: col,
+      });
 
-        await specificStock.save()
+      if (specificStock) {
+        specificStock.stock = updatedData[col];
+
+        await specificStock.save();
       }
       // if no previous stock of the column, create one
-      else if (!specificStock && updatedData[col] !=0){
+      else if (!specificStock && updatedData[col] != 0) {
         const newStock = new Stock({
           stock: updatedData[col],
-          parentCat: categoryName, 
-          parentBrand: brandName, 
+          parentCat: categoryName,
+          parentBrand: brandName,
           parentBrandId: brandId,
-          rowLabel:rowKey,
-          colLabel:col
+          rowLabel: rowKey,
+          colLabel: col,
         });
 
-        await newStock.save()
+        await newStock.save();
       }
- 
     }
-    return res.status(200).json({msg: "Stock updated successfully!"})
-  }
-  catch(err){
+    return res.status(200).json({ msg: "Stock updated successfully!" });
+  } catch (err) {
     console.error("Error edit stock");
     res.status(500).json({ message: "Internal server error!!(editStock)" });
   }
-}
+};
 
-const getCodes = async(req,res) => {
-  try{
-    console.log(req.body)
-    const {rowValue, brandId} = req.body
+const getCodes = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { rowValue, brandId } = req.body;
 
-    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
-    if (!forTypeId){
-      return res.status(404).json({ err: `${rowValue} does not exist!`})
+    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId });
+    if (!forTypeId) {
+      return res.status(404).json({ err: `${rowValue} does not exist!` });
     }
 
-    const typeId = forTypeId._id
+    const typeId = forTypeId._id;
 
-    const codes = await Column.find({brandId: brandId, typeId: typeId})
-    if (!codes){
-      return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
+    const codes = await Column.find({ brandId: brandId, typeId: typeId });
+    if (!codes) {
+      return res.status(404).json({ err: `${forTypeId.type} has no codes!` });
     }
 
-    return res.status(200).json({ msg: codes, typeId: typeId })
-  }
-  catch(err){
+    return res.status(200).json({ msg: codes, typeId: typeId });
+  } catch (err) {
     console.error("Error get codes");
     res.status(500).json({ message: "Internal server error!!(getCodes)" });
   }
-}
+};
 
-
-
-
-
-
+const getSpecificColumn = async (req, res) => {
+  try {
+    console.log(req.body);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
   getAllCategories,
   createCategory,
   delCategory,
   editCategory,
+  getSpecificColumn,
 
   getAllBrands,
   createBrand,
