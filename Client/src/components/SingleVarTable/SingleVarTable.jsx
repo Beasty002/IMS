@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function SingleVarTable({ onValueChange, specificId, fetchSingleVarData }) {
+function SingleVarTable({
+  onValueChange,
+  specificId,
+  fetchSingleVarData,
+  selectedKey,
+}) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
   const [typeId, setTypeId] = useState(null);
@@ -14,7 +19,14 @@ function SingleVarTable({ onValueChange, specificId, fetchSingleVarData }) {
   }, [categoryName, brandName]);
 
   useEffect(() => {
+    if (selectedKey) {
+      console.log("Yo ho hai", selectedKey);
+    }
+  }, [selectedKey]);
+
+  useEffect(() => {
     if (fetchSingleVarData) {
+      console.log("Fetch yei ho hai", fetchSingleVarData);
       setTypeId(fetchSingleVarData.typeId);
       console.log(typeId);
     }
@@ -49,7 +61,7 @@ function SingleVarTable({ onValueChange, specificId, fetchSingleVarData }) {
       brandId: specificId,
       categoryName: categoryName,
       brandName: brandName,
-      typeId: typeId,
+      typeName: selectedKey,
     };
 
     console.log("Saving payload:", JSON.stringify(payload));

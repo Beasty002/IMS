@@ -13,6 +13,30 @@ function Report() {
   }, []);
 
   useEffect(() => {
+    getCategoryStock();
+  }, []);
+
+  const getCategoryStock = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/getCatStock", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     if (categories) {
       console.log(categories);
     }

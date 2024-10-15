@@ -23,6 +23,7 @@ export default function SinVarList() {
   }, [dropdownOptions]);
 
   const fetchTableData = async () => {
+    console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
     try {
       const response = await fetch("http://localhost:3000/api/getTable", {
         method: "POST",
@@ -36,7 +37,7 @@ export default function SinVarList() {
       }
 
       const data = await response.json();
-      console.log(data);
+      console.log("Data is ",data);
       setTableData(data.matrix);
 
       const options = Object.keys(data.matrix);
@@ -162,6 +163,7 @@ export default function SinVarList() {
             onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
+            selectedKey = {selectedKey}
           />
         )}
         <CustomizeSingleCol
