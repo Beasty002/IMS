@@ -116,8 +116,8 @@ function PurchaseEntry() {
           console.log(response.statusText);
           return;
         }
-        console.log(data);
-        setColArray(data);
+        // console.log("Col data yo ho hai guys",data);
+        setColArray(data.msg);
       } catch (error) {
         console.error(error);
       }
@@ -126,7 +126,7 @@ function PurchaseEntry() {
 
   useEffect(() => {
     if (colArray) {
-      console.log(colArray);
+      console.log("Col array yo hai",colArray);
     }
   }, [colArray]);
 

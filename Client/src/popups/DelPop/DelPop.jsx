@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./DelPop.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
   // useEffect(() => {
@@ -26,8 +27,12 @@ export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
         return;
       }
       console.log(data);
-
-      window.location.reload();
+      toast.success("Brand deleted successfully", {
+        autoClose: 1000,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -54,6 +59,7 @@ export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </>,
     document.getElementById("overlay")
   );
