@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import ReportPrint from "../../popups/ReportPrint/ReportPrint";
 
 function Report() {
-  const { fetchCategory, categories } = useAuth();
+  const { fetchCategory, categories, catStock } = useAuth();
   const [enablePortal, setEnablePortal] = useState(false);
 
   useEffect(() => {
@@ -64,10 +64,10 @@ function Report() {
         </div>
       </div>
       <div className="cat-list">
-        {categories?.map((item) => (
-          <div key={item._id} className="cat-box">
-            <h3>{item.title}</h3>
-            <p className="cat-stock-availability">Stock available : 80</p>
+        {Object.entries(catStock).map(([key, value], index) => (
+          <div key={index} className="cat-box">
+            <h3>{key}</h3>
+            <p className="cat-stock-availability">Stock available : {value}</p>
             <div className="action-container">
               <i class="bx bx-printer print-icon"></i>
             </div>

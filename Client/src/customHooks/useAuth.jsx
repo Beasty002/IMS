@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [categoryLength, setCategoryLength] = useState([]);
   const [stockData, setStockData] = useState({});
+  const [catStock, setCatStock] = useState({});
   const fetchBrandData = async (catName) => {
     const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
     // console.log(categoryName);
@@ -46,7 +47,8 @@ export const AuthProvider = ({ children }) => {
         console.log("Error while fetching data");
         return;
       }
-      // console.log(data);
+      console.log(data);
+      setCatStock(data.catStocks);
       setCategoryLength(data.cats.length);
       setCategories(data.cats);
     } catch (error) {
@@ -64,6 +66,7 @@ export const AuthProvider = ({ children }) => {
         fetchBrandData,
         categoryLength,
         stockData,
+        catStock
       }}
     >
       {children}
