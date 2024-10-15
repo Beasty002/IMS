@@ -15,6 +15,7 @@ import MulVarList from "./pages/BrandItemList/MulVarList";
 import SinVarList from "./pages/BrandItemList/SinVarList";
 import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
 import ReportPrint from "./popups/ReportPrint/ReportPrint";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function App() {
   const location = useLocation();
@@ -76,6 +77,7 @@ export default function App() {
               />
               <Route path="/catband/:categoryName" element={<CatBrandList />} />
             </Routes>
+            <ToastContainer />
           </main>
         </div>
       </div>

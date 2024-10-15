@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function SingleVarTable({
-  onValueChange,
+  // onValueChange,
   specificId,
   fetchSingleVarData,
   selectedKey,
@@ -24,13 +24,13 @@ function SingleVarTable({
     }
   }, [selectedKey]);
 
-  useEffect(() => {
-    if (fetchSingleVarData) {
-      console.log("Fetch yei ho hai", fetchSingleVarData);
-      setTypeId(fetchSingleVarData.typeId);
-      console.log(typeId);
-    }
-  }, [fetchSingleVarData]);
+  // useEffect(() => {
+  //   if (fetchSingleVarData) {
+  //     console.log("Fetch yei ho hai", fetchSingleVarData);
+  //     setTypeId(fetchSingleVarData.typeId);
+  //     console.log(typeId);
+  //   }
+  // }, [fetchSingleVarData]);
 
   useEffect(() => {
     if (fetchSingleVarData && fetchSingleVarData.codeStocks) {
@@ -52,7 +52,9 @@ function SingleVarTable({
 
   const handleSave = async () => {
     const rowKey = Object.keys(editableData)[editIndex];
+    // console.log(rowKey);
     const updatedRowData = editableData[rowKey];
+    // console.log("Updated yo ho hai", updatedRowData);
     console.log(categoryName);
 
     const payload = {
@@ -73,13 +75,15 @@ function SingleVarTable({
         },
         body: JSON.stringify(payload),
       });
+      const data = await response.json();
 
       if (!response.ok) {
         console.error("Error saving the data:", response.statusText);
         return;
       }
 
-      onValueChange(rowKey, updatedRowData);
+      // onValueChange(rowKey, updatedRowData);
+      console.log(data);
       setEditIndex(null);
     } catch (error) {
       console.error("Error saving data:", error);

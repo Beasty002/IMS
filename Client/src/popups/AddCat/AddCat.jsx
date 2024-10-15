@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import ReactDOM from "react-dom";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./AddCat.css";
 
 function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
@@ -55,14 +58,19 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
         return;
       }
 
+      toast.success(`${type} created successfully`, {
+        autoClose: 2000,
+      });
       if (type === "category") {
         addCategory(createCate);
       }
-      window.location.reload();
+      // window.location.reload();
 
       setCreateCate("");
 
-      onClose();
+      setTimeout(() => {
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error(`Error adding ${type} :`, error);
     }
@@ -120,6 +128,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
           </div>
         </form>
       </section>
+      <ToastContainer />
     </>,
     document.getElementById("overlay")
   );

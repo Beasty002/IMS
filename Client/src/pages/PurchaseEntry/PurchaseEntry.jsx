@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
+  const [colArray, setColArray] = useState([]);
   const [brandId, setBrandId] = useState(null);
   const [addInput, setAddInput] = useState([
     {
@@ -116,11 +117,18 @@ function PurchaseEntry() {
           return;
         }
         console.log(data);
+        setColArray(data);
       } catch (error) {
         console.error(error);
       }
     }
   };
+
+  useEffect(() => {
+    if (colArray) {
+      console.log(colArray);
+    }
+  }, [colArray]);
 
   const handleSubmission = async (event) => {
     event.preventDefault();
@@ -276,10 +284,10 @@ function PurchaseEntry() {
                   className="column-select"
                 >
                   <option value="">Select ColLabel</option>
-                  {Array.isArray(item.brandData.column) &&
-                    item.brandData.column.map((label) => (
-                      <option key={label._id} value={label.column}>
-                        {label.column}
+                  {Array.isArray(colArray) &&
+                    colArray.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
                       </option>
                     ))}
                 </select>
