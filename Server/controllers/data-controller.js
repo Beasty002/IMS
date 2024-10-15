@@ -731,8 +731,6 @@ const getLabels = async (req,res) => {
     const chosenType = await Type.find({ brandId: brandId })
     const chosenColumn = await Column.find({ brandId: brandId })
 
-    // console.log(chosenType)
-
     if (!chosenType || !chosenColumn){
       return res.json({ err: "No such label found!"})
     }
@@ -906,37 +904,37 @@ const getAllStocks = async (req,res) =>{
 
 const getTable = async (req, res) => {
   try {
+    
     const cat = req.body.cat;
     const brand = req.body.brand;
-
+    
     const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
     const brandId = brandName._id;
-
+    
     const allTypes = await Type.find({ brandId: brandId });
     const allCols = await Column.find({ brandId: brandId });
-
+    
     const allEntries = await Stock.find({ parentCat: cat, parentBrand: brand });
-
+    
     var matrix = {};
-
+    
     for (let i = 0; i < allTypes.length; i++) {
       const type = allTypes[i];
       matrix[type.type] = {}; // create a row for each type
-
+      
       
       for (let j = 0; j < allCols.length; j++) {
         const col = allCols[j];
         matrix[type.type][col.column] = 0; // init each cell to 0
       }
     }
-    console.log(allEntries)
 
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
       const rowLabel = entry.rowLabel
       const colLabel = entry.colLabel
       const stock = entry.stock
-
+      
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
         matrix[rowLabel][colLabel] += stock;
       } else {
@@ -954,7 +952,6 @@ const getTable = async (req, res) => {
 const editStock = async (req,res) =>{
   try{
     if(req.body.typeName){
-      console.log(req.body.typeName)
       
       const { rowKey, updatedData,brandId,categoryName,brandName,typeName} = req.body
 
@@ -1002,6 +999,8 @@ const editStock = async (req,res) =>{
           });
   
           await newStock.save()
+        }else{
+          return res.status(409).json({ err: `Can not edit stock for ${rowKey} available` })
         }
    
       }
@@ -1056,11 +1055,6 @@ const getCodes = async(req,res) => {
         codeStocks[checkCol] = stock.stock.toString();
       }
     }
-    // console.log(codeStocks)
-
-
-
-
     return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks })
   }
   catch(err){
@@ -1074,16 +1068,22 @@ const getSpecCol = async (req,res) => {
     const {rowLabel, brandId} = req.body
     
     const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId[0]})
+    if (!forTypeId){
+      return res.status(404).json({err: "No such type found!"})
+    }
     const typeId = forTypeId._id
     
     const forColArr = await Column.find({ brandId: brandId, typeId: typeId})
+    if (!forColArr){
+      return res.status(404).json({ err: "No such column found!"})
+    }
     
     var colArr = [];
     for (var col of forColArr){
       colArr.push(col.column)
     }
 
-    return res.json(200).json({msg: colArr})
+    return res.status(200).json({msg: colArr})
 
   }
   catch(err){
