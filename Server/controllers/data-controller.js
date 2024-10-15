@@ -16,12 +16,32 @@ const SaleRecordModel = require("../models/sale-record-model");
 const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
-
+    
     if (!categories || categories.length == 0) {
       return res.status(404).json({ err: "No categories found!" });
     }
 
-    return res.json({ cats: categories });
+    var catStocks = {}
+    for (var category of categories){
+      var catTitle = category.title
+      
+      catStocks[catTitle] = 0;
+    }
+    
+    for (var category of categories){
+      var catTitle = category.title
+      
+      const forCatStocks = await Stock.find({parentCat: catTitle})
+      
+      for(var forCatStock of forCatStocks){
+        
+        const catStock = forCatStock.stock
+        
+        catStocks[catTitle] += catStock   
+      }
+    }
+
+    return res.json({ cats: categories , catStocks: catStocks});
   } catch (err) {
     console.log("error in fetching categories!");
   }
