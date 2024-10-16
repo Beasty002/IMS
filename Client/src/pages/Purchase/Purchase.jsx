@@ -3,8 +3,9 @@ import Sales from "../Sales/Sales";
 import PurchaseTable from "../../components/PurchaseTable/PurchaseTable";
 
 function Purchase() {
+  
 
-
+  
   const purchaseList = [
     { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },
     { id: 2, product: "Mayur Door 80*89 (Ganesh Coffee)", stockLeft: 30 },

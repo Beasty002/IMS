@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./Sales.css";
 import { Link } from "react-router-dom";
-function Sales({ title, TableComponent, products, setSaleData }) {
+function Sales({ title, TableComponent, products, setSalesData }) {
   const [dateSetter, setDateSetter] = useState("");
 
   useEffect(() => {
     const fetchDataByDate = async () => {
       if (dateSetter !== "") {
         try {
+          console.log(JSON.stringify({ day: dateSetter, title }));
           const response = await fetch(
             "http://localhost:3000/api/getSpecificSale",
             {
@@ -15,7 +16,7 @@ function Sales({ title, TableComponent, products, setSaleData }) {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ day: dateSetter }),
+              body: JSON.stringify({ day: dateSetter, title }),
             }
           );
           const data = await response.json();
@@ -24,7 +25,7 @@ function Sales({ title, TableComponent, products, setSaleData }) {
             return;
           }
           console.log(data);
-          setSaleData(data.msg); 
+          setSalesData(data.msg);
         } catch (error) {
           console.error(error);
         }
@@ -32,7 +33,7 @@ function Sales({ title, TableComponent, products, setSaleData }) {
     };
 
     fetchDataByDate();
-  }, [dateSetter, setSaleData]);
+  }, [dateSetter, setSalesData]);
 
   const handleDateChange = (event) => {
     setDateSetter(event.target.value);

@@ -34,7 +34,7 @@ function SalesPage() {
       title="Sales"
       TableComponent={SaleTable}
       products={salesData}
-      setSaleData={setSalesData}
+      setSalesData={setSalesData}
     />
   );
 }

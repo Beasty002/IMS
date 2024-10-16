@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Network error occurred", response.statusText);
         return;
       }
-      // console.log(data);
+      console.log(data);
       setFetchBrand(data.brands);
       setStockData(data.stockByBrand);
       return data.brands;

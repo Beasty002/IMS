@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 
 function SaleEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
+  const [colArray, setColArray] = useState([]);
+  const [brandId, setBrandId] = useState(null);
+  const [typeStatus, setTypeStatus] = useState(false);
+  const [fetchStatus, setFetchStatus] = useState(false);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -59,8 +63,12 @@ function SaleEntry() {
       const brandId = addInput.map(
         (item) => item.fetchData?.find((data) => data.brandName === value)?._id
       );
+      setTypeStatus(value);
+
       if (brandId) {
         const specificId = brandId[0];
+        setBrandId(specificId);
+
         console.log(specificId);
         try {
           const response = await fetch("http://localhost:3000/api/getLabels", {
@@ -77,6 +85,7 @@ function SaleEntry() {
             return;
           }
 
+          console.log(data);
           setAddInput((prevData) =>
             prevData.map((item) =>
               item.id === itemId ? { ...item, brandData: data } : item
@@ -86,8 +95,47 @@ function SaleEntry() {
           console.error(error);
         }
       }
+    } else if (field === "rowLabel") {
+      console.log("B dara", fetchBrand);
+
+      // just skip the complicated object entries cuz yele key value pair banaunthyuo
+      // jasle garxa extract garna ko lagi extra key value mapping garna parthyo
+      //  so vanam kinda shortcut
+      const brndId = addInput.map(
+        (item) =>
+          item.brandData?.type?.find((data) => data.type === value)?.brandId
+      );
+
+      if (!fetchStatus) {
+        try {
+          console.log(JSON.stringify({ rowLabel: value, brandId: brndId }));
+          const response = await fetch("http://localhost:3000/api/colData", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ rowLabel: value, brandId: brndId }),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            console.log(response.statusText);
+            return;
+          }
+          // console.log("Col data yo ho hai guys",data);
+          setColArray(data.msg);
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
   };
+
+  useEffect(() => {
+    if (colArray) {
+      console.log("Col array yo hai", colArray);
+    }
+  }, [colArray]);
 
   const handleSubmission = async (event) => {
     event.preventDefault();
@@ -129,6 +177,15 @@ function SaleEntry() {
     fetchCategory();
   }, []);
 
+  useEffect(() => {
+    if (typeStatus) {
+      const updateStatus = fetchBrand?.find(
+        (item) => item.brandName === typeStatus
+      )?.multiVar;
+
+      setFetchStatus(updateStatus || false);
+    }
+  }, [typeStatus, fetchBrand]);
   const handleDecrement = (itemId) => {
     setAddInput((prev) => {
       const updatedList = prev.map((item) =>
@@ -233,21 +290,39 @@ function SaleEntry() {
                     ))}
                 </select>
 
-                <select
-                  value={item.colLabel}
-                  onChange={(event) =>
-                    handleDataInsert(item.id, "colLabel", event.target.value)
-                  }
-                  className="column-select"
-                >
-                  <option value="">Select ColLabel</option>
-                  {Array.isArray(item.brandData.column) &&
-                    item.brandData.column.map((label) => (
-                      <option key={label._id} value={label.column}>
-                        {label.column}
-                      </option>
-                    ))}
-                </select>
+                {fetchStatus ? (
+                  <select
+                    value={item.colLabel}
+                    onChange={(event) =>
+                      handleDataInsert(item.id, "colLabel", event.target.value)
+                    }
+                    className="column-select"
+                  >
+                    <option value="">Select ColLabel</option>
+                    {Array.isArray(item.brandData.column) &&
+                      item.brandData.column.map((label) => (
+                        <option key={label._id} value={label.column}>
+                          {label.column}
+                        </option>
+                      ))}
+                  </select>
+                ) : (
+                  <select
+                    value={item.colLabel}
+                    onChange={(event) =>
+                      handleDataInsert(item.id, "colLabel", event.target.value)
+                    }
+                    className="column-select"
+                  >
+                    <option value="">Select ColLabel</option>
+                    {Array.isArray(colArray) &&
+                      colArray.map((item, index) => (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                  </select>
+                )}
 
                 <div className="sales-entry-qty">
                   <i

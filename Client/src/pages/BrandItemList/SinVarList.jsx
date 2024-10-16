@@ -63,7 +63,7 @@ export default function SinVarList() {
           return;
         }
         console.log(data);
-        setLabel(data.type);
+        setLabel(data.column);
       } catch (error) {
         console.error(error);
       }
@@ -175,8 +175,8 @@ export default function SinVarList() {
                   -- Select an option --
                 </option>
                 {label.map((item) => (
-                  <option key={item._id} value={item.type}>
-                    {item.type}
+                  <option key={item._id} value={item.column}>
+                    {item.column}
                   </option>
                 ))}
               </select>

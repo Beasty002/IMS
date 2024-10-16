@@ -9,7 +9,13 @@ function SingleVarTable({
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
-  const [typeId, setTypeId] = useState(null);
+  // const [typeId, setTypeId] = useState(null);
+
+  useEffect(() => {
+    if (fetchSingleVarData) {
+      console.log(fetchSingleVarData);
+    }
+  }, [fetchSingleVarData]);
 
   const { categoryName, brandName } = useParams();
   useEffect(() => {
