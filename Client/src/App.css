@@ -33,3 +33,10 @@ body {
 }
 
 
+.imp-note{
+  color: rgb(255, 0, 0);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 0px 0px 10px 0px;
+  
+}

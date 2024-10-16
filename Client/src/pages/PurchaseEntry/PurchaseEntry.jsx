@@ -4,10 +4,6 @@ import { Link } from "react-router-dom";
 
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
-  const [colArray, setColArray] = useState([]);
-  const [brandId, setBrandId] = useState(null);
-  const [typeStatus, setTypeStatus] = useState(false);
-  const [fetchStatus, setFetchStatus] = useState(false);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -18,6 +14,7 @@ function PurchaseEntry() {
       counter: 0,
       fetchData: [],
       brandData: [],
+      colArray: [],
     },
   ]);
 
@@ -34,6 +31,7 @@ function PurchaseEntry() {
         counter: 0,
         fetchData: [],
         brandData: [],
+        colArray: [],
       },
     ]);
   };
@@ -44,30 +42,28 @@ function PurchaseEntry() {
     );
     setAddInput(updatedData);
 
+    // Handle category selection
     if (field === "category") {
       const catName = updatedData.find((item) => item.id === itemId)?.category;
-
       if (catName) {
-        // direvlty return garya value instead of using previous state to get late data
         const fetchedData = await fetchBrandData(catName);
-
-        console.log("Fetched brand data:", fetchedData);
-
         setAddInput((prevData) =>
           prevData.map((item) =>
             item.id === itemId ? { ...item, fetchData: fetchedData } : item
           )
         );
       }
-    } else if (field === "brand") {
-      const brandId = addInput.map(
-        (item) => item.fetchData?.find((data) => data.brandName === value)?._id
+    }
+
+    // Handle brand selection
+    if (field === "brand") {
+      const foundData = updatedData.find((item) => item.id === itemId);
+      const brandData = foundData.fetchData.find(
+        (data) => data.brandName === value
       );
-      setTypeStatus(value);
-      if (brandId) {
-        const specificId = brandId[0];
-        setBrandId(specificId);
-        console.log(specificId);
+
+      if (brandData) {
+        const specificId = brandData._id;
         try {
           const response = await fetch("http://localhost:3000/api/getLabels", {
             method: "POST",
@@ -77,12 +73,8 @@ function PurchaseEntry() {
             body: JSON.stringify({ brandId: specificId }),
           });
 
+          if (!response.ok) throw new Error("Failed to fetch labels");
           const data = await response.json();
-          if (!response.ok) {
-            console.log("Error occured");
-            return;
-          }
-          console.log(data);
           setAddInput((prevData) =>
             prevData.map((item) =>
               item.id === itemId ? { ...item, brandData: data } : item
@@ -92,20 +84,17 @@ function PurchaseEntry() {
           console.error(error);
         }
       }
-    } else if (field === "rowLabel") {
-      console.log("B dara", fetchBrand);
+    }
 
-      // just skip the complicated object entries cuz yele key value pair banaunthyuo
-      // jasle garxa extract garna ko lagi extra key value mapping garna parthyo
-      //  so vanam kinda shortcut
-      const brndId = addInput.map(
-        (item) =>
-          item.brandData?.type?.find((data) => data.type === value)?.brandId
-      );
+    // Handle row label selection
+    if (field === "rowLabel") {
+      const foundData = updatedData.find((item) => item.id === itemId);
+      const brndId = foundData.brandData?.type?.find(
+        (data) => data.type === value
+      )?.brandId;
 
-      if (!fetchStatus) {
+      if (brndId) {
         try {
-          console.log(JSON.stringify({ rowLabel: value, brandId: brndId }));
           const response = await fetch("http://localhost:3000/api/colData", {
             method: "POST",
             headers: {
@@ -113,14 +102,15 @@ function PurchaseEntry() {
             },
             body: JSON.stringify({ rowLabel: value, brandId: brndId }),
           });
+          if (!response.ok) throw new Error("Failed to fetch column data");
           const data = await response.json();
 
-          if (!response.ok) {
-            console.log(response.statusText);
-            return;
-          }
-          // console.log("Col data yo ho hai guys",data);
-          setColArray(data.msg);
+          // Update colArray with the fetched data
+          setAddInput((prevData) =>
+            prevData.map((item) =>
+              item.id === itemId ? { ...item, colArray: data.msg } : item
+            )
+          );
         } catch (error) {
           console.error(error);
         }
@@ -128,15 +118,8 @@ function PurchaseEntry() {
     }
   };
 
-  useEffect(() => {
-    if (colArray) {
-      console.log("Col array yo hai", colArray);
-    }
-  }, [colArray]);
-
   const handleSubmission = async (event) => {
     event.preventDefault();
-    // console.log(JSON.stringify({ addInput, brandId: brandId }));
     try {
       const response = await fetch("http://localhost:3000/api/purchase", {
         method: "POST",
@@ -145,43 +128,27 @@ function PurchaseEntry() {
         },
         body: JSON.stringify({ addInput }),
       });
+      if (!response.ok) throw new Error("Error occurred while submitting");
 
       const data = await response.json();
-      if (response.ok) {
-        console.log(data);
-        setAddInput([
-          {
-            id: Date.now(),
-            category: "",
-            brand: "",
-            rowLabel: "",
-            colLabel: "",
-            counter: 0,
-            fetchData: [],
-            brandData: [],
-          },
-        ]);
-      } else {
-        console.log("Error");
-        return;
-      }
+      console.log(data);
+      setAddInput([
+        {
+          id: Date.now(),
+          category: "",
+          brand: "",
+          rowLabel: "",
+          colLabel: "",
+          counter: 0,
+          fetchData: [],
+          brandData: [],
+          colArray: [],
+        },
+      ]);
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
-  useEffect(() => {
-    if (typeStatus) {
-      const updateStatus = fetchBrand?.find(
-        (item) => item.brandName === typeStatus
-      )?.multiVar;
-
-      setFetchStatus(updateStatus || false);
-    }
-  }, [typeStatus, fetchBrand]);
 
   const handleDecrement = (itemId) => {
     setAddInput((prev) => {
@@ -209,10 +176,8 @@ function PurchaseEntry() {
   };
 
   useEffect(() => {
-    if (addInput) {
-      console.log(addInput);
-    }
-  }, [addInput]);
+    fetchCategory();
+  }, [fetchCategory]);
 
   return (
     <div id="newSales">
@@ -234,6 +199,9 @@ function PurchaseEntry() {
       </section>
 
       <section className="sales-item-container">
+        <h5 className="imp-note">
+          Note: Select the data in order to reduce the dynamic option
+        </h5>
         <form onSubmit={handleSubmission}>
           <section className="sales-entry-items-list">
             {addInput.map((item) => (
@@ -242,7 +210,6 @@ function PurchaseEntry() {
                   onClick={() => handleDelete(item.id)}
                   className="bx bx-trash del-icon"
                 ></i>
-
                 <select
                   value={item.category}
                   onChange={(event) =>
@@ -291,39 +258,28 @@ function PurchaseEntry() {
                     ))}
                 </select>
 
-                {fetchStatus ? (
-                  <select
-                    value={item.colLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "colLabel", event.target.value)
-                    }
-                    className="column-select"
-                  >
-                    <option value="">Select ColLabel</option>
-                    {Array.isArray(item.brandData.column) &&
+                <select
+                  value={item.colLabel}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "colLabel", event.target.value)
+                  }
+                  className="column-select"
+                >
+                  <option value="">Select ColLabel</option>
+                  {item.colArray.length > 0
+                    ? Array.isArray(item.colArray) &&
+                      item.colArray.map((label, index) => (
+                        <option key={index} value={label}>
+                          {label}
+                        </option>
+                      ))
+                    : Array.isArray(item.brandData.column) &&
                       item.brandData.column.map((label) => (
                         <option key={label._id} value={label.column}>
                           {label.column}
                         </option>
                       ))}
-                  </select>
-                ) : (
-                  <select
-                    value={item.colLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "colLabel", event.target.value)
-                    }
-                    className="column-select"
-                  >
-                    <option value="">Select ColLabel</option>
-                    {Array.isArray(colArray) &&
-                      colArray.map((item, index) => (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                  </select>
-                )}
+                </select>
 
                 <div className="sales-entry-qty">
                   <i

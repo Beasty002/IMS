@@ -18,6 +18,7 @@ function SaleEntry() {
       counter: 0,
       fetchData: [],
       brandData: [],
+      colArray: [],
     },
   ]);
 
@@ -34,6 +35,7 @@ function SaleEntry() {
         counter: 0,
         fetchData: [],
         brandData: [],
+        colArray: [],
       },
     ]);
   };
@@ -60,14 +62,14 @@ function SaleEntry() {
         );
       }
     } else if (field === "brand") {
-      const brandId = addInput.map(
-        (item) => item.fetchData?.find((data) => data.brandName === value)?._id
+      const foundData = updatedData.find((item) => item.id === itemId);
+      const brandData = foundData.fetchData.find(
+        (data) => data.brandName === value
       );
-      setTypeStatus(value);
 
-      if (brandId) {
-        const specificId = brandId[0];
-        setBrandId(specificId);
+      if (brandData) {
+        const specificId = brandData._id;
+        // setBrandId(specificId);
 
         console.log(specificId);
         try {
@@ -122,8 +124,11 @@ function SaleEntry() {
             console.log(response.statusText);
             return;
           }
-          // console.log("Col data yo ho hai guys",data);
-          setColArray(data.msg);
+          setAddInput((prevData) =>
+            prevData.map((item) =>
+              item.id === itemId ? { ...item, colArray: data.msg } : item
+            )
+          );
         } catch (error) {
           console.error(error);
         }
@@ -162,6 +167,7 @@ function SaleEntry() {
             counter: 0,
             fetchData: [],
             brandData: [],
+            colArray: [],
           },
         ]);
       } else {
@@ -233,6 +239,9 @@ function SaleEntry() {
       </section>
 
       <section className="sales-item-container">
+        <h5 className="imp-note">
+          Note: Select the data in order to reduce the dynamic option
+        </h5>
         <form onSubmit={handleSubmission}>
           <section className="sales-entry-items-list">
             {addInput.map((item) => (
@@ -290,39 +299,28 @@ function SaleEntry() {
                     ))}
                 </select>
 
-                {fetchStatus ? (
-                  <select
-                    value={item.colLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "colLabel", event.target.value)
-                    }
-                    className="column-select"
-                  >
-                    <option value="">Select ColLabel</option>
-                    {Array.isArray(item.brandData.column) &&
+                <select
+                  value={item.colLabel}
+                  onChange={(event) =>
+                    handleDataInsert(item.id, "colLabel", event.target.value)
+                  }
+                  className="column-select"
+                >
+                  <option value="">Select ColLabel</option>
+                  {item.colArray.length > 0
+                    ? Array.isArray(item.colArray) &&
+                      item.colArray.map((label, index) => (
+                        <option key={index} value={label}>
+                          {label}
+                        </option>
+                      ))
+                    : Array.isArray(item.brandData.column) &&
                       item.brandData.column.map((label) => (
                         <option key={label._id} value={label.column}>
                           {label.column}
                         </option>
                       ))}
-                  </select>
-                ) : (
-                  <select
-                    value={item.colLabel}
-                    onChange={(event) =>
-                      handleDataInsert(item.id, "colLabel", event.target.value)
-                    }
-                    className="column-select"
-                  >
-                    <option value="">Select ColLabel</option>
-                    {Array.isArray(colArray) &&
-                      colArray.map((item, index) => (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                  </select>
-                )}
+                </select>
 
                 <div className="sales-entry-qty">
                   <i

@@ -15,7 +15,6 @@ export default function SinVarList() {
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
   const [fetchSingleVarData, setFetchSingleVarData] = useState({});
-  const [label, setLabel] = useState([]);
 
   const { categoryName, brandName } = useParams();
 
@@ -24,7 +23,6 @@ export default function SinVarList() {
   }, [dropdownOptions]);
 
   const fetchTableData = async () => {
-    console.log(JSON.stringify({ cat: categoryName, brand: brandName }));
     try {
       const response = await fetch("http://localhost:3000/api/getTable", {
         method: "POST",
@@ -38,49 +36,16 @@ export default function SinVarList() {
       }
 
       const data = await response.json();
-      console.log("Data is ", data);
+      console.log(data);
       setTableData(data.matrix);
+
+      const options = Object.keys(data.matrix);
+      setDropdownOptions(options);
+
     } catch (error) {
       console.error("Fetch error: ", error);
     }
   };
-
-  const fetchLabelData = async () => {
-    if (specificId) {
-      console.log(JSON.stringify({ brandId: specificId }));
-      try {
-        const response = await fetch("http://localhost:3000/api/getLabels", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ brandId: specificId }),
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          console.log(response.statusText);
-          return;
-        }
-        console.log(data);
-        setLabel(data.column);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (label) {
-      console.log(label);
-    }
-  }, [label]);
-
-  useEffect(() => {
-    if (specificId) {
-      fetchLabelData();
-    }
-  }, [specificId]);
 
   useEffect(() => {
     console.log(fetchSingleVarData);
@@ -136,18 +101,15 @@ export default function SinVarList() {
     }
   }, [fetchBrand, brandName]);
 
-  // const handleValueChange = (key, newValue) => {
-  //   setTableData((prevData) => ({
-  //     ...prevData,
-  //     [selectedKey]: {
-  //       ...prevData[selectedKey],
-  //       [key]: { ...prevData[selectedKey][key], dfd: newValue },
-  //     },
-  //   }));
-  // };
-  useEffect(() => {
-    console.log("Yo ho hai table data", tableData);
-  }, [tableData]);
+  const handleValueChange = (key, newValue) => {
+    setTableData((prevData) => ({
+      ...prevData,
+      [selectedKey]: {
+        ...prevData[selectedKey],
+        [key]: { ...prevData[selectedKey][key], dfd: newValue },
+      },
+    }));
+  };
 
   return (
     <>
@@ -174,9 +136,9 @@ export default function SinVarList() {
                 <option value="" disabled>
                   -- Select an option --
                 </option>
-                {label.map((item) => (
-                  <option key={item._id} value={item.column}>
-                    {item.column}
+                {dropdownOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
@@ -197,10 +159,9 @@ export default function SinVarList() {
       <section>
         {selectedKey && (
           <SingleVarTable
-            // onValueChange={handleValueChange}
+            onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
-            selectedKey={selectedKey}
           />
         )}
         <CustomizeSingleCol

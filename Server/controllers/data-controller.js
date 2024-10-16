@@ -767,6 +767,8 @@ const delColumn = async (req,res) => {
 const getLabels = async (req,res) => {
   try{
     const brandId = req.body.brandId
+    // console.log(req.body);
+    // return;
 
     const chosenBrand = await Brand.findById({ _id: brandId })
     const rowLabel = chosenBrand.rowLabel
@@ -1111,8 +1113,10 @@ const getCodes = async(req,res) => {
 const getSpecCol = async (req,res) => {
   try{
     const {rowLabel, brandId} = req.body
+    console.log(req.body);
+    // return;
     
-    const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId[0]})
+    const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId})
     if (!forTypeId){
       return res.status(404).json({err: "No such type found!"})
     }

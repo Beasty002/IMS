@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
         console.log("Network error occurred", response.statusText);
         return;
       }
-      console.log(data);
       setFetchBrand(data.brands);
       setStockData(data.stockByBrand);
       return data.brands;
@@ -47,7 +46,6 @@ export const AuthProvider = ({ children }) => {
         console.log("Error while fetching data");
         return;
       }
-      console.log(data);
       setCatStock(data.catStocks);
       setCategoryLength(data.cats.length);
       setCategories(data.cats);
