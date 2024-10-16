@@ -437,23 +437,47 @@ const getAllSales = async (req, res) => {
 
 const getSpecificSale = async (req,res) => {
   try{
-    const { day } = req.body
+    var { day, title } = req.body
+    
+    title = title.toLowerCase()
+    
+    var model,schema,givenId,givenDate
+
+
+    if (title==="sales"){
+      model = SaleRecordModel
+      schema = Sales
+      givenId = "saleIds"
+      givenDate = "dos"
+      
+    }
+    else if (title==="purchases"){
+      model = Purchase
+      schema = Stock
+      givenId = "purchaseIds"
+      givenDate = "dop"
+      
+    }else{
+      return res.status(400).json({ err: `No such entry found for ${title}`})
+    }
+    
     var specificSales = []
 
-    const saleRecords = await SaleRecordModel.find();
-    
+    const saleRecords = await model.find();
+
     for (var sale of saleRecords){
-      var dos = sale.dos
+      var dos = sale[givenDate]
       dos = dos.toISOString();
 
       dos = dos.split('T')[0]
-      // console.log(dos)
 
       if (dos === day){
-        for (var saleId of sale.saleIds){
-
-          var specificSale = await Sales.findById( saleId )
-
+        for (var saleId of sale[givenId]){
+          console.log("SAleid: ", saleId)
+          
+          var specificSale = await schema.findById(saleId)
+          console.log(specificSale)
+          
           specificSales.push(specificSale)
         }
       }
@@ -747,6 +771,7 @@ const getLabels = async (req,res) => {
     const chosenBrand = await Brand.findById({ _id: brandId })
     const rowLabel = chosenBrand.rowLabel
     const colLabel = chosenBrand.colLabel
+    const multiVar = chosenBrand.multiVar
 
     const chosenType = await Type.find({ brandId: brandId })
     const chosenColumn = await Column.find({ brandId: brandId })
@@ -755,7 +780,7 @@ const getLabels = async (req,res) => {
       return res.json({ err: "No such label found!"})
     }
 
-    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn }) // if more than one type chosenType is an ARRAY
+    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn , multiVar: multiVar}) // if more than one type chosenType is an ARRAY
 
 
   }
