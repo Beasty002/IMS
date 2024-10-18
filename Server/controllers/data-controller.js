@@ -7,6 +7,7 @@ const Type = require("../models/type-model")
 const Column = require("../models/column-model")
 const Stock = require("../models/stock-model")
 const Purchase = require("../models/purchase-model")
+const RecordStock = require("../models/record-stock")
 
 const { Collection } = require("mongoose");
 const { isString } = require("util");
@@ -31,13 +32,13 @@ const getAllCategories = async (req, res) => {
     for (var category of categories){
       var catTitle = category.title
       
-      const forCatStocks = await Stock.find({parentCat: catTitle})
+      const forCatStocks = await RecordStock.find({category: catTitle})
       
       for(var forCatStock of forCatStocks){
         
-        const catStock = forCatStock.stock
+        const catStock = forCatStock.totalStock
         
-        catStocks[catTitle] += catStock   
+        catStocks[catTitle] += catStock
       }
     }
 
@@ -336,8 +337,6 @@ const salesEntry = async (req,res) => {
         const sCol = sale.colLabel;
         const sQty = sale.counter;
 
-        
-        
         if (isNaN(sQty)){
           return res.json({err: `Quantity of sale no.${count} is not a number`})
         }
@@ -357,6 +356,8 @@ const salesEntry = async (req,res) => {
         var newSale = await newSaleEntry.save();
 
         saleIds.push(newSale._id)
+
+
 
         
       }
@@ -843,7 +844,6 @@ const addPurchase = async (req,res) =>  {
       const brandId = forBrandId._id;
   
       const stock = body.counter
-
   
       const newStock = new Stock({
         stock: stock,
@@ -859,6 +859,23 @@ const addPurchase = async (req,res) =>  {
 
       purchaseIds.push(aStock._id);
 
+      const checkStock = await RecordStock.findOne({ brandId:brandId, brand:brand,category:cat,rowLabel:rowLabel, colLabel:colLabel})
+      if (checkStock){
+        checkStock.totalStock += stock
+
+        await checkStock.save()
+      }else{
+        const recordStock = new RecordStock({
+          totalStock:stock,
+          brandId:brandId, 
+          brand:brand,
+          category:cat,
+          rowLabel:rowLabel, 
+          colLabel:colLabel
+        });
+
+        await recordStock.save()
+      }
     }
 
     const newPurchase = new Purchase({
@@ -1174,7 +1191,7 @@ const getTotalStock = async(req,res) => {
 
 const checkStock = async (req,res) => {
   try{
-    const allStocks = await Stock.find()
+    const allStocks = await RecordStock.find()
     if (!allStocks || allStocks.length ===0){
       return res.status(404).json({ err: "No stock available!"})
     }
@@ -1189,10 +1206,10 @@ const checkStock = async (req,res) => {
     var stockByBrand = {};
 
     for (var categoryName of allCategories){
-      const allStockData = await Stock.find({parentCat: categoryName})
+      const allStockData = await RecordStock.find({category: categoryName})
 
       for (var stock of allStockData) {
-        const brand = stock.parentBrand;
+        const brand = stock.brand;
         const rowLabel = stock.rowLabel;
         const colLabel = stock.colLabel;
         
@@ -1201,11 +1218,11 @@ const checkStock = async (req,res) => {
           stockByBrand[brandCategoryKey] = 0;
         }
         
-        stockByBrand[brandCategoryKey] += stock.stock;
+        stockByBrand[brandCategoryKey] += stock.totalStock;
         
       }
-      console.log("🤣🤣🤣🤣",stock)
     }
+    // console.log("🤣🤣🤣🤣",stockByBrand)
     
     var lowStock = []
     for (var key in stockByBrand) {
