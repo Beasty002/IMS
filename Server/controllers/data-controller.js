@@ -465,6 +465,10 @@ const getSpecificSale = async (req,res) => {
 
     const saleRecords = await model.find();
 
+    if (!saleRecords || saleRecords.length ===0){
+      return res.status(404).json({ saleAvailable: false})
+    }
+
     for (var sale of saleRecords){
       var dos = sale[givenDate]
       dos = dos.toISOString();
@@ -473,7 +477,7 @@ const getSpecificSale = async (req,res) => {
 
       if (dos === day){
         for (var saleId of sale[givenId]){
-          console.log("SAleid: ", saleId)
+          // console.log("SAleid: ", saleId)
           
           var specificSale = await schema.findById(saleId)
           // console.log(specificSale)
