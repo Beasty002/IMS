@@ -42,11 +42,14 @@ function SalesPage() {
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);
-        fetchAllSales(prevDate);
         return;
       }
       console.log(data);
-      setSalesData(data.msg);
+      if (data.msg.length < 1) {
+        fetchAllSales(prevDate);
+      } else {
+        setSalesData(data.msg);
+      }
     } catch (error) {
       console.error(error);
     }

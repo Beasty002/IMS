@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 
-function SaleTable({ data }) {
-  // 0 is initial value and total is callback and product is var represnting the items inside the data
-  // simply added all the stockLeft attribute inside the data
+function SaleTable({ data = [] }) {
+  //  safe access to sQty in case the product is null or undefined
   const totalQuantity = data.reduce(
-    (total, product) => total + product.sQty,
+    (total, product) => total + (product?.sQty || 0),
     0
   );
 
@@ -27,12 +26,13 @@ function SaleTable({ data }) {
           </thead>
           <tbody>
             {data?.map((item, index) => (
-              <tr key={item._id}>
+              <tr key={item?._id || index}>
                 <td className="table-sn">{index + 1}</td>
                 <td className="sales-table-prod">
-                  {item.sBrand} {item.sRowLabel} ( {item.sColLabel} )
+                  {item?.sBrand || "N/A"} {item?.sRowLabel || "N/A"} ({" "}
+                  {item?.sColLabel || "N/A"} )
                 </td>
-                <td>{item.sQty}</td>
+                <td>{item?.sQty || 0}</td>
               </tr>
             ))}
           </tbody>
