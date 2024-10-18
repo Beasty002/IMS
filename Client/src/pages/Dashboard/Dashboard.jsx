@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Dashboard.css";
 import PieChart from "../../assets/MainChart.svg";
 import Legends from "../../assets/Legends.svg";
@@ -11,6 +11,7 @@ import { useAuth } from "../../customHooks/useAuth";
 
 const Dashboard = () => {
   const { categoryLength, fetchCategory } = useAuth();
+  const [stock, setStock] = useState("");
   const products = [
     { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },
     { id: 2, product: "Mayur Door 80*89 (Ganesh Coffee)", stockLeft: 30 },
@@ -23,11 +24,38 @@ const Dashboard = () => {
     fetchCategory();
   }, []);
 
+  const fetchTotalStock = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/stock", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return;
+      }
+      console.log("Stock yo hai", data);
+      setStock(data.msg);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTotalStock();
+  }, []);
+
   return (
     <section className="upper-dash">
       <div className="summary-graph">
         <div className="summary-sec">
-          <StockData label="Stock on hand" value="680" imgSrc={Vector} />
+          <StockData
+            label="Stock on hand"
+            value={stock || "N/A"}
+            imgSrc={Vector}
+          />
           <StockData
             label="Total categories"
             value={categoryLength || "N/A"}
