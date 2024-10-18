@@ -243,6 +243,7 @@ const delBrand = async (req, res) => {
     await Column.deleteMany({ brandId: delBrandId})
     await Type.deleteMany({ brandId: delBrandId})
     await Stock.deleteMany({ parentBrandId: delBrandId})
+    await RecordStock.deleteMany({ brandId: delBrandId})
     await Sales.deleteMany({ sBrandId: delBrandId})
 
     return res.json({ msg: delBrandName + " brand deleted!" });
@@ -748,11 +749,14 @@ const editColumn = async (req,res) => {
     await Column.findByIdAndUpdate(id, { column: columnName })
 
     const updateCorrStock = await Stock.findOne({ colLabel: oldColName, parentBrandId: brandId})
+    const updateCorrRecordStock = await RecordStock.findOne({ colLabel: oldColName, brandId: brandId})
     
     updateCorrStock.colLabel = columnName
+    await updateCorrStock.save();
+    updateCorrRecordStock.colLabel = columnName
+    await updateCorrRecordStock.save()
     // console.log(updateCorrStock)
     // return
-    await updateCorrStock.save();
 
     return res.status(200).json({msg: `${columnName} updated`})
   }
@@ -1012,7 +1016,7 @@ const getTable = async (req, res) => {
     const allTypes = await Type.find({ brandId: brandId });
     const allCols = await Column.find({ brandId: brandId });
     
-    const allEntries = await Stock.find({ parentCat: cat, parentBrand: brand });
+    const allEntries = await RecordStock.find({ category: cat, brand: brand });
     
     var matrix = {};
     
@@ -1031,7 +1035,7 @@ const getTable = async (req, res) => {
       const entry = allEntries[i];
       const rowLabel = entry.rowLabel
       const colLabel = entry.colLabel
-      const stock = entry.stock
+      const stock = entry.totalStock
       
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
         matrix[rowLabel][colLabel] += stock;
@@ -1053,52 +1057,55 @@ const editStock = async (req,res) =>{
       
       const { rowKey, updatedData,brandId,categoryName,brandName,typeName} = req.body
 
-      var specificStock = await Stock.findOne({parentBrandId: brandId,rowLabel:typeName,colLabel:rowKey })
-  
-      if (specificStock){
-        specificStock.stock = updatedData
+      var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:typeName,colLabel:rowKey })
+        // console.log(updatedData)
+        // return
 
-        await specificStock.save()
+      if (specificRecordStock){
+        specificRecordStock.totalStock = parseInt(updatedData)
+        
+        await specificRecordStock.save()
       }
-      // if no previous stock of the column, create one
-      else if (!specificStock && updatedData !=0){
-        const newStock = new Stock({
-          stock: updatedData,
-          parentCat:categoryName,
-          parentBrand:brandName,
-          parentBrandId: brandId,
-          rowLabel:rowKey,
-          colLabel:typeName
-        });
+      else if (!specificRecordStock && updatedData!=0){
+        const newRecordStock = new RecordStock({
+            totalStock:parseInt(updatedData),
+            brandId:brandId, 
+            brand:brandName,
+            category:categoryName,
+            rowLabel:rowKey, 
+            colLabel:typeName
+          });
 
-        await newStock.save()
+          await newRecordStock.save()
       }
+   
+
       return res.status(200).json({msg: "Stock updated successfully!"})
 
     }else{
       const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
       for (var col in updatedData){
-        var specificStock = await Stock.findOne({ parentCat: categoryName, parentBrand: brandName, parentBrandId: brandId,rowLabel:rowKey,colLabel:col })
-  
-        if (specificStock){
-          specificStock.stock = updatedData[col]
-  
-          await specificStock.save()
+
+        var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:rowKey,colLabel:col })
+        // console.log("😊🤣😊🤣",updatedData[col])
+        // return
+
+        if (specificRecordStock){
+          specificRecordStock.totalStock = parseInt(updatedData[col])
+          
+          await specificRecordStock.save()
         }
-        // if no previous stock of the column, create one
-        else if (!specificStock && updatedData[col] !=0){
-          const newStock = new Stock({
-            stock: updatedData[col],
-            parentCat: categoryName, 
-            parentBrand: brandName, 
-            parentBrandId: brandId,
-            rowLabel:rowKey,
-            colLabel:col
-          });
+        else if (!specificRecordStock && updatedData[col]!=0){
+          const newRecordStock = new RecordStock({
+              totalStock:parseInt(updatedData[col]),
+              brandId:brandId, 
+              brand:brandName,
+              category:categoryName,
+              rowLabel:rowKey, 
+              colLabel:col
+            });
   
-          await newStock.save()
-        }else{
-          return res.status(409).json({ err: `Can not edit stock for ${rowKey} available` })
+            await newRecordStock.save()
         }
    
       }
@@ -1112,54 +1119,105 @@ const editStock = async (req,res) =>{
   }
 }
 
+// const getCodes = async(req,res) => {
+//   try{
+//     // console.log(req.body)
+//     const {rowValue, brandId} = req.body
+
+//     const stockArr = await Stock.find({ parentBrandId: brandId, rowLabel: rowValue})
+//     console.log('stock',stockArr);
+
+//     const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
+//     if (!forTypeId){
+//       return res.status(404).json({ err: `${rowValue} does not exist!`})
+//     }
+
+//     const typeId = forTypeId._id
+
+//     const codes = await Column.find({brandId: brandId, typeId: typeId})
+//     if (!codes || codes.length ===0){
+//       return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
+//     }
+
+//     var codeArr = []
+//     var codeStocks = {};
+
+//     for (let i = 0; i < codes.length; i++) {
+//       const col = codes[i];
+//       codeStocks[col.column] = "0";  // Initialize each column with stock value 0
+//     }
+
+//     for (var stock of stockArr){
+      
+//       var checkCol = stock.colLabel
+//       // console.log(checkCol)
+//       if (!codeArr.includes(checkCol)){
+//         codeArr.push(checkCol)
+//       }
+//       if (codeStocks[checkCol]) {
+//         codeStocks[checkCol] = (parseInt(codeStocks[checkCol]) + stock.stock).toString();
+//       } else {
+//         codeStocks[checkCol] = stock.stock.toString();
+//       }
+//     }
+//     return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks })
+//   }
+//   catch(err){
+//     console.error("Error get codes");
+//     res.status(500).json({ message: "Internal server error!!(getCodes)" });
+//   }
+// }
+
 const getCodes = async(req,res) => {
   try{
     // console.log(req.body)
-    const {rowValue, brandId} = req.body
+    const {rowValue, brandId} = req.body;
 
-    const stockArr = await Stock.find({ parentBrandId: brandId, rowLabel: rowValue})
-    console.log('stock',stockArr);
+    const stockArr = await RecordStock.find({ brandId: brandId, rowLabel: rowValue });
+    console.log('stock', stockArr);
 
-    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId})
+    const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId });
     if (!forTypeId){
-      return res.status(404).json({ err: `${rowValue} does not exist!`})
+      return res.status(404).json({ err: `${rowValue} does not exist!` });
     }
 
-    const typeId = forTypeId._id
+    const typeId = forTypeId._id;
 
-    const codes = await Column.find({brandId: brandId, typeId: typeId})
-    if (!codes || codes.length ===0){
-      return res.status(404).json({ err: `${forTypeId.type} has no codes!`})
+    const codes = await Column.find({ brandId: brandId, typeId: typeId });
+    if (!codes || codes.length === 0){
+      return res.status(404).json({ err: `${forTypeId.type} has no codes!` });
     }
 
-    var codeArr = []
+    var codeArr = [];
     var codeStocks = {};
 
+    // Initialize each column with a stock value of 0
     for (let i = 0; i < codes.length; i++) {
       const col = codes[i];
-      codeStocks[col.column] = "0";  // Initialize each column with stock value 0
+      codeStocks[col.column] = "0";
     }
 
+    // Update stock based on rowLabel and colLabel
     for (var stock of stockArr){
-      
-      var checkCol = stock.colLabel
-      // console.log(checkCol)
+      var checkCol = stock.colLabel;
       if (!codeArr.includes(checkCol)){
-        codeArr.push(checkCol)
+        codeArr.push(checkCol);
       }
       if (codeStocks[checkCol]) {
-        codeStocks[checkCol] = (parseInt(codeStocks[checkCol]) + stock.stock).toString();
+        codeStocks[checkCol] = (parseInt(codeStocks[checkCol]) + stock.totalStock).toString();
       } else {
-        codeStocks[checkCol] = stock.stock.toString();
+        codeStocks[checkCol] = stock.totalStock.toString();
       }
     }
-    return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks })
+
+    return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks });
   }
   catch(err){
     console.error("Error get codes");
     res.status(500).json({ message: "Internal server error!!(getCodes)" });
   }
 }
+
 
 const getSpecCol = async (req,res) => {
   try{
@@ -1195,13 +1253,13 @@ const getSpecCol = async (req,res) => {
 const getTotalStock = async(req,res) => {
   try{
     var totalStock = 0;
-    const allStocks = await Stock.find()
+    const allStocks = await RecordStock.find()
     if (!allStocks || allStocks.length ===0){
       return res.status(404).json({ err: "No stock available!"})
     }
     for (var stock of allStocks )
     {
-      totalStock += stock.stock
+      totalStock += stock.totalStock
     }
     return res.status(200).json({msg: totalStock})
   }
