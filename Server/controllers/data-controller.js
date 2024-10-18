@@ -357,8 +357,30 @@ const salesEntry = async (req,res) => {
 
         saleIds.push(newSale._id)
 
+        const forRecordStock = await RecordStock.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
+        if (!forRecordStock || forRecordStock.length ===0 ){
+          return res.status(404).json({
+            err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
+          });          
+          // const newRecordStock = new RecordStock({
+          //   totalStock:sQty,
+          //   brandId:brandId, 
+          //   brand:sBrand,
+          //   category:sCat,
+          //   rowLabel:sRow, 
+          //   colLabel:sCol
+          // });
 
+          // await newRecordStock.save()
+        }
+        else{
+          if (forRecordStock.totalStock < sQty){
+            return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
+          }
+          forRecordStock.totalStock -= sQty
 
+          await forRecordStock.save()
+        }
         
       }
       // console.log(saleIds)
