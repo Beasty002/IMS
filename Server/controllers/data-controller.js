@@ -1184,7 +1184,7 @@ const checkStock = async (req,res) => {
     for (var cat of forAllCategories){
       allCategories.push(cat.title)
     }
-    console.log(allCategories)
+    // console.log(allCategories)
     
     var stockByBrand = {};
 
@@ -1193,8 +1193,10 @@ const checkStock = async (req,res) => {
 
       for (var stock of allStockData) {
         const brand = stock.parentBrand;
-        const brandCategoryKey = `${brand} ${categoryName}`;
+        const rowLabel = stock.rowLabel;
+        const colLabel = stock.colLabel;
         
+        const brandCategoryKey = `${brand} ${categoryName} ${rowLabel} (${colLabel})`;        
         if (!stockByBrand[brandCategoryKey]) {
           stockByBrand[brandCategoryKey] = 0;
         }
@@ -1202,6 +1204,7 @@ const checkStock = async (req,res) => {
         stockByBrand[brandCategoryKey] += stock.stock;
         
       }
+      console.log("🤣🤣🤣🤣",stock)
     }
     
     var lowStock = []
@@ -1213,7 +1216,6 @@ const checkStock = async (req,res) => {
         });
       }
     }
-    // console.log("🤣🤣🤣🤣",lowStock)
     return res.json({lowStock})
   }
   catch(err){
