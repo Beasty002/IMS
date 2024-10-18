@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 
-function PurchaseTable({ data }) {
+function PurchaseTable({ data = [] }) {
   // 0 is initial value and total is callback and product is var represnting the items inside the data
   // simply added all the stockLeft attribute inside the data
   const totalQuantity = data.reduce(
-    (total, product) => total + product.stock,
+    (total, product) => total + (product?.stock || 0),
     0
   );
 
@@ -26,11 +26,12 @@ function PurchaseTable({ data }) {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
+            {data?.map((item, index) => (
               <tr key={item._id}>
                 <td className="table-sn">{index + 1}</td>
                 <td className="sales-table-prod">
-                  {item.parentBrand} {item.rowLabel} ( {item.colLabel} )
+                  {item.parentBrand} {item.parentCat} {item.rowLabel} ({" "}
+                  {item.colLabel} )
                 </td>
                 <td>{item.stock}</td>
               </tr>

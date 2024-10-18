@@ -42,11 +42,15 @@ function Purchase() {
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);
-        fetchAllSales(prevDate);
         return;
       }
       console.log(data);
-      setSalesData(data.msg);
+      const filteredData = data.msg.filter((item) => item !== null);
+      if (data.msg.every((element) => element === null)) {
+        fetchAllSales(prevDate);
+      } else {
+        setSalesData(filteredData || []);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -73,7 +77,6 @@ function Purchase() {
       TableComponent={PurchaseTable}
       products={salesData}
       setSalesData={setSalesData}
-
     />
   );
 }

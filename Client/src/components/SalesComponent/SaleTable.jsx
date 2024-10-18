@@ -29,8 +29,8 @@ function SaleTable({ data = [] }) {
               <tr key={item?._id || index}>
                 <td className="table-sn">{index + 1}</td>
                 <td className="sales-table-prod">
-                  {item?.sBrand || "N/A"} {item?.sRowLabel || "N/A"} ({" "}
-                  {item?.sColLabel || "N/A"} )
+                  {item?.sBrand} {item?.sCategory} {item?.sRowLabel} ({" "}
+                  {item?.sColLabel} )
                 </td>
                 <td>{item?.sQty || 0}</td>
               </tr>

@@ -45,10 +45,11 @@ function SalesPage() {
         return;
       }
       console.log(data);
-      if (data.msg.length < 1) {
+      const filteredData = data.msg.filter((item) => item !== null);
+      if (data.msg.every((element) => element === null)) {
         fetchAllSales(prevDate);
       } else {
-        setSalesData(data.msg);
+        setSalesData(filteredData || []);
       }
     } catch (error) {
       console.error(error);
@@ -60,6 +61,9 @@ function SalesPage() {
       fetchAllSales(dateSetter);
     }
   }, [dateSetter]);
+  useEffect(() => {
+    console.log(salesData);
+  }, [salesData]);
 
   return (
     <Sales

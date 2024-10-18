@@ -25,7 +25,8 @@ function Sales({ title, TableComponent, products, setSalesData }) {
             return;
           }
           console.log(data);
-          setSalesData(data.msg);
+          const filteredData = data.msg.filter((item) => item !== null);
+          setSalesData(filteredData || []);
         } catch (error) {
           console.error(error);
         }
