@@ -476,7 +476,7 @@ const getSpecificSale = async (req,res) => {
           console.log("SAleid: ", saleId)
           
           var specificSale = await schema.findById(saleId)
-          console.log(specificSale)
+          // console.log(specificSale)
           
           specificSales.push(specificSale)
         }
@@ -821,14 +821,22 @@ const addPurchase = async (req,res) =>  {
 
     for (var body of bodies){
   
-      const cat = body.category
-      const brand = body.brand
+      // if 
+      const requiredFields = ['category', 'brand', 'rowLabel', 'colLabel','counter'];
+      const missingFields = requiredFields.filter(field => !body[field]);
 
-      const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand})
-      const brandId = forBrandId._id
-  
-      const rowLabel = body.rowLabel
-      const colLabel = body.colLabel
+      if (missingFields.length) {
+        return res.status(404).json({ err: `${missingFields.join(', ')} not selected!` });
+      }
+
+      const { category: cat, brand, rowLabel, colLabel } = body;
+
+      const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand });
+      if (!forBrandId) {
+        return res.status(404).json({ err: 'Brand not found!' });
+      }
+
+      const brandId = forBrandId._id;
   
       const stock = body.counter
 
@@ -1141,6 +1149,25 @@ const getSpecCol = async (req,res) => {
   }
 }
 
+const getTotalStock = async(req,res) => {
+  try{
+    var totalStock = 0;
+    const allStocks = await Stock.find()
+    if (!allStocks || allStocks.length ===0){
+      return res.status(404).json({ err: "No stock available!"})
+    }
+    for (var stock of allStocks )
+    {
+      totalStock += stock.stock
+    }
+    return res.status(200).json({msg: totalStock})
+  }
+  catch(err){
+    console.error("Error get total stock");
+    res.status(500).json({ message: "Internal server error!!(getTotalStock)" });
+  }
+}
+
 
 module.exports = {
   getAllCategories,
@@ -1186,4 +1213,6 @@ module.exports = {
 
   getCodes,
   getSpecCol,
+
+  getTotalStock
 };

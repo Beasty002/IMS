@@ -55,6 +55,7 @@ router.route("/getColLabel").post(datac.getColLabel);
 router.route("/getAllStocks").get(datac.getAllStocks)
 router.route("/getTable").post(datac.getTable)
 
+router.route("/stock").get(datac.getTotalStock)
 router.route("/editStock").post(datac.editStock)
 
 router.route("/code").post(datac.getCodes)
