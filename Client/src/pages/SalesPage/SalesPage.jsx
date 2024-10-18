@@ -5,17 +5,44 @@ import SaleTable from "../../components/SalesComponent/SaleTable";
 function SalesPage() {
   const [salesData, setSalesData] = useState([]);
 
-  const fetchAllSales = async () => {
+  const [dateSetter, setDateSetter] = useState("");
+  const [prevDate, setPrevDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date(Date.now());
+    const prevDay = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+
+    const prevFormattedDate = `${prevDay.getFullYear()}-${(
+      prevDay.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${prevDay.getDate().toString().padStart(2, "0")}`;
+
+    setPrevDate(prevFormattedDate);
+    setDateSetter(formattedDate);
+  }, []);
+
+  const fetchAllSales = async (date) => {
     try {
-      const response = await fetch("http://localhost:3000/api/sales", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      console.log(JSON.stringify({ day: date, title: "Sales" }));
+      const response = await fetch(
+        "http://localhost:3000/api/getSpecificSale",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ day: date, title: "Sales" }),
+        }
+      );
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);
+        fetchAllSales(prevDate);
         return;
       }
       console.log(data);
@@ -26,8 +53,10 @@ function SalesPage() {
   };
 
   useEffect(() => {
-    fetchAllSales();
-  }, []);
+    if (dateSetter) {
+      fetchAllSales(dateSetter);
+    }
+  }, [dateSetter]);
 
   return (
     <Sales
