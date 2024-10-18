@@ -62,5 +62,6 @@ router.route("/code").post(datac.getCodes)
 
 router.route("/colData").post(datac.getSpecCol)
 
+router.route("/checkStock").get(datac.checkStock)
 
 module.exports = router;

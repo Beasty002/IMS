@@ -1168,6 +1168,56 @@ const getTotalStock = async(req,res) => {
   }
 }
 
+const checkStock = async (req,res) => {
+  try{
+    const allStocks = await Stock.find()
+    if (!allStocks || allStocks.length ===0){
+      return res.status(404).json({ err: "No stock available!"})
+    }
+
+    var allCategories = []
+    const forAllCategories = await Category.find()
+    for (var cat of forAllCategories){
+      allCategories.push(cat.title)
+    }
+    console.log(allCategories)
+    
+    var stockByBrand = {};
+
+    for (var categoryName of allCategories){
+      const allStockData = await Stock.find({parentCat: categoryName})
+
+      for (var stock of allStockData) {
+        const brand = stock.parentBrand;
+        const brandCategoryKey = `${brand} ${categoryName}`;
+        
+        if (!stockByBrand[brandCategoryKey]) {
+          stockByBrand[brandCategoryKey] = 0;
+        }
+        
+        stockByBrand[brandCategoryKey] += stock.stock;
+        
+      }
+    }
+    
+    var lowStock = []
+    for (var key in stockByBrand) {
+      if (stockByBrand[key] < 6) {
+        lowStock.push({
+          brandCategory: key,
+          stock: stockByBrand[key]
+        });
+      }
+    }
+    // console.log("🤣🤣🤣🤣",lowStock)
+    return res.json({lowStock})
+  }
+  catch(err){
+    console.error("Error check stock");
+    res.status(500).json({ message: "Internal server error!!(checkStock)" });
+  }
+}
+
 
 module.exports = {
   getAllCategories,
@@ -1214,5 +1264,7 @@ module.exports = {
   getCodes,
   getSpecCol,
 
-  getTotalStock
+  getTotalStock,
+
+  checkStock,
 };
