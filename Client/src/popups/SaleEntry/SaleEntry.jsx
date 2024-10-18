@@ -240,7 +240,7 @@ function SaleEntry() {
 
       <section className="sales-item-container">
         <h5 className="imp-note">
-          Note: Select the data in order to reduce the dynamic option
+          Note: Select the data in order 
         </h5>
         <form onSubmit={handleSubmission}>
           <section className="sales-entry-items-list">

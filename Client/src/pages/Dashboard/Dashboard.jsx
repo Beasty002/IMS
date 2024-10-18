@@ -11,6 +11,7 @@ import { useAuth } from "../../customHooks/useAuth";
 
 const Dashboard = () => {
   const { categoryLength, fetchCategory } = useAuth();
+  const [lowStock, setLowStock] = useState([]);
   const [stock, setStock] = useState("");
   const products = [
     { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },
@@ -23,6 +24,34 @@ const Dashboard = () => {
   useEffect(() => {
     fetchCategory();
   }, []);
+
+  useEffect(() => {
+    fetchLowStock();
+  }, []);
+
+  const fetchLowStock = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/checkStock", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+      setLowStock(data.lowStock);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(lowStock);
+  }, [lowStock]);
 
   const fetchTotalStock = async () => {
     try {
@@ -69,7 +98,7 @@ const Dashboard = () => {
         <img id="pieChart" src={PieChart} alt="chart" />
         <img src={Legends} alt="legends" />
       </div>
-      <ProductTable title="Low Stock Products" data={products} />
+      <ProductTable title="Low Stock Products" data={lowStock} />
       <ProductTable title="Top Selling Products" data={products} />
     </section>
   );

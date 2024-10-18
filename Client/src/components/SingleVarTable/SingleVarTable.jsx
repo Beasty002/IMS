@@ -98,7 +98,15 @@ function SingleVarTable({
 
   return (
     <div className="brand-item-table single-var">
-      <h1>{fetchSingleVarData ? "Brand Data" : "No Data Available"}</h1>
+      <h4
+        style={{
+          color: "red",
+          textAlign: "center",
+          'padding':'20px'
+        }}
+      >
+        Dont edit when stock is 0, Purchase stock instead
+      </h4>
       <table>
         <thead>
           <tr>
@@ -138,8 +146,14 @@ function SingleVarTable({
                       </button>
                     ) : (
                       <i
-                        className="bx bx-edit-alt edit-icon"
-                        onClick={() => handleEditClick(index)}
+                        className={`bx bx-edit-alt edit-icon ${
+                          value === 0 ? "disabled" : ""
+                        }}`}
+                        onClick={() => {
+                          if (value !== 0) {
+                            handleEditClick(index);
+                          }
+                        }}
                       ></i>
                     )}
                     <i className="bx bx-trash del-icon"></i>
