@@ -378,31 +378,36 @@ const salesEntry = async (req,res) => {
           await forRecordStock.save()
         }
 
-        const forRecordSale = await RecordStock.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
-        if (!forRecordSale || forRecordSale.length ===0 ){
-          return res.status(404).json({
-            err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
-          });
+        const forRecordSale = await RecordSale.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
+        if (forRecordSale){
+          forRecordSale.soldQty += sQty
+          
+          await forRecordSale.save()
         }
-        else{
+        else {
+          const newRecordSale = new RecordSale({
+            soldQty: sQty,
+            category:sCat,
+            brand:sBrand,
+            brandId:brandId,
+            rowLabel:sRow, 
+            colLabel:sCol 
+          });
+          await newRecordSale.save()
+        }
+        // else{
+          // return res.status(404).json({
+          //   err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
+          // });
           // if (forRecordSale.soldQty < sQty){
           //   return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
           // }
-          forRecordSale.soldQty += sQty
-
-          await forRecordStock.save()
-        }
-
-
-        
+        // }
       }
-      // console.log(saleIds)
-
 
       const newSalesEntry = new SalesRecord({
         saleIds: saleIds
       });     
-      
 
       await newSalesEntry.save()
 
@@ -875,7 +880,7 @@ const addPurchase = async (req,res) =>  {
 
       const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand });
       if (!forBrandId) {
-        return res.status(404).json({ err: 'Brand not found!' });
+        return res.status(405).json({ err: 'Brand not found!' });
       }
 
       const brandId = forBrandId._id;
@@ -1002,7 +1007,11 @@ const editStock = async (req,res) =>{
       const { rowKey, updatedData,brandId,categoryName,brandName,typeName} = req.body
       
       var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:typeName,colLabel:rowKey })
-      
+
+      // if (parseInt(updatedData) ===0 && specificRecordStock){
+      //   await specificRecordStock.deleteOne({brandId: brandId,rowLabel:typeName,colLabel:rowKey })
+      // }
+      // else 
       if (specificRecordStock){
         specificRecordStock.totalStock = parseInt(updatedData)
         
@@ -1030,7 +1039,10 @@ const editStock = async (req,res) =>{
         var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:rowKey,colLabel:col })
         // console.log("😊🤣😊🤣",updatedData[col])
         // return
-
+        // if (updatedData[col] == 0 && specificRecordStock){
+        //   await specificRecordStock.deleteOne({brandId: brandId,rowLabel:rowKey,colLabel:col })
+        // }
+        // else 
         if (specificRecordStock){
           specificRecordStock.totalStock = parseInt(updatedData[col])
           
@@ -1059,55 +1071,6 @@ const editStock = async (req,res) =>{
     res.status(500).json({ message: "Internal server error!!(editStock)" });
   }
 }
-
-// const getCodes = async(req,res) => {
-//   try{
-//     const {rowValue, brandId} = req.body;
-    
-//     const stock = await RecordStock.findOne({ brandId: brandId, rowLabel: rowValue });
-
-//     const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId });
-//     if (!forTypeId){
-//       return res.status(404).json({ err: `${rowValue} does not exist!` });
-//     }
-
-//     const typeId = forTypeId._id;
-
-//     const codes = await Column.find({ brandId: brandId, typeId: typeId });
-//     if (!codes || codes.length === 0){
-//       return res.status(404).json({ err: `${forTypeId.type} has no codes!` });
-//     }
-
-//     var codeArr = [];
-//     var codeStocks = {};
-
-//     // Initialize each column with a stock value of 0
-//     for (let i = 0; i < codes.length; i++) {
-//       const col = codes[i];
-//       codeStocks[col.column] = 0;
-//     }
-//     console.log('stock😒😒😒😒', stock);
-//     // return
-
-//     if (stock || stock!=null){
-//       var checkCol = stock.colLabel;
-//       if (!codeArr.includes(checkCol)){
-//         codeArr.push(checkCol);
-//       }
-//       if (codeStocks[checkCol]) {
-//         codeStocks[checkCol] = parseInt(codeStocks[checkCol]) + stock.totalStock
-//       } else {
-//         codeStocks[checkCol] = stock.totalStock
-//       }
-//     }
-    
-//     return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks });
-//   }
-//   catch(err){
-//     console.error("Error get codes");
-//     res.status(500).json({ message: "Internal server error!!(getCodes)" });
-//   }
-// }
 
 const getCodes = async(req,res) => {
   try{
