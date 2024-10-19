@@ -11,51 +11,50 @@ export default function SinVarList() {
   const [catPortal, setCatPortal] = useState(false);
   const { fetchBrandData, fetchBrand } = useAuth();
   const [specificId, setSpecificId] = useState();
-  const [tableData, setTableData] = useState({});
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
   const [fetchSingleVarData, setFetchSingleVarData] = useState({});
+  const [codeDropDown, setCodeDropDown] = useState([]);
 
   const { categoryName, brandName } = useParams();
 
-  useEffect(() => {
-    console.log("Data is ", dropdownOptions);
-  }, [dropdownOptions]);
 
-  const fetchTableData = async () => {
+
+
+
+  const getLabelData = async () => {
+    console.log(JSON.stringify({ brandId: specificId }));
     try {
-      const response = await fetch("http://localhost:3000/api/getTable", {
+      const response = await fetch("http://localhost:3000/api/getLabels", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cat: categoryName, brand: brandName }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ brandId: specificId }),
       });
-
+      const data = await response.json();
       if (!response.ok) {
-        console.error("Error:", response.statusText);
+        console.log(response.statusText);
         return;
       }
-
-      const data = await response.json();
       console.log(data);
-      setTableData(data.matrix);
-
-      const options = Object.keys(data.matrix);
-      setDropdownOptions(options);
-
+      setCodeDropDown(data.type);
     } catch (error) {
-      console.error("Fetch error: ", error);
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (specificId) {
+      getLabelData();
+    }
+  }, [specificId]);
 
   useEffect(() => {
     console.log(fetchSingleVarData);
   }, [fetchSingleVarData]);
 
-  useEffect(() => {
-    if (categoryName && brandName) {
-      fetchTableData();
-    }
-  }, [categoryName, brandName]);
+  
 
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
@@ -92,6 +91,12 @@ export default function SinVarList() {
     }
   };
 
+  // useEffect(() => {
+  //   if (codeDropDown) {
+  //     console.log("Yo ho hai ta goys", codeDropDown);
+  //   }
+  // }, [codeDropDown]);
+
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
       const requiredId = fetchBrand.find(
@@ -101,15 +106,15 @@ export default function SinVarList() {
     }
   }, [fetchBrand, brandName]);
 
-  const handleValueChange = (key, newValue) => {
-    setTableData((prevData) => ({
-      ...prevData,
-      [selectedKey]: {
-        ...prevData[selectedKey],
-        [key]: { ...prevData[selectedKey][key], dfd: newValue },
-      },
-    }));
-  };
+  // const handleValueChange = (key, newValue) => {
+  //   setTableData((prevData) => ({
+  //     ...prevData,
+  //     [selectedKey]: {
+  //       ...prevData[selectedKey],
+  //       [key]: { ...prevData[selectedKey][key], dfd: newValue },
+  //     },
+  //   }));
+  // };
 
   return (
     <>
@@ -136,9 +141,9 @@ export default function SinVarList() {
                 <option value="" disabled>
                   -- Select an option --
                 </option>
-                {dropdownOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
+                {codeDropDown.map((item, index) => (
+                  <option key={item._id} value={item.type}>
+                    {item.type}
                   </option>
                 ))}
               </select>
@@ -159,7 +164,7 @@ export default function SinVarList() {
       <section>
         {selectedKey && (
           <SingleVarTable
-            onValueChange={handleValueChange}
+            // onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
             selectedKey={selectedKey}

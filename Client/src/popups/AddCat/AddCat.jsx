@@ -59,8 +59,9 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
       }
 
       toast.success(`${type} created successfully`, {
-        autoClose: 2000,
+        autoClose: 1000,
       });
+      window.location.reload();
       if (type === "category") {
         addCategory(createCate);
       }

@@ -57,6 +57,7 @@ function SingleVarTable({
   };
 
   const handleEditClick = (index) => {
+    console.log("Click vayeko xa hai");
     setEditIndex(index);
   };
 
