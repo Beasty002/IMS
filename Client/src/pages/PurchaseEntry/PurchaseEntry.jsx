@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../customHooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
+  const navigate = useNavigate();
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -145,6 +146,7 @@ function PurchaseEntry() {
           colArray: [],
         },
       ]);
+      navigate("/purchases");
     } catch (error) {
       console.error(error);
     }

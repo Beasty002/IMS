@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../customHooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function SaleEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
+  const navigate = useNavigate();
   const [colArray, setColArray] = useState([]);
   const [brandId, setBrandId] = useState(null);
   const [typeStatus, setTypeStatus] = useState(false);
@@ -169,7 +170,9 @@ function SaleEntry() {
             brandData: [],
             colArray: [],
           },
+          
         ]);
+        navigate('/sales');
       } else {
         console.log("Error");
         return;

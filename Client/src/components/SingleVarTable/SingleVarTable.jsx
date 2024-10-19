@@ -17,6 +17,10 @@ function SingleVarTable({
     }
   }, [fetchSingleVarData]);
 
+  useEffect(() => {
+    console.log(selectedKey);
+  }, [selectedKey]);
+
   const { categoryName, brandName } = useParams();
   useEffect(() => {
     if (categoryName && brandName) {
@@ -102,7 +106,7 @@ function SingleVarTable({
         style={{
           color: "red",
           textAlign: "center",
-          'padding':'20px'
+          padding: "20px",
         }}
       >
         Dont edit when stock is 0, Purchase stock instead
