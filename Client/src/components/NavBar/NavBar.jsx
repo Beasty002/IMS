@@ -7,6 +7,7 @@ function NavBar({ currentPage, onMenuClick }) {
   }
 
   const [lowStock, setLowStock] = useState([]);
+  const [showNotifi, setShowNotifi] = useState(false);
 
   useEffect(() => {
     fetchLowStock();
@@ -49,19 +50,27 @@ function NavBar({ currentPage, onMenuClick }) {
       </div>
       <div className="right-interact">
         <div className="notification-shade">
-          <i className="fa-regular fa-bell" aria-label="Notifications"></i>
-          <div id="notifications">
-            <section id="notiContainer">
-              {lowStock?.map((item, index) => (
-                <div key={index + 1} class="noti-box">
-                  <i class="bx bxs-circle"></i>
-                  <p class="noti-msg">
-                    {item.stock} stock left of {item.brandCategory}
-                  </p>
-                </div>
-              ))}
-            </section>
-          </div>
+          <i
+            onClick={() => setShowNotifi(!showNotifi)}
+            className="fa-regular fa-bell"
+            aria-label="Notifications"
+          ></i>
+          {showNotifi ? (
+            <div id="notifications">
+              <section id="notiContainer">
+                {lowStock?.map((item, index) => (
+                  <div key={index + 1} class="noti-box">
+                    <i class="bx bxs-circle"></i>
+                    <p class="noti-msg">
+                      {item.stock} stock left of {item.brandCategory}
+                    </p>
+                  </div>
+                ))}
+              </section>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <span className="nav-border-line"></span>
         <i class="fa-solid fa-bars menu-icon" onClick={onMenuClick}></i>
