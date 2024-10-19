@@ -109,9 +109,7 @@ function SingleVarTable({
           textAlign: "center",
           padding: "20px",
         }}
-      >
-        Dont edit when stock is 0, Purchase stock instead
-      </h4>
+      ></h4>
       <table>
         <thead>
           <tr>
