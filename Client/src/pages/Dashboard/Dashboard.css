@@ -1,260 +1,324 @@
 .upper-dash {
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 20px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
 }
 
 .upper-section {
-    display: flex;
-    gap: 50px;
-    padding: 10px 30px;
-    width: 100%;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 50px;
+  padding: 10px 30px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .summary-graph {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .summary-sec {
-    display: flex;
-    gap: 20px;
-    height: 110px;
+  display: flex;
+  gap: 20px;
+  height: 110px;
 }
 
 .cat-pie-chart {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #pieChart {
-    height: 300px;
+  height: 300px;
 }
-
-
 
 .sub-stock,
 .sub-category {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 25px;
-    border-radius: 20px;
-    gap: 5px;
-    background-color: #23c1ff;
-    flex: 1;
-    min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 25px;
+  border-radius: 20px;
+  gap: 5px;
+  background-color: #23c1ff;
+  flex: 1;
+  min-width: 200px;
 }
 
 .stock-data span {
-    font-size: 28px;
-    color: white;
-    font-weight: 600;
+  font-size: 28px;
+  color: white;
+  font-weight: 600;
 }
 
 .stock-data {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .stock-data p {
-    font-size: 18px;
-    color: white;
-    font-weight: 500;
+  font-size: 18px;
+  color: white;
+  font-weight: 500;
 }
 
 .graph {
-    padding: 20px 30px;
-    border-radius: 20px;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    gap: 10px;
+  padding: 20px 30px;
+  border-radius: 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  gap: 10px;
 }
 
 .graph-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .graph-head select {
-    cursor: pointer;
-    border: 2px solid #9d9a9a;
-    border-radius: 8px;
-    padding: 4px;
-    color: #9d9a9a;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 14px;
-    width: 100px;
+  cursor: pointer;
+  border: 2px solid #9d9a9a;
+  border-radius: 8px;
+  padding: 4px;
+  color: #9d9a9a;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  width: 100px;
 }
 
 .data-represent {
-    display: flex;
-    padding: 0 5px;
-    width: max-content;
-    margin: auto;
-    gap: 20px;
+  display: flex;
+  padding: 0 5px;
+  width: max-content;
+  margin: auto;
+  gap: 20px;
 }
 
 .single-represent {
-    display: flex;
-    gap: 5px;
+  display: flex;
+  gap: 5px;
 }
 
 .graph-data img {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
 }
 
 .right-chart {
-    display: flex;
-    flex-direction: column;
-    padding: 5px 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    flex: 1;
-    max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  flex: 1;
+  max-width: 400px;
 }
 
 .days {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    justify-items: center;
-    padding: 0 5px;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  justify-items: center;
+  padding: 0 5px;
+  margin-top: 20px;
 }
 
 .right-chart img {
-    max-width: 80%;
-    height: auto;
-    margin: auto;
-    display: block;
+  max-width: 80%;
+  height: auto;
+  margin: auto;
+  display: block;
 }
 
 .days span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .days span p:first-child {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    background-color: #ffd700;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: #ffd700;
 }
 
 .lower-section {
-    display: flex;
-    padding: 10px 30px;
-    gap: 25px;
+  display: flex;
+  padding: 10px 30px;
+  gap: 25px;
 }
 
 .left-table {
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    padding: 20px 30px;
-    justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  padding: 20px 30px;
+  justify-content: flex-start;
 
-    border-radius: 15px;
-    gap: 20px;
+  border-radius: 15px;
+  gap: 20px;
 }
 
 table {
-    border-collapse: collapse;
-    width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 tr th:first-child {
-    border-top-left-radius: 8px;
+  border-top-left-radius: 8px;
 }
 
 tr th:last-child {
-    border-top-right-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .table-sn {
-    text-align: center;
-    width: 50px;
-    padding: 0 !important;
+  text-align: center;
+  width: 50px;
+  padding: 0 !important;
 }
 
 .stk-left {
-    text-align: center;
-    padding: 5px;
-    width: 100px;
+  text-align: center;
+  padding: 5px;
+  width: 100px;
 }
 
 th,
 td {
-    padding: 11px 20px;
-    text-align: left;
-    font-size: 1rem;
+  padding: 11px 20px;
+  text-align: left;
+  font-size: 1rem;
 }
 
 tr td:nth-child(3) {
-    text-align: center;
+  text-align: center;
 }
 
 th {
-    background-color: #DFF6F9;
+  background-color: #dff6f9;
 }
 
 tbody tr:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
 
-
-@media(width < 860px) {
-    .upper-dash {
-        grid-template-columns: 1fr;
-    }
+@media (width < 860px) {
+  .upper-dash {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media(width < 665px) {
-    .navigation-elem {
-        display: block;
-    }
+@media (width < 665px) {
+  .navigation-elem {
+    display: block;
+  }
 
-    .summary-sec {
-        flex-direction: column;
-        height: auto;
-        gap: 10px;
-    }
+  .summary-sec {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+  }
 
-    .sub-stock,
-    .sub-category {
-        min-width: 0;
-        padding: 1.5em 2em;
+  .sub-stock,
+  .sub-category {
+    min-width: 0;
+    padding: 1.5em 2em;
+  }
 
-    }
+  .graph,
+  .cat-pie-chart,
+  .left-table {
+    padding: 10px 20px;
+  }
 
-    .graph,
-    .cat-pie-chart,
-    .left-table {
-        padding: 10px 20px;
-    }
+  .graph-head {
+    gap: 10px;
+  }
 
-    .graph-head {
-        gap: 10px;
-    }
+  .dash-title {
+    font-size: 1.2rem;
+  }
+}
 
-    .dash-title {
-        font-size: 1.2rem;
-    }
+.left-table {
+  margin: 20px;
+}
 
+.table-sn {
+  width: 50px;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.page-item {
+  display: inline;
+  margin: 0 5px;
+}
+
+.page-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #007bff;
+  border-radius: 50%;
+  color: #007bff;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: white;
+}
+
+.page-link:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.active .page-link {
+  background-color: #007bff;
+  color: white;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.prev-item,
+.next-item {
+  margin: 0 10px;
+}
+
+.prev-item .page-link,
+.next-item .page-link {
+  width: auto;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+}
+
+.prev-item .page-link:hover,
+.next-item .page-link:hover {
+  background-color: #007bff;
+  color: white;
 }

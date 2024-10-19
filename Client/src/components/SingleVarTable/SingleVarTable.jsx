@@ -2,45 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function SingleVarTable({
-  // onValueChange,
   specificId,
   fetchSingleVarData,
   selectedKey,
+  searchTerm,
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
-  // const [typeId, setTypeId] = useState(null);
-
-  useEffect(() => {
-    if (fetchSingleVarData) {
-      console.log(fetchSingleVarData);
-    }
-  }, [fetchSingleVarData]);
-
-  useEffect(() => {
-    console.log(selectedKey);
-  }, [selectedKey]);
 
   const { categoryName, brandName } = useParams();
-  useEffect(() => {
-    if (categoryName && brandName) {
-      console.log(categoryName, brandName);
-    }
-  }, [categoryName, brandName]);
-
-  useEffect(() => {
-    if (selectedKey) {
-      console.log("Yo ho hai", selectedKey);
-    }
-  }, [selectedKey]);
-
-  // useEffect(() => {
-  //   if (fetchSingleVarData) {
-  //     console.log("Fetch yei ho hai", fetchSingleVarData);
-  //     setTypeId(fetchSingleVarData.typeId);
-  //     console.log(typeId);
-  //   }
-  // }, [fetchSingleVarData]);
 
   useEffect(() => {
     if (fetchSingleVarData && fetchSingleVarData.codeStocks) {
@@ -57,16 +27,12 @@ function SingleVarTable({
   };
 
   const handleEditClick = (index) => {
-    console.log("Click vayeko xa hai");
     setEditIndex(index);
   };
 
   const handleSave = async () => {
     const rowKey = Object.keys(editableData)[editIndex];
-    // console.log(rowKey);
     const updatedRowData = editableData[rowKey];
-    // console.log("Updated yo ho hai", updatedRowData);
-    console.log(categoryName);
 
     const payload = {
       rowKey: rowKey,
@@ -77,7 +43,7 @@ function SingleVarTable({
       typeName: selectedKey,
     };
 
-    console.log("Saving payload:", JSON.stringify(payload));
+    console.log(JSON.stringify(payload));
     try {
       const response = await fetch("http://localhost:3000/api/editStock", {
         method: "POST",
@@ -92,8 +58,6 @@ function SingleVarTable({
         console.error("Error saving the data:", response.statusText);
         return;
       }
-
-      // onValueChange(rowKey, updatedRowData);
       console.log(data);
       setEditIndex(null);
     } catch (error) {
@@ -101,15 +65,12 @@ function SingleVarTable({
     }
   };
 
+  const filteredData = Object.entries(editableData).filter(([key]) =>
+    key.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="brand-item-table single-var">
-      <h4
-        style={{
-          color: "red",
-          textAlign: "center",
-          padding: "20px",
-        }}
-      ></h4>
       <table>
         <thead>
           <tr>
@@ -122,8 +83,8 @@ function SingleVarTable({
           </tr>
         </thead>
         <tbody>
-          {fetchSingleVarData && fetchSingleVarData.codeStocks ? (
-            Object.entries(editableData).map(([key, value], index) => (
+          {filteredData.length > 0 ? (
+            filteredData.map(([key, value], index) => (
               <tr key={index}>
                 <td className="table-checkbox">
                   <input type="checkbox" />
@@ -151,7 +112,7 @@ function SingleVarTable({
                       <i
                         className={`bx bx-edit-alt edit-icon ${
                           value === 0 ? "disabled" : ""
-                        }}`}
+                        }`}
                         onClick={() => {
                           if (value !== 0) {
                             handleEditClick(index);

@@ -91,6 +91,7 @@
 /* ----------------------------------notification css--------------------------------------- */
 #notifications {
   position: absolute;
+  z-index: 9999;
   max-width: 400px;
   border-radius: 6px;
   z-index: 1000;

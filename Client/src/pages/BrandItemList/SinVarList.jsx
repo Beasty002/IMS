@@ -11,19 +11,14 @@ export default function SinVarList() {
   const [catPortal, setCatPortal] = useState(false);
   const { fetchBrandData, fetchBrand } = useAuth();
   const [specificId, setSpecificId] = useState();
-  const [dropdownOptions, setDropdownOptions] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
   const [fetchSingleVarData, setFetchSingleVarData] = useState({});
   const [codeDropDown, setCodeDropDown] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   const { categoryName, brandName } = useParams();
 
-
-
-
-
   const getLabelData = async () => {
-    console.log(JSON.stringify({ brandId: specificId }));
     try {
       const response = await fetch("http://localhost:3000/api/getLabels", {
         method: "POST",
@@ -37,7 +32,6 @@ export default function SinVarList() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
       setCodeDropDown(data.type);
     } catch (error) {
       console.log(error);
@@ -51,52 +45,10 @@ export default function SinVarList() {
   }, [specificId]);
 
   useEffect(() => {
-    console.log(fetchSingleVarData);
-  }, [fetchSingleVarData]);
-
-  
-
-  const enableCustPortal = () => setCustPortal(!custPortal);
-  const enableCatPortal = () => setCatPortal(!catPortal);
-
-  useEffect(() => {
     if (categoryName) {
       fetchBrandData(categoryName);
     }
   }, [categoryName]);
-
-  const fetchSelectedData = async (event) => {
-    const selectedData = event.target.value;
-    setSelectedKey(selectedData);
-    console.log(
-      JSON.stringify({ rowValue: selectedData, brandId: specificId })
-    );
-    try {
-      const response = await fetch("http://localhost:3000/api/code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ rowValue: selectedData, brandId: specificId }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.log(response.statusText);
-        setFetchSingleVarData();
-        return;
-      }
-      console.log("Singlevar selected data", data);
-      setFetchSingleVarData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // useEffect(() => {
-  //   if (codeDropDown) {
-  //     console.log("Yo ho hai ta goys", codeDropDown);
-  //   }
-  // }, [codeDropDown]);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
@@ -107,15 +59,30 @@ export default function SinVarList() {
     }
   }, [fetchBrand, brandName]);
 
-  // const handleValueChange = (key, newValue) => {
-  //   setTableData((prevData) => ({
-  //     ...prevData,
-  //     [selectedKey]: {
-  //       ...prevData[selectedKey],
-  //       [key]: { ...prevData[selectedKey][key], dfd: newValue },
-  //     },
-  //   }));
-  // };
+  const fetchSelectedData = async (event) => {
+    const selectedData = event.target.value;
+    setSelectedKey(selectedData);
+    try {
+      const response = await fetch("http://localhost:3000/api/code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rowValue: selectedData, brandId: specificId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setFetchSingleVarData();
+        return;
+      }
+      setFetchSingleVarData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const enableCustPortal = () => setCustPortal(!custPortal);
+  const enableCatPortal = () => setCatPortal(!catPortal);
 
   return (
     <>
@@ -132,6 +99,8 @@ export default function SinVarList() {
                 type="text"
                 placeholder="Search items..."
                 aria-label="Search input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)} 
               />
             </div>
             <div className="sel-container">
@@ -165,10 +134,10 @@ export default function SinVarList() {
       <section>
         {selectedKey && (
           <SingleVarTable
-            // onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
             selectedKey={selectedKey}
+            searchTerm={searchTerm} 
           />
         )}
         <CustomizeSingleCol

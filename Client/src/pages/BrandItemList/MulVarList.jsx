@@ -11,8 +11,10 @@ export default function MulVarList() {
   const [specificId, setSpecificId] = useState();
   const [fetchedBdata, setFetchedBdata] = useState({});
   const [tableData, setTableData] = useState({});
+  const [filteredData, setFilteredData] = useState({});
   const [editRowIndex, setEditRowIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   const { fetchBrandData, fetchBrand } = useAuth();
   const { categoryName, brandName } = useParams();
@@ -104,9 +106,25 @@ export default function MulVarList() {
 
   useEffect(() => {
     if (tableData) {
-      console.log(tableData);
+      setFilteredData(tableData);
     }
   }, [tableData]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = Object.keys(tableData)
+        .filter((rowKey) =>
+          rowKey.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .reduce((obj, key) => {
+          obj[key] = tableData[key];
+          return obj;
+        }, {});
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(tableData); 
+    }
+  }, [searchQuery, tableData]);
 
   const handleEditClick = (index) => {
     setEditRowIndex(index);
@@ -114,7 +132,6 @@ export default function MulVarList() {
   };
 
   const handleDeleteClick = async (rowKey) => {
-    // console.log(JSON.stringify({ rowKey: rowKey, brandId: specificId }));
     try {
       const response = await fetch("http://localhost:3000/api/type", {
         method: "DELETE",
@@ -136,10 +153,6 @@ export default function MulVarList() {
     }
   };
 
-  useEffect(() => {
-    console.log(fetchedBdata);
-  }, [fetchedBdata]);
-
   const handleValueChange = (rowKey, colKey, value) => {
     const updatedTableData = { ...editableData };
     updatedTableData[rowKey][colKey] = value;
@@ -158,7 +171,6 @@ export default function MulVarList() {
       brandId: specificId,
     };
 
-    console.log(JSON.stringify(payload));
     try {
       const response = await fetch("http://localhost:3000/api/editStock", {
         method: "POST",
@@ -179,9 +191,6 @@ export default function MulVarList() {
       console.error("Error:", error);
     }
   };
-  if (specificId) {
-    console.log(specificId);
-  }
 
   return (
     <>
@@ -194,6 +203,8 @@ export default function MulVarList() {
               type="text"
               placeholder="Search items..."
               aria-label="Search input"
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
             />
           </div>
           <div className="btn-container mv">
@@ -219,24 +230,24 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
-                {tableData &&
-                  Object.keys(tableData).length > 0 &&
-                  Object.keys(Object.values(tableData)[0]).map(
+                {filteredData &&
+                  Object.keys(filteredData).length > 0 &&
+                  Object.keys(Object.values(filteredData)[0]).map(
                     (colName, index) => <th key={index}>{colName}</th>
                   )}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {tableData &&
-                Object.keys(tableData).map((rowKey, rowIndex) => (
+              {filteredData &&
+                Object.keys(filteredData).map((rowKey, rowIndex) => (
                   <tr key={rowIndex}>
                     <td className="table-checkbox">
                       <input type="checkbox" />
                     </td>
                     <td>{rowKey}</td>
-                    {tableData[rowKey] &&
-                      Object.entries(tableData[rowKey]).map(
+                    {filteredData[rowKey] &&
+                      Object.entries(filteredData[rowKey]).map(
                         ([colKey, value], colIndex) => (
                           <td key={colIndex}>
                             {editRowIndex === rowIndex ? (
@@ -289,8 +300,6 @@ export default function MulVarList() {
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}
-          type="item"
-          multiVar="true"
           specificId={specificId}
         />
       </section>
