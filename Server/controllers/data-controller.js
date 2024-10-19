@@ -949,14 +949,14 @@ const getTable = async (req, res) => {
     const brand = req.body.brand;
     
     const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
-
+    
     const brandId = brandName._id;
     
     // Find all types for the brand
     const allTypes = await Type.find({ brandId: brandId });
     // Find all columns for the brand
     const allCols = await Column.find({ brandId: brandId });
-
+    
     // Find all entries for the brand and category
     const allEntries = await RecordStock.find({ category: cat, brand: brand });
     
@@ -972,14 +972,16 @@ const getTable = async (req, res) => {
         matrix[type.type][col.column] = 0; // init each cell to 0
       }
     }
-
+    
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
       const rowLabel = entry.rowLabel
       const colLabel = entry.colLabel
       const stock = entry.totalStock
+      console.log(entry)
+      // return
       
-      if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== undefined) {
+      if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== null) {
         matrix[rowLabel][colLabel] += stock;
       } else {
         matrix[rowLabel][colLabel] = stock;
