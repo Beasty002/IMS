@@ -14,7 +14,7 @@ export default function MulVarList() {
   const [filteredData, setFilteredData] = useState({});
   const [editRowIndex, setEditRowIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { fetchBrandData, fetchBrand } = useAuth();
   const { categoryName, brandName } = useParams();
@@ -122,7 +122,7 @@ export default function MulVarList() {
         }, {});
       setFilteredData(filtered);
     } else {
-      setFilteredData(tableData); 
+      setFilteredData(tableData);
     }
   }, [searchQuery, tableData]);
 
@@ -192,10 +192,14 @@ export default function MulVarList() {
     }
   };
 
+  useEffect(() => {
+    console.log("YO aauna prne ho", brandName);
+  }, [brandName]);
+
   return (
     <>
       <section>
-        <h1>{brandName} Plywoods</h1>
+        <h1>{brandName} {categoryName} </h1>
         <section className="brand-list-top mv">
           <div className="search-box">
             <i className="bx bx-search-alt"></i>
@@ -203,8 +207,8 @@ export default function MulVarList() {
               type="text"
               placeholder="Search items..."
               aria-label="Search input"
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="btn-container mv">

@@ -14,7 +14,7 @@ export default function SinVarList() {
   const [selectedKey, setSelectedKey] = useState("");
   const [fetchSingleVarData, setFetchSingleVarData] = useState({});
   const [codeDropDown, setCodeDropDown] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { categoryName, brandName } = useParams();
 
@@ -84,11 +84,17 @@ export default function SinVarList() {
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
 
+  useEffect(() => {
+    console.log("YO aauna prne ho", brandName);
+  }, [brandName]);
+
   return (
     <>
       <section className="brand-list-page">
         <div className="title-customize-cont">
-          <h1>{brandName || "No Brand Selected"}</h1>
+          <h1>
+            {brandName} {categoryName}
+          </h1>
         </div>
 
         <section className="brand-list-top sp">
@@ -100,7 +106,7 @@ export default function SinVarList() {
                 placeholder="Search items..."
                 aria-label="Search input"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)} 
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="sel-container">
@@ -137,7 +143,7 @@ export default function SinVarList() {
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
             selectedKey={selectedKey}
-            searchTerm={searchTerm} 
+            searchTerm={searchTerm}
           />
         )}
         <CustomizeSingleCol
