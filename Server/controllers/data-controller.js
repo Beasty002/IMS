@@ -1006,7 +1006,7 @@ const editStock = async (req,res) =>{
       if (specificRecordStock){
         specificRecordStock.totalStock = parseInt(updatedData)
         
-        // await specificRecordStock.save()
+        await specificRecordStock.save()
       }
       else if (!specificRecordStock && updatedData!=0){
         const newRecordStock = new RecordStock({
