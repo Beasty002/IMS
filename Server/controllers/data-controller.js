@@ -988,7 +988,7 @@ const getTable = async (req, res) => {
       }
     }
 
-    return res.json({ matrix: matrix });
+    return res.json({ matrix: matrix , allColumns: allCols});
   } catch (err) {
     console.error("Error get table");
     res.status(500).json({ message: "Internal server error!!(getTable)" });
