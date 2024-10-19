@@ -1230,13 +1230,15 @@ const checkStock = async (req,res) => {
     
     var lowStock = []
     for (var key in stockByBrand) {
-      if (stockByBrand[key] < 6) {
+      if (stockByBrand[key] < 11) {
         lowStock.push({
           brandCategory: key,
           stock: stockByBrand[key]
         });
       }
     }
+
+    lowStock.sort((a, b) => a.stock - b.stock);
     return res.json({lowStock})
   }
   catch(err){
