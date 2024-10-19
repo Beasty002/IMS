@@ -11,7 +11,7 @@ const RecordStock = require("../models/record-stock")
 const RecordSale = require("../models/record-sale")
 
 const { Collection } = require("mongoose");
-const { isString } = require("util");
+const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
@@ -1227,6 +1227,18 @@ const checkStock = async (req,res) => {
   }
 }
 
+const getTopSelling = async (req,res) => {
+  try{
+    const allSelling = await RecordSale.find().sort({ soldQty: -1 }); 
+
+    return res.status(200).json(allSelling)
+  }
+  catch(err){
+    console.error(`Error get top selling:`, err);
+    return res.status(500).json({ message: `Error get top selling : ${err.message}` });
+  }
+}
+
 
 module.exports = {
   getAllCategories,
@@ -1276,4 +1288,6 @@ module.exports = {
   getTotalStock,
 
   checkStock,
+
+  getTopSelling,
 };
