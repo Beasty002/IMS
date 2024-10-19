@@ -8,6 +8,7 @@ const Column = require("../models/column-model")
 const Stock = require("../models/stock-model")
 const Purchase = require("../models/purchase-model")
 const RecordStock = require("../models/record-stock")
+const RecordSale = require("../models/record-sale")
 
 const { Collection } = require("mongoose");
 const { isString } = require("util");
@@ -83,8 +84,8 @@ const delCategory = async (req, res) => {
         const brandId = brand._id;
         await Column.deleteMany({ brandId });
         await Type.deleteMany({ brandId });
-        await Stock.deleteMany({ parentBrandId: brandId });
-        await Sales.deleteMany({ sBrandId: brandId });
+        // await Stock.deleteMany({ parentBrandId: brandId });
+        // await Sales.deleteMany({ sBrandId: brandId });
         
         await Brand.deleteOne({ _id: brandId });
       }
@@ -242,9 +243,9 @@ const delBrand = async (req, res) => {
     await Brand.deleteOne({ _id: delBrandId });
     await Column.deleteMany({ brandId: delBrandId})
     await Type.deleteMany({ brandId: delBrandId})
-    await Stock.deleteMany({ parentBrandId: delBrandId})
+    // await Stock.deleteMany({ parentBrandId: delBrandId})
     await RecordStock.deleteMany({ brandId: delBrandId})
-    await Sales.deleteMany({ sBrandId: delBrandId})
+    // await Sales.deleteMany({ sBrandId: delBrandId})
 
     return res.json({ msg: delBrandName + " brand deleted!" });
   } catch (err) {
@@ -341,6 +342,10 @@ const salesEntry = async (req,res) => {
         if (isNaN(sQty)){
           return res.json({err: `Quantity of sale no.${count} is not a number`})
         }
+
+        if (sQty == 0){
+          return res.json({ err: "Selling quantity can not be zero"})
+        }
         
         var newSaleEntry = new Sales({
           sCategory: sCat,
@@ -362,17 +367,7 @@ const salesEntry = async (req,res) => {
         if (!forRecordStock || forRecordStock.length ===0 ){
           return res.status(404).json({
             err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
-          });          
-          // const newRecordStock = new RecordStock({
-          //   totalStock:sQty,
-          //   brandId:brandId, 
-          //   brand:sBrand,
-          //   category:sCat,
-          //   rowLabel:sRow, 
-          //   colLabel:sCol
-          // });
-
-          // await newRecordStock.save()
+          });
         }
         else{
           if (forRecordStock.totalStock < sQty){
@@ -382,6 +377,23 @@ const salesEntry = async (req,res) => {
 
           await forRecordStock.save()
         }
+
+        const forRecordSale = await RecordStock.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
+        if (!forRecordSale || forRecordSale.length ===0 ){
+          return res.status(404).json({
+            err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
+          });
+        }
+        else{
+          // if (forRecordSale.soldQty < sQty){
+          //   return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
+          // }
+          forRecordSale.soldQty += sQty
+
+          await forRecordStock.save()
+        }
+
+
         
       }
       // console.log(saleIds)
@@ -670,18 +682,17 @@ const addType = async (req,res) => {
 
 const delType = async (req,res) => {
   try{
-    console.log(req.body)
-
+    
     const { rowKey, brandId } = req.body
-
+    
     const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
-
+    
     if (!delRow){
       return res.status(404).json({ err: `${rowKey} not found!`})
     }
 
     await delRow.deleteOne({ type: rowKey, brandId: brandId })
-    await Stock.deleteOne({ parentBrandId: brandId, rowLabel: rowKey})
+    await RecordStock.deleteOne({ brandId: brandId, rowLabel: rowKey})
 
     return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
   }
@@ -778,10 +789,10 @@ const delColumn = async (req,res) => {
 
     const delColName = forDelColName.column
     console.log(delColName)
-    const toDelStock = await Stock.findOne({ parentBrandId: brandId, colLabel: delColName})
+    const toDelStock = await RecordStock.findOne({ brand: brandId, colLabel: delColName})
     if (toDelStock){
 
-      const delStock = await Stock.deleteOne({ parentBrandId: brandId, colLabel: delColName})
+      const delStock = await RecordStock.deleteOne({ brandId: brandId, colLabel: delColName})
       console.log("delsto: ",delStock)
     }
 
@@ -938,11 +949,15 @@ const getTable = async (req, res) => {
     const brand = req.body.brand;
     
     const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
+
     const brandId = brandName._id;
     
+    // Find all types for the brand
     const allTypes = await Type.find({ brandId: brandId });
+    // Find all columns for the brand
     const allCols = await Column.find({ brandId: brandId });
-    
+
+    // Find all entries for the brand and category
     const allEntries = await RecordStock.find({ category: cat, brand: brand });
     
     var matrix = {};
