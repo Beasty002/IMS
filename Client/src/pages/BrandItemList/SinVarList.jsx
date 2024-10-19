@@ -82,6 +82,7 @@ export default function SinVarList() {
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);
+        setFetchSingleVarData();
         return;
       }
       console.log("Singlevar selected data", data);
