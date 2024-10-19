@@ -162,6 +162,7 @@ export default function SinVarList() {
             onValueChange={handleValueChange}
             specificId={specificId}
             fetchSingleVarData={fetchSingleVarData}
+            selectedKey={selectedKey}
           />
         )}
         <CustomizeSingleCol
