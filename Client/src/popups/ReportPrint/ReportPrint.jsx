@@ -1,38 +1,69 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./ReportPrint.css";
 import ReactDOM from "react-dom";
-import { useAuth } from "../../customHooks/useAuth";
 
-export default function ReportPrint({ isOpen, onClose }) {
-  const { fetchCategory, categories } = useAuth();
+export default function ReportPrint({ isOpen, onClose, data }) {
+  const [selectedItems, setSelectedItems] = useState([]);
 
   useEffect(() => {
-    fetchCategory();
-  }, []);
+    console.log(data);
+  }, [data]);
+
+  const handleCheckboxChange = (id) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((item) => item !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = data.map((item) => item._id);
+      setSelectedItems(allIds);
+    } else {
+      setSelectedItems([]);
+    }
+  };
+
+  const isAllSelected =
+    data?.length > 0 && selectedItems.length === data.length;
+
   if (!isOpen) return null;
+
   return ReactDOM.createPortal(
     <>
       <div onClick={onClose} className="overlay"></div>
 
-      <section class="print-popup">
+      <section className="print-popup">
         <h1>Print Categories</h1>
-        <section class="cat-list-to-print">
-          <div class="cat-print-container">
-            <input type="checkbox" name="" id="selAll" />{" "}
+        <section className="cat-list-to-print">
+          <div className="cat-print-container">
+            <input
+              type="checkbox"
+              id="selAll"
+              checked={isAllSelected}
+              onChange={handleSelectAll}
+            />{" "}
             <label htmlFor="selAll">Select All</label>
           </div>
-          {categories?.map((item) => (
-            <div key={item._id} class="cat-print-container">
-              <input type="checkbox" name={item.title} id={item._id} />
-              <label htmlFor={item.title}>{item.title}</label>
+          {data?.map((item) => (
+            <div key={item._id} className="cat-print-container">
+              <input
+                type="checkbox"
+                id={item._id}
+                checked={selectedItems.includes(item._id)}
+                onChange={() => handleCheckboxChange(item._id)}
+              />
+              <label htmlFor={item._id}>{item.title || item.brandName}</label>
             </div>
           ))}
         </section>
-        <div class="btn-container">
-          <button onClick={onClose} class="cancel-btn">
+        <div className="btn-container">
+          <button onClick={onClose} className="cancel-btn">
             Cancel
           </button>
-          <button class="primary-btn">Print</button>
+          <button className="primary-btn">Print</button>
         </div>
       </section>
     </>,

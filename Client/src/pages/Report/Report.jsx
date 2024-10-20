@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Report.css";
 import { useAuth } from "../../customHooks/useAuth";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReportPrint from "../../popups/ReportPrint/ReportPrint";
 
 function Report() {
   const { fetchCategory, categories, catStock } = useAuth();
   const [enablePortal, setEnablePortal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCategories, setFilteredCategories] = useState(catStock || {});
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategory();
@@ -15,6 +18,26 @@ function Report() {
   useEffect(() => {
     getCategoryStock();
   }, []);
+
+  useEffect(() => {
+    if (categories) {
+      console.log(categories);
+    }
+  }, [categories]);
+
+  useEffect(() => {
+    const filtered = Object.entries(catStock)
+      .filter(([key]) => key.toLowerCase().includes(searchQuery.toLowerCase()))
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+    setFilteredCategories(filtered);
+  }, [searchQuery, catStock]);
+
+  const handleReportNavigation = (categoryName) => {
+    navigate(`/catReport/${categoryName}`);
+  };
 
   const getCategoryStock = async () => {
     try {
@@ -36,21 +59,17 @@ function Report() {
     }
   };
 
-  useEffect(() => {
-    if (categories) {
-      console.log(categories);
-    }
-  }, [categories]);
-
   return (
     <section>
-      <h1>Categories</h1>
+      <h1>Reports</h1>
       <div className="cat-list-top">
         <div className="search-box">
           <i className="bx bx-search-alt"></i>
           <input
             type="text"
             placeholder="Search categories..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search input"
           />
         </div>
@@ -64,8 +83,12 @@ function Report() {
         </div>
       </div>
       <div className="cat-list">
-        {Object.entries(catStock).map(([key, value], index) => (
-          <div key={index} className="cat-box">
+        {Object.entries(filteredCategories).map(([key, value], index) => (
+          <div
+            onClick={() => handleReportNavigation(key)}
+            key={index}
+            className="cat-box"
+          >
             <h3>{key}</h3>
             <p className="cat-stock-availability">Stock available : {value}</p>
             <div className="action-container">
@@ -77,6 +100,7 @@ function Report() {
       <ReportPrint
         isOpen={enablePortal}
         onClose={() => setEnablePortal(!enablePortal)}
+        data={categories}
       />
     </section>
   );
