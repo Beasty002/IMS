@@ -1229,9 +1229,13 @@ const checkStock = async (req,res) => {
 
 const getTopSelling = async (req,res) => {
   try{
-    const allSelling = await RecordSale.find().sort({ soldQty: -1 }); 
+    const allSelling = await RecordSale.find().sort({ soldQty: -1 });
 
-    return res.status(200).json(allSelling)
+    const topSelling = allSelling.map(item => {
+      return `${item.brand} ${item.category} ${item.rowLabel} (${item.colLabel}) : ${item.soldQty}`;
+  });
+
+    return res.status(200).json({topSelling})
   }
   catch(err){
     console.error(`Error get top selling:`, err);
