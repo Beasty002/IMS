@@ -12,14 +12,8 @@ import { useAuth } from "../../customHooks/useAuth";
 const Dashboard = () => {
   const { categoryLength, fetchCategory } = useAuth();
   const [lowStock, setLowStock] = useState([]);
+  const [topSelling, setTopSelling] = useState([]);
   const [stock, setStock] = useState("");
-  const products = [
-    { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },
-    { id: 2, product: "Mayur Door 80*89 (Ganesh Coffee)", stockLeft: 30 },
-    { id: 3, product: "Leader Laminates (SD)", stockLeft: 20 },
-    { id: 4, product: "Indian Door 80*39 (Flower Design)", stockLeft: 15 },
-    { id: 5, product: "Kalapatru Door 80*38 (4 panel wood)", stockLeft: 15 },
-  ];
 
   useEffect(() => {
     fetchCategory();
@@ -76,6 +70,30 @@ const Dashboard = () => {
     fetchTotalStock();
   }, []);
 
+  useEffect(() => {
+    fetchTopSelling();
+  }, []);
+
+  const fetchTopSelling = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/topSelling", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+      setTopSelling(data.topSelling);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section className="upper-dash">
       <div className="summary-graph">
@@ -99,7 +117,7 @@ const Dashboard = () => {
         <img src={Legends} alt="legends" />
       </div>
       <ProductTable title="Low Stock Products" data={lowStock} />
-      <ProductTable title="Top Selling Products" data={products} />
+      <ProductTable title="Top Selling Products" data={topSelling} />
     </section>
   );
 };
