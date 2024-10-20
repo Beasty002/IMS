@@ -1231,9 +1231,10 @@ const getTopSelling = async (req,res) => {
   try{
     const allSelling = await RecordSale.find().sort({ soldQty: -1 });
 
-    const topSelling = allSelling.map(item => {
-      return `${item.brand} ${item.category} ${item.rowLabel} (${item.colLabel}) : ${item.soldQty}`;
-  });
+    const topSelling = allSelling.map(item => ({
+      brandCategory: `${item.brand} ${item.category} ${item.rowLabel} (${item.colLabel})` ,
+      stock : `${item.soldQty}` // stock means sold quantity here
+  }));
 
     return res.status(200).json({topSelling})
   }
