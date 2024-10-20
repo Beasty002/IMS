@@ -7,8 +7,8 @@ function BrandReport() {
   const { categoryName } = useParams();
   const { fetchBrandData, fetchBrand, stockData } = useAuth();
   const [enablePortal, setEnablePortal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // To store the search input
-  const [filteredBrands, setFilteredBrands] = useState([]); // To store the filtered results
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredBrands, setFilteredBrands] = useState([]);
 
   useEffect(() => {
     if (categoryName) {
@@ -17,12 +17,10 @@ function BrandReport() {
   }, []);
 
   useEffect(() => {
-    // When fetchBrand changes, apply the search filter
     setFilteredBrands(fetchBrand);
   }, [fetchBrand]);
 
   useEffect(() => {
-    // Filter brands based on the search term
     if (fetchBrand) {
       const filtered = fetchBrand.filter((item) =>
         item.brandName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,8 +40,8 @@ function BrandReport() {
               type="text"
               placeholder="Search brands..."
               aria-label="Search input"
-              value={searchTerm} // Bind searchTerm to the input
-              onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm on change
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div

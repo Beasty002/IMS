@@ -69,6 +69,41 @@ function SingleVarTable({
     key.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDeleteClick = async (rowKey, rowValue) => {
+    try {
+      console.log(
+        JSON.stringify({
+          selectedKey: selectedKey,
+          itemName: rowKey,
+          rowValue: rowValue,
+          brandId: specificId,
+        })
+      );
+      const response = await fetch("http://localhost:3000/api/type", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          selectedKey: selectedKey,
+          itemName: rowKey,
+          rowValue: rowValue,
+          brandId: specificId,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="brand-item-table single-var">
       <table>
@@ -120,7 +155,10 @@ function SingleVarTable({
                         }}
                       ></i>
                     )}
-                    <i className="bx bx-trash del-icon"></i>
+                    <i
+                      onClick={() => handleDeleteClick(key, value)}
+                      className="bx bx-trash del-icon"
+                    ></i>
                   </div>
                 </td>
               </tr>

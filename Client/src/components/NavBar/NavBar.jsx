@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "./NavBar.css";
 
 function NavBar({ currentPage, onMenuClick }) {
@@ -8,6 +9,8 @@ function NavBar({ currentPage, onMenuClick }) {
 
   const [lowStock, setLowStock] = useState([]);
   const [showNotifi, setShowNotifi] = useState(false);
+
+  const { categoryName, brandName } = useParams();
 
   useEffect(() => {
     fetchLowStock();
