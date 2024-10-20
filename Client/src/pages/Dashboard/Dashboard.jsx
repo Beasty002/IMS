@@ -87,7 +87,7 @@ const Dashboard = () => {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+      console.log("Top selling ", data);
       setTopSelling(data.topSelling);
     } catch (error) {
       console.error(error);
