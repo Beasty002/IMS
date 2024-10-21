@@ -3,6 +3,8 @@ import "./Sales.css";
 import { Link } from "react-router-dom";
 function Sales({ title, TableComponent, products, setSalesData }) {
   const [dateSetter, setDateSetter] = useState("");
+  const [editClicked, setEditClicked] = useState(false);
+  const [resData, setResData] = useState([]);
 
   useEffect(() => {
     const fetchDataByDate = async () => {
@@ -40,6 +42,36 @@ function Sales({ title, TableComponent, products, setSalesData }) {
     setDateSetter(event.target.value);
   };
 
+  const handleStockEdit = () => {
+    setEditClicked(!editClicked);
+  };
+
+  const handleDataRetrieve = (editData) => {
+    console.log("Taneko data yo ho hai", editData);
+    setResData(editData);
+  };
+
+  const handleStockSave = async () => {
+    setEditClicked(!editClicked);
+    try {
+      const response = await fetch("http://localhost:3000/api/transaction", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ updateStock: resData, title }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <section className="sale-purchase">
       <h1>{title} Summary </h1>
@@ -48,10 +80,17 @@ function Sales({ title, TableComponent, products, setSalesData }) {
           <input type="date" value={dateSetter} onChange={handleDateChange} />
         </div>
         <div className="btn-container">
-          <button className="secondary-btn">
-            <i className="bx bxs-edit"></i>
-            <p className="bx-sale">Edit</p>
-          </button>
+          {editClicked ? (
+            <button onClick={handleStockSave} className="secondary-btn">
+              <i className="bx bxs-edit"></i>
+              <p className="bx-sale">Save</p>
+            </button>
+          ) : (
+            <button onClick={handleStockEdit} className="secondary-btn">
+              <i className="bx bxs-edit"></i>
+              <p className="bx-sale">Edit</p>
+            </button>
+          )}
           <button className="primary-btn">
             <i className="bx bxs-plus-circle"></i>
             <Link id="cname" to={`/${title.toLowerCase() + "Entry"}`}>
@@ -61,7 +100,13 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         </div>
       </div>
       <div className="sale-table-export">
-        <TableComponent data={products} />
+        <TableComponent
+          data={products}
+          handleStockEdit={handleStockEdit}
+          title={title}
+          editClicked={editClicked}
+          handleDataRetrieve={handleDataRetrieve}
+        />
       </div>
     </section>
   );
