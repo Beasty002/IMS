@@ -9,6 +9,7 @@ function PurchaseTable({
   // 0 is initial value and total is callback and product is var represnting the items inside the data
   // simply added all the stockLeft attribute inside the data
   const [editData, setEditData] = useState([]);
+  const [allowSave, setAllowSave] = useState(false);
 
   let totalQuantity;
 
@@ -45,7 +46,13 @@ function PurchaseTable({
       <div className="sale-quantity-table">
         {editClicked ? (
           <button
-            onClick={() => handleDataRetrieve(editData,'purchase')}
+            onClick={() => {
+              setAllowSave((prevAllowSave) => {
+                const newAllowSave = !prevAllowSave;
+                handleDataRetrieve(editData, "sales", newAllowSave);
+                return newAllowSave;
+              });
+            }}
             className="save-edit-button"
           >
             <i className="bx bxs-edit"></i>

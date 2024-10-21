@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Sales.css";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 function Sales({ title, TableComponent, products, setSalesData }) {
   const [dateSetter, setDateSetter] = useState("");
   const [editClicked, setEditClicked] = useState(false);
   const [resData, setResData] = useState([]);
   const [titleName, setTitleName] = useState("");
+  const [click, setClick] = useState("");
 
   useEffect(() => {
     const fetchDataByDate = async () => {
@@ -47,9 +49,10 @@ function Sales({ title, TableComponent, products, setSalesData }) {
     setEditClicked(!editClicked);
   };
 
-  const handleDataRetrieve = (editData, type) => {
+  const handleDataRetrieve = (editData, type, allowSave) => {
     console.log("Taneko data yo ho hai", editData);
     setTitleName(type);
+    setClick(allowSave);
     setResData(editData);
   };
 
@@ -84,16 +87,31 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         </div>
         <div className="btn-container">
           {editClicked ? (
-            <button onClick={handleStockSave} className="secondary-btn">
-              <i className="bx bxs-edit"></i>
-              <p className="bx-sale">Save</p>
-            </button>
+            !click ? (
+              <button
+                onClick={() =>
+                  toast.error("Please click on Confirm Edit first", {
+                    autoClose: 1300,
+                  })  
+                }
+                className="secondary-btn"
+              >
+                <i className="bx bxs-edit"></i>
+                <p className="bx-sale">Save</p>
+              </button>
+            ) : (
+              <button onClick={handleStockSave} className="secondary-btn">
+                <i className="bx bxs-edit"></i>
+                <p className="bx-sale">Save</p>
+              </button>
+            )
           ) : (
             <button onClick={handleStockEdit} className="secondary-btn">
               <i className="bx bxs-edit"></i>
               <p className="bx-sale">Edit</p>
             </button>
           )}
+
           <button className="primary-btn">
             <i className="bx bxs-plus-circle"></i>
             <Link id="cname" to={`/${title.toLowerCase() + "Entry"}`}>
@@ -111,6 +129,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
           handleDataRetrieve={handleDataRetrieve}
         />
       </div>
+      <ToastContainer />
     </section>
   );
 }

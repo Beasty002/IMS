@@ -7,6 +7,7 @@ function SaleTable({
   handleDataRetrieve,
 }) {
   const [editData, setEditData] = useState([]);
+  const [allowSave, setAllowSave] = useState(false);
 
   let totalQuantity;
 
@@ -37,7 +38,13 @@ function SaleTable({
       <div className="sale-quantity-table">
         {editClicked ? (
           <button
-            onClick={() => handleDataRetrieve(editData,'sales')}
+            onClick={() => {
+              setAllowSave((prevAllowSave) => {
+                const newAllowSave = !prevAllowSave;
+                handleDataRetrieve(editData, "sales", newAllowSave);
+                return newAllowSave;
+              });
+            }}
             className="save-edit-button"
           >
             <i className="bx bxs-edit"></i>
