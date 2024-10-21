@@ -956,6 +956,8 @@ const getTable = async (req, res) => {
     const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
     
     const brandId = brandName._id;
+    const brandRow = brandName.rowLabel
+    const brandCol = brandName.colLabel
     
     // Find all types for the brand
     const allTypes = await Type.find({ brandId: brandId });
@@ -993,7 +995,7 @@ const getTable = async (req, res) => {
       }
     }
 
-    return res.json({ matrix: matrix , allColumns: allCols});
+    return res.json({ matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
   } catch (err) {
     console.error("Error get table");
     res.status(500).json({ message: "Internal server error!!(getTable)" });
@@ -1301,7 +1303,7 @@ const editPurchase = async (req,res) => {
         
         currData.stock = stock
         await currData.save()
-        
+
         currStock.totalStock += stock - currStockQty
         await currStock.save()
       }
