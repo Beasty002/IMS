@@ -58,9 +58,9 @@ function Sales({ title, TableComponent, products, setSalesData }) {
 
   const handleStockSave = async () => {
     setEditClicked(!editClicked);
-    console.log(JSON.stringify({ updateStock: resData, title }));
+    console.log(JSON.stringify({ updateStock: resData, title, titleName }));
     try {
-      const response = await fetch(`http://localhost:3000/api/transaction`, {
+      const response = await fetch(`http://localhost:3000/api/${titleName}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
                 onClick={() =>
                   toast.error("Please click on Confirm Edit first", {
                     autoClose: 1300,
-                  })
+                  })  
                 }
                 className="secondary-btn"
               >
