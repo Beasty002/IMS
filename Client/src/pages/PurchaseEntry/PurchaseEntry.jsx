@@ -293,6 +293,7 @@ function PurchaseEntry() {
                   ></i>
                   <input type="number" value={item.counter} readOnly />
                   <i
+                    onClick={() => handleIncrement(item.id)}
                     onMouseDown={() => handleLongPressIncrement(item.id)}
                     onMouseUp={handleLongPressEnd}
                     onMouseLeave={handleLongPressEnd}
