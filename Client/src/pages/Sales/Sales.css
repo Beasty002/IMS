@@ -128,3 +128,16 @@ a {
     padding: 0.4em 0.6em;
   }
 }
+.save-edit-button{
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  margin: 5px 45px;
+  background-color: #1f6dff;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  border-radius: 9px;
+  border: none;
+  float: right;
+}

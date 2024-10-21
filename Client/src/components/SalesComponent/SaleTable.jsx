@@ -7,11 +7,12 @@ function SaleTable({
   handleDataRetrieve,
 }) {
   const [editData, setEditData] = useState([]);
+
   let totalQuantity;
 
   if (editData) {
-     totalQuantity = editData.reduce(
-      (total, product) => total + (product?.sQty || 0),
+    totalQuantity = editData.reduce(
+      (total, product) => total + (parseInt(product?.sQty) || 0),
       0
     );
   }
@@ -34,9 +35,17 @@ function SaleTable({
   return (
     <>
       <div className="sale-quantity-table">
-        <button onClick={() => handleDataRetrieve(editData)}>
-          Save the data
-        </button>
+        {editClicked ? (
+          <button
+            onClick={() => handleDataRetrieve(editData,'sales')}
+            className="save-edit-button"
+          >
+            <i className="bx bxs-edit"></i>
+            <p className="bx-sale">Confirm Edit</p>
+          </button>
+        ) : (
+          <></>
+        )}
         <table>
           <thead className="sale-qnt-table">
             <tr>

@@ -5,6 +5,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   const [dateSetter, setDateSetter] = useState("");
   const [editClicked, setEditClicked] = useState(false);
   const [resData, setResData] = useState([]);
+  const [titleName, setTitleName] = useState("");
 
   useEffect(() => {
     const fetchDataByDate = async () => {
@@ -46,15 +47,17 @@ function Sales({ title, TableComponent, products, setSalesData }) {
     setEditClicked(!editClicked);
   };
 
-  const handleDataRetrieve = (editData) => {
+  const handleDataRetrieve = (editData, type) => {
     console.log("Taneko data yo ho hai", editData);
+    setTitleName(type);
     setResData(editData);
   };
 
   const handleStockSave = async () => {
     setEditClicked(!editClicked);
+    console.log(JSON.stringify({ updateStock: resData, title, titleName }));
     try {
-      const response = await fetch("http://localhost:3000/api/transaction", {
+      const response = await fetch(`http://localhost:3000/api/${titleName}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
