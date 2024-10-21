@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../customHooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,6 +18,8 @@ function PurchaseEntry() {
       colArray: [],
     },
   ]);
+
+  const incrementTimer = useRef(null);
 
   const addNewList = (event) => {
     event.preventDefault();
@@ -43,7 +45,6 @@ function PurchaseEntry() {
     );
     setAddInput(updatedData);
 
-    // Handle category selection
     if (field === "category") {
       const catName = updatedData.find((item) => item.id === itemId)?.category;
       if (catName) {
@@ -56,7 +57,6 @@ function PurchaseEntry() {
       }
     }
 
-    // Handle brand selection
     if (field === "brand") {
       const foundData = updatedData.find((item) => item.id === itemId);
       const brandData = foundData.fetchData.find(
@@ -87,7 +87,6 @@ function PurchaseEntry() {
       }
     }
 
-    // Handle row label selection
     if (field === "rowLabel") {
       const foundData = updatedData.find((item) => item.id === itemId);
       const brndId = foundData.brandData?.type?.find(
@@ -106,7 +105,6 @@ function PurchaseEntry() {
           if (!response.ok) throw new Error("Failed to fetch column data");
           const data = await response.json();
 
-          // Update colArray with the fetched data
           setAddInput((prevData) =>
             prevData.map((item) =>
               item.id === itemId ? { ...item, colArray: data.msg } : item
@@ -156,8 +154,7 @@ function PurchaseEntry() {
     setAddInput((prev) => {
       const updatedList = prev.map((item) =>
         item.id === itemId
-          ? // Math.max is used to determine upper and lower limit
-            { ...item, counter: Math.max(0, item.counter - 1) }
+          ? { ...item, counter: Math.max(0, item.counter - 1) }
           : item
       );
       return updatedList;
@@ -171,6 +168,14 @@ function PurchaseEntry() {
       );
       return updatedList;
     });
+  };
+
+  const handleLongPressIncrement = (itemId) => {
+    incrementTimer.current = setInterval(() => handleIncrement(itemId), 200);
+  };
+
+  const handleLongPressEnd = () => {
+    clearInterval(incrementTimer.current);
   };
 
   const handleDelete = (itemId) => {
@@ -288,13 +293,16 @@ function PurchaseEntry() {
                   ></i>
                   <input type="number" value={item.counter} readOnly />
                   <i
-                    onClick={() => handleIncrement(item.id)}
+                    onMouseDown={() => handleLongPressIncrement(item.id)}
+                    onMouseUp={handleLongPressEnd}
+                    onMouseLeave={handleLongPressEnd}
                     className="bx bxs-plus-circle"
                   ></i>
                 </div>
               </div>
             ))}
           </section>
+
           <div className="btn-container new-entry-btn-container">
             <Link to="/sales">
               <button className="cancel-btn">Back</button>

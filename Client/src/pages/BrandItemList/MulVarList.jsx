@@ -199,7 +199,9 @@ export default function MulVarList() {
   return (
     <>
       <section>
-        <h1>{brandName} {categoryName} </h1>
+        <h1>
+          {brandName} {categoryName}{" "}
+        </h1>
         <section className="brand-list-top mv">
           <div className="search-box">
             <i className="bx bx-search-alt"></i>
@@ -305,6 +307,8 @@ export default function MulVarList() {
           isOpen={catPortal}
           onClose={enableCatPortal}
           specificId={specificId}
+          type="item"
+          multiVar="true"
         />
       </section>
     </>
