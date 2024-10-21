@@ -15,7 +15,7 @@ function PurchaseTable({
 
   if (editData) {
     totalQuantity = editData.reduce(
-      (total, product) => total + (parseInt(product?.sQty) || 0),
+      (total, product) => total + (parseInt(product?.stock) || 0),
       0
     );
   }
