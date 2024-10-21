@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../customHooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -22,6 +22,8 @@ function SaleEntry() {
       colArray: [],
     },
   ]);
+  const incrementTimer = useRef(null);
+  const decrementTimer = useRef(null);
 
   const addNewList = (event) => {
     event.preventDefault();
@@ -170,9 +172,8 @@ function SaleEntry() {
             brandData: [],
             colArray: [],
           },
-          
         ]);
-        navigate('/sales');
+        navigate("/sales");
       } else {
         console.log("Error");
         return;
@@ -216,6 +217,21 @@ function SaleEntry() {
     });
   };
 
+  const handleLongPressIncrement = (itemId) => {
+    incrementTimer.current = setInterval(() => handleIncrement(itemId), 200);
+  };
+
+  const handleLongPressEnd = () => {
+    clearInterval(incrementTimer.current);
+  };
+
+  const handleLongPressDecrement = (itemId) => {
+    decrementTimer.current = setInterval(() => handleDecrement(itemId), 200);
+  };
+
+  const handleLongPressEndDecrement = () => {
+    clearInterval(decrementTimer.current);
+  };
   const handleDelete = (itemId) => {
     setAddInput((prev) => prev.filter((item) => item.id !== itemId));
   };
@@ -242,9 +258,7 @@ function SaleEntry() {
       </section>
 
       <section className="sales-item-container">
-        <h5 className="imp-note">
-          Note: Select the data in order 
-        </h5>
+        <h5 className="imp-note">Note: Select the data in order</h5>
         <form onSubmit={handleSubmission}>
           <section className="sales-entry-items-list">
             {addInput.map((item) => (
@@ -328,11 +342,17 @@ function SaleEntry() {
                 <div className="sales-entry-qty">
                   <i
                     onClick={() => handleDecrement(item.id)}
+                    onMouseDown={() => handleLongPressDecrement(item.id)}
+                    onMouseUp={handleLongPressEndDecrement}
+                    onMouseLeave={handleLongPressEndDecrement}
                     className="bx bxs-minus-circle"
                   ></i>
                   <input type="number" value={item.counter} readOnly />
                   <i
                     onClick={() => handleIncrement(item.id)}
+                    onMouseDown={() => handleLongPressIncrement(item.id)}
+                    onMouseUp={handleLongPressEnd}
+                    onMouseLeave={handleLongPressEnd}
                     className="bx bxs-plus-circle"
                   ></i>
                 </div>

@@ -20,6 +20,7 @@ function PurchaseEntry() {
   ]);
 
   const incrementTimer = useRef(null);
+  const decrementTimer = useRef(null);
 
   const addNewList = (event) => {
     event.preventDefault();
@@ -178,6 +179,14 @@ function PurchaseEntry() {
     clearInterval(incrementTimer.current);
   };
 
+  const handleLongPressDecrement = (itemId) => {
+    decrementTimer.current = setInterval(() => handleDecrement(itemId), 200);
+  };
+
+  const handleLongPressEndDecrement = () => {
+    clearInterval(decrementTimer.current);
+  };
+
   const handleDelete = (itemId) => {
     setAddInput((prev) => prev.filter((item) => item.id !== itemId));
   };
@@ -289,6 +298,9 @@ function PurchaseEntry() {
                 <div className="sales-entry-qty">
                   <i
                     onClick={() => handleDecrement(item.id)}
+                    onMouseDown={() => handleLongPressDecrement(item.id)}
+                    onMouseUp={handleLongPressEndDecrement}
+                    onMouseLeave={handleLongPressEndDecrement}
                     className="bx bxs-minus-circle"
                   ></i>
                   <input type="number" value={item.counter} readOnly />
