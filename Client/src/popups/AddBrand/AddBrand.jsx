@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import "./AddBrand.css";
 
 export default function AddBrand({ isOpen, onClose, newBrand }) {
@@ -33,9 +34,13 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
         console.log("Network error , Please try again later");
         return;
       }
+      toast.success(`${formData.brandName} brand created successfully`, {
+        autoClose: 1000,
+      });
       newBrand("fetch on more time");
       console.log(formData);
       console.log(data);
+
       setFormData({
         brandName: "",
         multiVar: "",
@@ -43,12 +48,14 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
         colLabel: "",
         parentCat: categoryName,
       });
-      onClose();
+      setTimeout(() => {
+        onClose();
+      }, 1300);
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   useEffect(() => {
     const initialState = {
       brandName: "",
@@ -142,6 +149,7 @@ export default function AddBrand({ isOpen, onClose, newBrand }) {
           </div>
         </form>
       </section>
+      <ToastContainer />
     </>,
     document.getElementById("overlay")
   );

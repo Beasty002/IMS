@@ -32,7 +32,7 @@ export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
       });
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 1300);
     } catch (error) {
       console.log(error);
     }

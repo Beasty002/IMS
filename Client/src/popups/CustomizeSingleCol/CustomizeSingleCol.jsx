@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function CustomizeSingleCol({
   isOpen,
@@ -105,7 +106,12 @@ export default function CustomizeSingleCol({
         return;
       }
       console.log(data);
-      // window.location.reload();
+      toast.success(`New column created successfully`, {
+        autoClose: 1000,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1300);
     } catch (error) {
       console.error(error);
     }
@@ -161,10 +167,17 @@ export default function CustomizeSingleCol({
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Failed to update column:", data);
+        toast.error("Failed to update column", {
+          autoClose: 1000,
+        });
         return;
       }
-      console.log("Column updated successfully:", data);
+      toast.success("Column updated successfully", {
+        autoClose: 1000,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1300);
     } catch (error) {
       console.error(error);
     }
@@ -278,6 +291,7 @@ export default function CustomizeSingleCol({
           </div>
         </form>
       </section>
+      <ToastContainer />
     </>,
     document.getElementById("overlay")
   );

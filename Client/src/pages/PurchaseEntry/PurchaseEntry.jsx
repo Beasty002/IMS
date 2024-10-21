@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../customHooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
@@ -145,9 +146,15 @@ function PurchaseEntry() {
           colArray: [],
         },
       ]);
-      navigate("/purchases");
+      toast.success("Successfully bought stock", {
+        autoClose: 1000,
+      });
+      setTimeout(() => {
+        navigate("/purchases");
+      }, 1300);
     } catch (error) {
       console.error(error);
+      toast.error("Unexpected Error occured")
     }
   };
 
@@ -326,6 +333,7 @@ function PurchaseEntry() {
           </div>
         </form>
       </section>
+      <ToastContainer />
     </div>
   );
 }
