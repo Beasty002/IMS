@@ -15,6 +15,7 @@ export default function MulVarList() {
   const [editRowIndex, setEditRowIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [colLabel, setColLabel] = useState([]);
 
   const { fetchBrandData, fetchBrand } = useAuth();
   const { categoryName, brandName } = useParams();
@@ -86,7 +87,9 @@ export default function MulVarList() {
       }
 
       const data = await response.json();
+      console.log(data);
       setTableData(data.matrix);
+      setColLabel(data.allColumns);
     } catch (error) {
       console.error("Fetch error: ", error);
     }
@@ -107,8 +110,9 @@ export default function MulVarList() {
   useEffect(() => {
     if (tableData) {
       setFilteredData(tableData);
+      console.log("Yo hai filter data", filteredData);
     }
-  }, [tableData]);
+  }, [tableData, filteredData]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -236,11 +240,9 @@ export default function MulVarList() {
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
-                {filteredData &&
-                  Object.keys(filteredData).length > 0 &&
-                  Object.keys(Object.values(filteredData)[0]).map(
-                    (colName, index) => <th key={index}>{colName}</th>
-                  )}
+                {colLabel?.map((item) => (
+                  <th key={item._id}>{item.column}</th>
+                ))}
                 <th className="table-action-container">Actions</th>
               </tr>
             </thead>
@@ -253,18 +255,22 @@ export default function MulVarList() {
                     </td>
                     <td>{rowKey}</td>
                     {filteredData[rowKey] &&
-                      Object.entries(filteredData[rowKey]).map(
-                        ([colKey, value], colIndex) => (
+                      Object.entries(filteredData[rowKey])
+
+                      .filter(([innerKey]) => !innerKey.match(/\s\d+/))
+                        .map(([innerKey, value], colIndex) => (
                           <td key={colIndex}>
                             {editRowIndex === rowIndex ? (
                               <input
                                 type="text"
-                                value={editableData[rowKey][colKey]}
+                                value={
+                                  editableData[rowKey]?.[innerKey] || value
+                                }
                                 className="edit-input"
                                 onChange={(e) =>
                                   handleValueChange(
                                     rowKey,
-                                    colKey,
+                                    innerKey,
                                     e.target.value
                                   )
                                 }
@@ -273,8 +279,7 @@ export default function MulVarList() {
                               value
                             )}
                           </td>
-                        )
-                      )}
+                        ))}
                     <td className="table-action-container">
                       <div className="action-container">
                         {editRowIndex === rowIndex ? (

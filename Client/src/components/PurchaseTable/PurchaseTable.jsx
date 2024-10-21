@@ -6,14 +6,12 @@ function PurchaseTable({
   editClicked,
   handleDataRetrieve,
 }) {
-  // 0 is initial value and total is callback and product is var represnting the items inside the data
-  // simply added all the stockLeft attribute inside the data
   const [editData, setEditData] = useState([]);
-  const [allowSave, setAllowSave] = useState(false);
+  const [allowSave, setAllowSave] = useState(false); // Default to false
 
-  let totalQuantity;
+  let totalQuantity = 0;
 
-  if (editData) {
+  if (editData.length) {
     totalQuantity = editData.reduce(
       (total, product) => total + (parseInt(product?.stock) || 0),
       0
@@ -23,7 +21,6 @@ function PurchaseTable({
   useEffect(() => {
     if (data) {
       setEditData(data);
-      console.log(editData);
     }
   }, [data]);
 
@@ -35,32 +32,27 @@ function PurchaseTable({
     );
   };
 
-  // useEffect(() => {
-  //   if (data) {
-  //     console.log("Data yo ho", data);
-  //   }
-  // }, [data]);
+  const handleConfirmEdit = () => {
+    setAllowSave(true); 
+    handleDataRetrieve(editData, "purchase", true);
+  };
 
   return (
     <>
       <div className="sale-quantity-table">
-        {editClicked ? (
+        {editClicked && !allowSave && (
           <button
-            onClick={() => {
-              setAllowSave((prevAllowSave) => {
-                const newAllowSave = !prevAllowSave;
-                handleDataRetrieve(editData, "purchase", newAllowSave);
-                return newAllowSave;
-              });
-            }}
+            onClick={handleConfirmEdit}
             className="save-edit-button"
           >
             <i className="bx bxs-edit"></i>
             <p className="bx-sale">Confirm Edit</p>
           </button>
-        ) : (
-          <></>
         )}
+        {allowSave && (
+          <p className="bx-sale">Editing Enabled. Save your changes.</p>
+        )}
+
         <table>
           <thead className="sale-qnt-table">
             <tr>
@@ -90,7 +82,7 @@ function PurchaseTable({
                   </td>
                 ) : (
                   <td>{item?.stock || 0}</td>
-                )}{" "}
+                )}
               </tr>
             ))}
           </tbody>

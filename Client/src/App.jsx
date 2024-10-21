@@ -14,9 +14,10 @@ import SaleEntry from "./popups/SaleEntry/SaleEntry";
 import MulVarList from "./pages/BrandItemList/MulVarList";
 import SinVarList from "./pages/BrandItemList/SinVarList";
 import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
-import ReportPrint from "./popups/ReportPrint/ReportPrint";
+// import ReportPrint from "./popups/ReportPrint/ReportPrint";
 import { ToastContainer, toast } from "react-toastify";
 import BrandReport from "./pages/BrandReport/BrandReport";
+import FinalReport from "./pages/FinalReport/FinalReport";
 
 export default function App() {
   const location = useLocation();
@@ -80,6 +81,10 @@ export default function App() {
               <Route
                 path="/catReport/:categoryName"
                 element={<BrandReport />}
+              />
+              <Route
+                path="/finalReport/:parentCategory/:brandName"
+                element={<FinalReport />}
               />
             </Routes>
             <ToastContainer />

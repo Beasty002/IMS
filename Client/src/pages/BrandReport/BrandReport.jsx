@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../customHooks/useAuth";
 import ReportPrint from "../../popups/ReportPrint/ReportPrint";
+import { useNavigate } from "react-router-dom";
 
 function BrandReport() {
   const { categoryName } = useParams();
@@ -9,6 +10,8 @@ function BrandReport() {
   const [enablePortal, setEnablePortal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBrands, setFilteredBrands] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (categoryName) {
@@ -28,6 +31,11 @@ function BrandReport() {
       setFilteredBrands(filtered);
     }
   }, [searchTerm, fetchBrand]);
+
+  const handleFinalRedirect = (brandName, parentCategory) => {
+    console.log(" brandname yo ho hai", brandName, parentCategory);
+    navigate(`/finalReport/${parentCategory}/${brandName}`);
+  };
 
   return (
     <>
@@ -65,7 +73,13 @@ function BrandReport() {
         ) : (
           <div className="cat-list">
             {filteredBrands.map((item, index) => (
-              <div key={item._id} className="cat-box">
+              <div
+                onClick={() =>
+                  handleFinalRedirect(item.brandName, item.parentCategory)
+                }
+                key={item._id}
+                className="cat-box"
+              >
                 <h3>{item.brandName}</h3>
                 <p className="cat-stock-availability">
                   Stock available : {stockData[item.brandName]}

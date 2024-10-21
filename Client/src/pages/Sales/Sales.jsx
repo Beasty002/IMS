@@ -7,6 +7,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   const [editClicked, setEditClicked] = useState(false);
   const [resData, setResData] = useState([]);
   const [titleName, setTitleName] = useState("");
+  const [initial, setInitial] = useState(false);
   const [click, setClick] = useState("");
 
   useEffect(() => {
@@ -57,7 +58,9 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   };
 
   const handleStockSave = async () => {
-    setEditClicked(!editClicked);
+    setEditClicked(false);
+    setAllowSave(false);
+
     console.log(JSON.stringify({ updateStock: resData, titleName }));
     try {
       const response = await fetch(`http://localhost:3000/api/${titleName}`, {
@@ -126,6 +129,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
           handleStockEdit={handleStockEdit}
           title={title}
           editClicked={editClicked}
+          initial={initial}
           handleDataRetrieve={handleDataRetrieve}
         />
       </div>
