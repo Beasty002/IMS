@@ -49,7 +49,7 @@ function PurchaseTable({
             onClick={() => {
               setAllowSave((prevAllowSave) => {
                 const newAllowSave = !prevAllowSave;
-                handleDataRetrieve(editData, "sales", newAllowSave);
+                handleDataRetrieve(editData, "purchase", newAllowSave);
                 return newAllowSave;
               });
             }}
