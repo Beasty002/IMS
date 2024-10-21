@@ -1244,6 +1244,75 @@ const getTopSelling = async (req,res) => {
   }
 }
 
+/////////WORKS/////////////////////////
+const editSales = async (req,res) => {
+  try{
+    const {updateStock} = req.body
+
+    
+    for (var stock of updateStock){
+      var { _id ,sBrandId, sRowLabel,sColLabel,sQty } = stock
+      
+      sQty = parseInt(sQty)
+
+      const currData = await Sales.findById(_id)
+      const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
+
+      const currQty = currData.sQty
+
+      if (currQty != sQty){
+        var currSQty = currData.sQty
+        
+        
+        currData.sQty = sQty
+        await currData.save()
+        currSale.soldQty += sQty - currSQty
+        await currSale.save()
+      }
+
+    }
+
+    return res.status(200).json({msg: "Sales updated successfully"})
+  }
+  catch(err){
+    console.error(`Error edit transaction:`, err);
+    return res.status(500).json({ message: `Error edit transaction : ${err.message}` });
+  }
+}
+
+const editPurchase = async (req,res) => {
+  try{
+    // console.log(req.body)
+    const {resData} = req.body
+
+    
+    for (var oneStock of resData){
+      var { _id ,parentBrandId, rowLabel,colLabel,stock } = oneStock
+      
+      stock = parseInt(stock)
+
+      const currData = await Stock.findById(_id)
+      const currStock = await RecordStock.findOne({brandId:parentBrandId, rowLabel:rowLabel, colLabel:colLabel})
+
+      const currQty = currData.stock
+
+      if (currQty != stock){
+        var currStockQty = currData.stock
+        
+        currData.stock = stock
+        await currData.save()
+        
+        currStock.totalStock += stock - currStockQty
+        await currStock.save()
+      }
+
+    }
+  }
+  catch(err){
+    console.error(`Error edit transaction:`, err);
+    return res.status(500).json({ message: `Error edit transaction : ${err.message}` });
+  }
+}
 
 module.exports = {
   getAllCategories,
@@ -1295,4 +1364,6 @@ module.exports = {
   checkStock,
 
   getTopSelling,
+  editSales,
+  editPurchase,
 };
