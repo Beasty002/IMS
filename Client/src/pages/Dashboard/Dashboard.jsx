@@ -41,6 +41,7 @@ const Dashboard = () => {
         console.log(response.statusText);
         return;
       }
+      console.log(data);
     } catch (error) {
       console.error(error);
     }
