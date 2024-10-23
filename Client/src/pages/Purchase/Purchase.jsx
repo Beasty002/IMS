@@ -44,7 +44,7 @@ function Purchase() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+      // console.log(data);
       const filteredData = data.msg.filter((item) => item !== null);
       if (data.msg.every((element) => element === null)) {
         fetchAllSales(prevDate);

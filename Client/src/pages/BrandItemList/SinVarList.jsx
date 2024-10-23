@@ -81,28 +81,7 @@ export default function SinVarList() {
     }
   };
 
-  const handleDeleteClick = async (rowKey) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/type", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ rowKey: rowKey, brandId: specificId }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
-      }
-      console.log(data);
-      window.location.reload();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  
 
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);

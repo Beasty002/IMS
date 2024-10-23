@@ -69,6 +69,10 @@ function SingleVarTable({
     key.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    console.log(editableData);
+  }, [editableData]);
+
   const handleDeleteClick = async (rowKey, rowValue) => {
     try {
       console.log(
@@ -118,7 +122,7 @@ function SingleVarTable({
           </tr>
         </thead>
         <tbody>
-          {filteredData.length > 0 ? (
+          {Object.entries(fetchSingleVarData || 0).length > 0 ? (
             filteredData.map(([key, value], index) => (
               <tr key={index}>
                 <td className="table-checkbox">

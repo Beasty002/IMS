@@ -28,7 +28,7 @@ function SalesPage() {
 
   const fetchAllSales = async (date) => {
     try {
-      console.log(JSON.stringify({ day: date, title: "Sales" }));
+      // console.log(JSON.stringify({ day: date, title: "Sales" }));
       const response = await fetch(
         "http://localhost:3000/api/getSpecificSale",
         {
@@ -60,10 +60,10 @@ function SalesPage() {
     if (dateSetter) {
       fetchAllSales(dateSetter);
     }
-  }, [dateSetter]);
-  useEffect(() => {
-    console.log(salesData);
-  }, [salesData]);
+  }, []);
+  // useEffect(() => {
+  //   console.log(salesData);
+  // }, [salesData]);
 
   return (
     <Sales
