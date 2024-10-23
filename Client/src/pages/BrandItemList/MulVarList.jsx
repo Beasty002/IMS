@@ -110,16 +110,25 @@ export default function MulVarList() {
   useEffect(() => {
     if (tableData) {
       setFilteredData(tableData);
-      console.log("Yo hai filter data", filteredData);
     }
-  }, [tableData, filteredData]);
+  }, [tableData]);
 
   useEffect(() => {
     if (searchQuery) {
+      console.log(searchQuery);
       const filtered = Object.keys(tableData)
-        .filter((rowKey) =>
-          rowKey.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+        .filter((rowKey) => {
+
+          if (rowKey.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return true;
+          }
+
+          return Object.keys(tableData[rowKey]).some((nestedKey) =>
+            String(tableData[rowKey][nestedKey])
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          );
+        })
         .reduce((obj, key) => {
           obj[key] = tableData[key];
           return obj;
@@ -257,7 +266,7 @@ export default function MulVarList() {
                     {filteredData[rowKey] &&
                       Object.entries(filteredData[rowKey])
 
-                      .filter(([innerKey]) => !innerKey.match(/\s\d+/))
+                        .filter(([innerKey]) => !innerKey.match(/\s\d+/))
                         .map(([innerKey, value], colIndex) => (
                           <td key={colIndex}>
                             {editRowIndex === rowIndex ? (
