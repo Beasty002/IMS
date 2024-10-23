@@ -977,12 +977,10 @@ const getTable = async (req, res) => {
       for (let j = 0; j < allCols.length; j++) {
         const col = allCols[j];
         matrix[type.type][col.column] = 0; // init each cell to 0
-        for (let k = 0; k < 3; k++) {
-          matrix[type.type][`${col.column} ${k}`] = 0;
-        }
       }
 
     }
+    // return res.json(allEntries)
     
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
@@ -992,18 +990,11 @@ const getTable = async (req, res) => {
       console.log(entry)
       // return
       
-      if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== null) {
+      if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
         matrix[rowLabel][colLabel] += stock;
 
-        for (let k = 0; k < 3; k++) {
-          matrix[rowLabel][`${colLabel} ${k}`] += stock;
-        }
       } else {
         matrix[rowLabel][colLabel] = stock;
-
-        for (let k = 0; k < 3; k++) {
-          matrix[rowLabel][`${colLabel} ${k}`] = stock;
-        }
       }
     }
 
