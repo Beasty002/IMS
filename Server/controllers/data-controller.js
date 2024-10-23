@@ -9,6 +9,7 @@ const Stock = require("../models/stock-model")
 const Purchase = require("../models/purchase-model")
 const RecordStock = require("../models/record-stock")
 const RecordSale = require("../models/record-sale")
+const ReportStock = require("../models/report-stock")
 
 const { Collection } = require("mongoose");
 const { isString, getSystemErrorMap } = require("util");
@@ -895,10 +896,10 @@ const addPurchase = async (req,res) =>  {
         rowLabel: rowLabel,
         colLabel: colLabel
       });
-  
-  
-      var aStock = await newStock.save();
+      
 
+      var aStock = await newStock.save();
+      
       purchaseIds.push(aStock._id);
 
       const checkStock = await RecordStock.findOne({ brandId:brandId, brand:brand,category:cat,rowLabel:rowLabel, colLabel:colLabel})
@@ -1319,6 +1320,122 @@ const editPurchase = async (req,res) => {
   }
 }
 
+const getReport = async (req, res) => {
+  try {
+    const {brandId} = req.body
+    
+    const brandData = await Brand.findById(brandId);
+
+    const brandName = brandData.brandName
+    const brandRow = brandData.rowLabel
+    const brandCol = brandData.colLabel
+    
+    const allTypes = await Type.find({ brandId: brandId });
+    if (!allTypes){
+      return res.status(404).json({err: `${brandName} has no types` })
+    }
+    
+    const allCols = await Column.find({ brandId: brandId });
+    if (!allCols){
+      return res.status(405).json({err: `${brandName} has no column/items` })
+    }
+    
+    const allEntries = await RecordStock.find( {brandId: brandId});
+    if (!allEntries){
+      return res.status(406).json({ err: `${brandName} has no recorded stock`})
+    }
+
+    var matrix = {};
+    
+    for (let i = 0; i < allTypes.length; i++) {
+      const type = allTypes[i];
+      matrix[type.type] = {}; // create a row for each type
+      
+      
+      for (let j = 0; j < allCols.length; j++) {
+        const col = allCols[j];
+        matrix[type.type][col.column] = { op: 0, in: 0, out: 0, bal: 0 } // init each cell to 0
+      }
+
+    }
+    // return res.json(allEntries)
+
+
+    
+    for (let i = 0; i < allEntries.length; i++) {
+      const entry = allEntries[i];
+      const rowLabel = entry.rowLabel
+      const colLabel = entry.colLabel
+      const stock = entry.totalStock
+
+      const forOp = await ReportStock.findOne({brandId:brandId, rowLabel:rowLabel, colLabel:colLabel})
+      
+      var opVal;
+      if (forOp){
+        opVal = forOp.totalStock
+      }
+      
+      if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
+        matrix[rowLabel][colLabel].op += opVal || 0;
+        matrix[rowLabel][colLabel].in += 0;
+        matrix[rowLabel][colLabel].out += 0;
+        matrix[rowLabel][colLabel].bal += stock;
+
+      } else {
+        matrix[rowLabel][colLabel] = {
+          op: opVal || 0,
+          in:0,
+          out:0,
+          bal:stock
+        };
+      }
+    }
+
+    return res.json({ matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
+  } catch (err) {
+    console.error("Error get table");
+    res.status(500).json({ message: "Internal server error!!(getTable)" });
+  }
+};
+
+
+const editReportStock = async(req,res) => {
+  try{
+      const todayDate = new Date().toISOString().split('T')[0];
+      
+      const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
+      
+      if (!checkDate || checkDate.length ===0){
+        // await ReportStock.deleteMany({});
+        const allRecordStocks = await RecordStock.find()
+        
+        const newReportStocks = allRecordStocks.map(stock => ({
+          // Include all the fields from the RecordStock
+          ...stock.toObject(), // Convert Mongoose document to plain object
+          stockUntilThisDate: todayDate // Add today's date
+        }));
+        console.log("newReportStocksssss🙌🙌🙌🙌")
+        
+        await ReportStock.insertMany(newReportStocks);
+      }
+      else{
+        for (var eachReport of checkDate){
+          const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
+          if (reportDate != todayDate){
+            await eachReport.deleteOne()
+          }
+        }
+      }
+      return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
+
+  }
+  catch(err){
+    console.error(`Error edit report stock:`, err);
+    return res.status(500).json({ message: `Error edit report stock : ${err.message}` });
+  }
+} 
+
+
 module.exports = {
   getAllCategories,
   createCategory,
@@ -1371,4 +1488,8 @@ module.exports = {
   getTopSelling,
   editSales,
   editPurchase,
+
+  getReport,
+
+  editReportStock,
 };
