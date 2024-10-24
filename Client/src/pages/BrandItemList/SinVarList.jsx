@@ -75,6 +75,7 @@ export default function SinVarList() {
         setFetchSingleVarData();
         return;
       }
+      console.log("Code ko data yo hai",data);
       setFetchSingleVarData(data);
     } catch (error) {
       console.error(error);

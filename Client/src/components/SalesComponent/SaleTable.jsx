@@ -21,38 +21,42 @@ function SaleTable({
   useEffect(() => {
     if (data) {
       setEditData(data);
-      console.log(editData);
+      console.log("Yo edit data ho", editData);
     }
-  }, [data]);
+  }, [data, editData]);
 
-  const handleStockChange = (itemId, newQty) => {
+  // const handleStockChange = (itemId, newQty) => {
+  //   setEditData((prevState) =>
+  //     prevState.map((item) =>
+  //       item._id === itemId ? { ...item, sQty: newQty } : item
+  //     )
+  //   );
+  // };
+
+  const handleStockIncrease = (itemId) => {
+    console.log(itemId);
+    setEditData((prevState) =>
+      prevState.map((item) => (item._id === itemId ? item.sQty++ : item))
+    );
+  };
+
+  const handleStockDecrease = (itemId) => {
+    console.log(itemId);
     setEditData((prevState) =>
       prevState.map((item) =>
-        item._id === itemId ? { ...item, sQty: newQty } : item
+        item._id === itemId ? (item.sQty >= 1 ? item.sQty-- : item) : item
       )
     );
+  };
+
+  const handleSaleDelete = (itemId) => {
+    console.log("Delete vayo hai");
+    setEditData((prevState) => prevState.filter((item) => item._id !== itemId));
   };
 
   return (
     <>
       <div className="sale-quantity-table">
-        {editClicked ? (
-          <button
-            onClick={() => {
-              setAllowSave((prevAllowSave) => {
-                const newAllowSave = !prevAllowSave;
-                handleDataRetrieve(editData, "sales", newAllowSave);
-                return newAllowSave;
-              });
-            }}
-            className="save-edit-button"
-          >
-            <i className="bx bxs-edit"></i>
-            <p className="bx-sale">Confirm Edit</p>
-          </button>
-        ) : (
-          <></>
-        )}
         <table>
           <thead className="sale-qnt-table">
             <tr>
@@ -63,14 +67,28 @@ function SaleTable({
           </thead>
           <tbody>
             {editData?.map((item, index) => (
-              <tr key={item?._id || index}>
-                <td className="table-sn">{index + 1}</td>
+              <tr className="single-row" key={item?._id || index}>
+                {editClicked ? (
+                  <td>
+                    <i
+                      onClick={() => handleSaleDelete(item._id)}
+                      className="bx bx-trash del-icon"
+                    ></i>
+                  </td>
+                ) : (
+                  <>
+                    <td className="table-sn">{index + 1}</td>
+                  </>
+                )}
                 <td className="sales-table-prod">
                   {item?.sBrand} {item?.sCategory} {item?.sRowLabel} ({" "}
                   {item?.sColLabel} )
                 </td>
                 {editClicked ? (
-                  <td>
+                  <td className="edits-btns">
+                    <button onClick={() => handleStockDecrease(item._id)}>
+                      -
+                    </button>
                     <input
                       onChange={(e) =>
                         handleStockChange(item._id, e.target.value)
@@ -79,6 +97,9 @@ function SaleTable({
                       type="text"
                       value={item?.sQty}
                     />
+                    <button onClick={() => handleStockIncrease(item._id)}>
+                      +
+                    </button>
                   </td>
                 ) : (
                   <td>{item?.sQty || 0}</td>
@@ -88,10 +109,38 @@ function SaleTable({
           </tbody>
         </table>
       </div>
-      <div className="total-calculate">
-        <span>Total Quantity:</span>
-        <span>{totalQuantity}</span>
-      </div>
+
+      {editClicked ? (
+        <>
+          {editClicked ? (
+            <>
+              <button
+                onClick={() => {
+                  setAllowSave((prevAllowSave) => {
+                    const newAllowSave = !prevAllowSave;
+                    handleDataRetrieve(editData, "sales", newAllowSave);
+                    return newAllowSave;
+                  });
+                }}
+                className="save-edit-button"
+              >
+                <i className="bx bxs-edit"></i>
+                <p className="bx-sale">Confirm Edit</p>
+              </button>
+              <button>Cancel Edit</button>
+            </>
+          ) : (
+            <></>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="total-calculate">
+            <span>Total Quantity:</span>
+            <span>{totalQuantity}</span>
+          </div>
+        </>
+      )}
     </>
   );
 }

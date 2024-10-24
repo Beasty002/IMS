@@ -44,6 +44,8 @@ function SalesPage() {
         console.log(response.statusText);
         return;
       }
+      console.log("Initial fetch yo hai", data);
+      localStorage.setItem("initialData", JSON.stringify(data.msg));
       const filteredData = data.msg.filter((item) => item !== null);
       if (data.msg.every((element) => element === null)) {
         fetchAllSales(prevDate);
@@ -60,9 +62,10 @@ function SalesPage() {
       fetchAllSales(dateSetter);
     }
   }, [dateSetter]);
-  // useEffect(() => {
-  //   console.log(salesData);
-  // }, [salesData]);
+
+  useEffect(() => {
+    console.log("YO sales data ho hai", salesData);
+  }, [salesData]);
 
   return (
     <Sales

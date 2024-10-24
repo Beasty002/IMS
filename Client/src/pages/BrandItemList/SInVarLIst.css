@@ -143,3 +143,28 @@
         gap: 10px;
     }
 }
+
+
+
+.del-icon{
+    color: red;
+    font-size: 20px;
+
+}
+.edits-btns{
+    display: flex;
+    justify-content: space-between;
+}
+.edits-btns :first-child{
+    height: 30px;
+    width: 30px;
+    border: 1px solid rgb(151, 151, 151);
+    border-radius: 50%;
+}
+
+.edits-btns :last-child{
+    height: 30px;
+    width: 30px;
+    border: 1px solid rgb(151, 151, 151);
+    border-radius: 50%;
+}

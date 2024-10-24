@@ -18,6 +18,7 @@ import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
 import { ToastContainer, toast } from "react-toastify";
 import BrandReport from "./pages/BrandReport/BrandReport";
 import FinalReport from "./pages/FinalReport/FinalReport";
+// import EditSaleEntry from "./pages/EditSaleEntry/EditSaleEntry";
 
 export default function App() {
   const location = useLocation();
@@ -86,6 +87,8 @@ export default function App() {
                 path="/finalReport/:parentCategory/:brandId"
                 element={<FinalReport />}
               />
+
+              {/* <Route path="/editSaleEntry" element={<EditSaleEntry />} /> */}
             </Routes>
             <ToastContainer />
           </main>
