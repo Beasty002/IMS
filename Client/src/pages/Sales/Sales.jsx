@@ -51,6 +51,8 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   };
 
   const handleDataRetrieve = (editData, type, allowSave) => {
+    // setEditClicked(!editClicked);
+
     console.log("Taneko data yo ho hai", editData);
     setTitleName(type);
     setClick(allowSave);
@@ -58,9 +60,6 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   };
 
   const handleStockSave = async () => {
-    setEditClicked(false);
-    setAllowSave(false);
-
     console.log(JSON.stringify({ updateStock: resData, titleName }));
     try {
       const response = await fetch(`http://localhost:3000/api/${titleName}`, {
@@ -91,14 +90,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         <div className="btn-container">
           {editClicked ? (
             !click ? (
-              <button
-                onClick={() =>
-                  toast.error("Please click on Confirm Edit first", {
-                    autoClose: 1300,
-                  })
-                }
-                className="secondary-btn"
-              >
+              <button className="secondary-btn">
                 <i className="bx bxs-edit"></i>
                 <p className="bx-sale">Save</p>
               </button>
@@ -126,6 +118,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
       <div className="sale-table-export">
         <TableComponent
           data={products}
+          setEditClicked={setEditClicked}
           handleStockEdit={handleStockEdit}
           title={title}
           editClicked={editClicked}

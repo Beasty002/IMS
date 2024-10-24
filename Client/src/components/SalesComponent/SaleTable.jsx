@@ -5,6 +5,7 @@ function SaleTable({
   handleStockEdit,
   editClicked,
   handleDataRetrieve,
+  setEditClicked,
 }) {
   const [editData, setEditData] = useState([]);
   const [allowSave, setAllowSave] = useState(false);
@@ -112,8 +113,8 @@ function SaleTable({
 
       {editClicked ? (
         <>
-          {editClicked ? (
-            <>
+          {!allowSave ? (
+            <div className="total-calculate">
               <button
                 onClick={() => {
                   setAllowSave((prevAllowSave) => {
@@ -127,8 +128,18 @@ function SaleTable({
                 <i className="bx bxs-edit"></i>
                 <p className="bx-sale">Confirm Edit</p>
               </button>
-              <button>Cancel Edit</button>
-            </>
+              <button
+                onClick={() => setEditClicked(!editClicked)}
+                style={{
+                  backgroundColor: "red",
+                  cursor: "pointer",
+                }}
+                className="save-edit-button"
+              >
+                <i className="bx bxs-edit"></i>
+                <p className="bx-sale">Cancel Edit</p>
+              </button>
+            </div>
           ) : (
             <></>
           )}
