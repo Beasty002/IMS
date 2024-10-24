@@ -698,7 +698,7 @@ const delType = async (req,res) => {
     }
 
     await delRow.deleteOne({ type: rowKey, brandId: brandId })
-    await RecordStock.deleteOne({ brandId: brandId, rowLabel: rowKey})
+    await RecordStock.deleteMany({ brandId: brandId, rowLabel: rowKey})
 
     return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
   }
@@ -711,16 +711,12 @@ const delType = async (req,res) => {
 const addColumn = async (req, res) => {
   try {
     const bodies = req.body;
-    // console.log("adcol",bodies)
-    // // return
 
     for (var body of bodies) {
-      // console.log(body);
       const col = body.columnName;
       const id = body.specificId;
 
       const checkCol = await Column.findOne({ column: col, brandId: id });
-      // console.log(checkCol);
 
       const typeName = body.typeName;
       // only create those column which do not exist already
@@ -765,13 +761,19 @@ const editColumn = async (req,res) => {
 
     await Column.findByIdAndUpdate(id, { column: columnName })
 
-    const updateCorrStock = await Stock.findOne({ colLabel: oldColName, parentBrandId: brandId})
-    const updateCorrRecordStock = await RecordStock.findOne({ colLabel: oldColName, brandId: brandId})
+    const updateCorrStocks = await Stock.find({ colLabel: oldColName, parentBrandId: brandId})
+    const updateCorrRecordStocks = await RecordStock.find({ colLabel: oldColName, brandId: brandId})
     
-    updateCorrStock.colLabel = columnName
-    await updateCorrStock.save();
-    updateCorrRecordStock.colLabel = columnName
-    await updateCorrRecordStock.save()
+    for (var updateCorrStock of updateCorrStocks ){
+      updateCorrStock.colLabel = columnName
+      await updateCorrStock.save();
+    }
+
+    for( var updateCorrRecordStock of updateCorrRecordStocks){
+
+      updateCorrRecordStock.colLabel = columnName
+      await updateCorrRecordStock.save()
+    }
     // console.log(updateCorrStock)
     // return
 
@@ -788,21 +790,22 @@ const delColumn = async (req,res) => {
     // console.log(req.body)
     const { columnId, brandId } = req.body
 
-
     const forDelColName = await Column.findById(columnId)
-
-    const delCol = await Column.deleteOne( { _id: columnId})
-
-    const delColName = forDelColName.column
-    console.log(delColName)
-    const toDelStock = await RecordStock.findOne({ brand: brandId, colLabel: delColName})
-    if (toDelStock){
-
-      const delStock = await RecordStock.deleteOne({ brandId: brandId, colLabel: delColName})
-      console.log("delsto: ",delStock)
+    if (!forDelColName){
+      return res.status(404).json({ message: "Column not found" });
+      
     }
-
-    await delCol.deleteOne({ _id: columnId})
+    const delColName = forDelColName.column
+    
+    const toDelStock = await RecordStock.find({ brandId: brandId, colLabel: delColName})
+    if (toDelStock || toDelStock.length >0){
+      
+      // console.log("delsto: ",delStock)
+      await RecordStock.deleteMany({ brandId: brandId, colLabel: delColName})
+    }
+    
+    await Column.deleteOne({ _id: columnId})
+    return res.status(200).json({ message: "Column and related stock deleted successfully" });
 
 
   }
@@ -962,11 +965,11 @@ const getTable = async (req, res) => {
     
     // Find all types for the brand
     const allTypes = await Type.find({ brandId: brandId });
-    // Find all columns for the brand
+    
     const allCols = await Column.find({ brandId: brandId });
     
-    // Find all entries for the brand and category
-    const allEntries = await RecordStock.find({ category: cat, brand: brand });
+    const allEntries = await RecordStock.find( {brandId: brandId});
+    // return res.json({allEntries: allEntries, alltypes: allTypes, allCols: allCols})
     
     var matrix = {};
     
@@ -979,7 +982,7 @@ const getTable = async (req, res) => {
         const col = allCols[j];
         matrix[type.type][col.column] = 0; // init each cell to 0
       }
-
+      
     }
     // return res.json(allEntries)
     
@@ -988,12 +991,11 @@ const getTable = async (req, res) => {
       const rowLabel = entry.rowLabel
       const colLabel = entry.colLabel
       const stock = entry.totalStock
-      console.log(entry)
-      // return
+      console.log("row: ",rowLabel,"  column: ",colLabel, "matrix: ",matrix)
       
-      if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
+      if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== null) {
         matrix[rowLabel][colLabel] += stock;
-
+        
       } else {
         matrix[rowLabel][colLabel] = stock;
       }
@@ -1364,19 +1366,22 @@ const getReport = async (req, res) => {
     
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
+      const currBrandId = entry.brandId
       const rowLabel = entry.rowLabel
       const colLabel = entry.colLabel
       const stock = entry.totalStock
 
-      const forOp = await ReportStock.findOne({brandId:brandId, rowLabel:rowLabel, colLabel:colLabel})
+      const forOp = await ReportStock.findOne({brandId:currBrandId, rowLabel:rowLabel, colLabel:colLabel})
       
-      var opVal;
+      var opVal = 0;
       if (forOp){
         opVal = forOp.totalStock
+        console.log(forOp)
       }
       
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
         matrix[rowLabel][colLabel].op += opVal || 0;
+        return
         matrix[rowLabel][colLabel].in += 0;
         matrix[rowLabel][colLabel].out += 0;
         matrix[rowLabel][colLabel].bal += stock;
@@ -1393,8 +1398,8 @@ const getReport = async (req, res) => {
 
     return res.json({ matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
   } catch (err) {
-    console.error("Error get table");
-    res.status(500).json({ message: "Internal server error!!(getTable)" });
+    console.error("Error get report", err);
+    res.status(500).json({ message:`Error getReport : ${err.message}`});
   }
 };
 
