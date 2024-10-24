@@ -76,6 +76,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         return;
       }
       console.log(data);
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
