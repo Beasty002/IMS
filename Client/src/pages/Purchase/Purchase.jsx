@@ -60,7 +60,7 @@ function Purchase() {
     if (dateSetter) {
       fetchAllSales(dateSetter);
     }
-  }, []);
+  }, [dateSetter]);
 
   // const purchaseList = [
   //   { id: 1, product: "Mayur Door 80*90 (Ganesgh GT)", stockLeft: 50 },

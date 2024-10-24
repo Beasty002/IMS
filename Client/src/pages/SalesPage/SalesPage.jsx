@@ -44,7 +44,6 @@ function SalesPage() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
       const filteredData = data.msg.filter((item) => item !== null);
       if (data.msg.every((element) => element === null)) {
         fetchAllSales(prevDate);
@@ -60,7 +59,7 @@ function SalesPage() {
     if (dateSetter) {
       fetchAllSales(dateSetter);
     }
-  }, []);
+  }, [dateSetter]);
   // useEffect(() => {
   //   console.log(salesData);
   // }, [salesData]);
