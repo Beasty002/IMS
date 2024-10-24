@@ -685,19 +685,37 @@ const addType = async (req,res) => {
 
 const delType = async (req,res) => {
   try{
-    
-    const { rowKey, brandId } = req.body
-    
-    const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
-    
-    if (!delRow){
-      return res.status(404).json({ err: `${rowKey} not found!`})
+    if (req.body.itemName){
+      const { selectedKey, itemName, brandId} = req.body
+
+      const delRow = await Type.findOne({ brandId: brandId , type: selectedKey})
+      const delRowId = delRow._id
+
+      
+      await RecordStock.deleteMany({ brandId: brandId, rowLabel: selectedKey, colLabel: itemName})
+      
+      await Column.deleteOne({ brandId: brandId, column:itemName, typeId: delRowId})
+      console.log(delRowId)
+      return
+
+      return res.status(200).json({ msg: `${itemName} deleted successfully!`})
+
+    }else{
+
+      const { rowKey, brandId } = req.body
+      
+      const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
+      
+      if (!delRow){
+        return res.status(404).json({ err: `${rowKey} not found!`})
+      }
+  
+      await delRow.deleteOne({ type: rowKey, brandId: brandId })
+      await RecordStock.deleteMany({ brandId: brandId, rowLabel: rowKey})
+  
+      return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
     }
-
-    await delRow.deleteOne({ type: rowKey, brandId: brandId })
-    await RecordStock.deleteMany({ brandId: brandId, rowLabel: rowKey})
-
-    return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
+    
   }
   catch(err){
     console.error("Error del type");
