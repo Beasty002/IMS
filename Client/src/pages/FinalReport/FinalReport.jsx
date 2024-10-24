@@ -57,7 +57,7 @@ function FinalReport() {
   return (
     <>
       <div class="report-table-container">
-        <table>
+        <table id="finalReport">
           <thead class="report-table-head">
             <tr>
               <th rowspan="2">S.N</th>
