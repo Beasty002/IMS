@@ -3,27 +3,26 @@ import { useParams } from "react-router-dom";
 import "./FinalReport.css";
 
 function FinalReport() {
-  const { parentCategory, brandName } = useParams();
+  const { parentCategory, brandId } = useParams();
   const [fetchedData, setFetchedData] = useState([]);
   const [matrixKey, setMatrixKey] = useState({});
   const [rowLabel, setRowLabel] = useState("");
   const [colLabel, setColLabel] = useState("");
+
   const fetchTotalData = async () => {
     console.log(
       JSON.stringify({
-        categoryName: parentCategory,
-        brandName: brandName,
+        brandId: brandId,
       })
     );
     try {
-      const response = await fetch("http://localhost:3000/api/getTable", {
+      const response = await fetch("http://localhost:3000/api/report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cat: parentCategory,
-          brand: brandName,
+          brandId: brandId,
         }),
       });
       const data = await response.json();
@@ -42,7 +41,7 @@ function FinalReport() {
   };
 
   useEffect(() => {
-    if (parentCategory && brandName) {
+    if (parentCategory && brandId) {
       fetchTotalData();
     }
   }, []);
@@ -88,8 +87,12 @@ function FinalReport() {
                 <td>{index + 1}</td>
                 <td>{key}</td>
 
-                {Object.entries(value)?.map(([key, value], index) => (
-                  <td>{value}</td>
+                {Object.entries(value)?.map(([key, innerValue], index) => (
+                  <>
+                    {Object.entries(innerValue)?.map(([key, value], index) => (
+                      <td>{value}</td>
+                    ))}
+                  </>
                 ))}
               </tr>
             ))}

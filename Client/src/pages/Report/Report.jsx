@@ -39,6 +39,7 @@ function Report() {
     navigate(`/catReport/${categoryName}`);
   };
 
+
   const getCategoryStock = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/getCatStock", {

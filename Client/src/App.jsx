@@ -83,7 +83,7 @@ export default function App() {
                 element={<BrandReport />}
               />
               <Route
-                path="/finalReport/:parentCategory/:brandName"
+                path="/finalReport/:parentCategory/:brandId"
                 element={<FinalReport />}
               />
             </Routes>

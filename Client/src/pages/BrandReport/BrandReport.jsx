@@ -32,9 +32,9 @@ function BrandReport() {
     }
   }, [searchTerm, fetchBrand]);
 
-  const handleFinalRedirect = (brandName, parentCategory) => {
-    console.log(" brandname yo ho hai", brandName, parentCategory);
-    navigate(`/finalReport/${parentCategory}/${brandName}`);
+  const handleFinalRedirect = (brandId, parentCategory) => {
+    console.log(" brandname yo ho hai", brandId, parentCategory);
+    navigate(`/finalReport/${parentCategory}/${brandId}`);
   };
 
   return (
@@ -75,7 +75,7 @@ function BrandReport() {
             {filteredBrands.map((item, index) => (
               <div
                 onClick={() =>
-                  handleFinalRedirect(item.brandName, item.parentCategory)
+                  handleFinalRedirect(item._id, item.parentCategory)
                 }
                 key={item._id}
                 className="cat-box"
