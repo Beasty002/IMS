@@ -1270,27 +1270,31 @@ const getTopSelling = async (req,res) => {
 /////////WORKS/////////////////////////
 const editSales = async (req,res) => {
   try{
-    const {updateStock} = req.body
+    const {resData} = req.body
 
-    
-    for (var stock of updateStock){
+    for (var stock of resData){
       var { _id ,sBrandId, sRowLabel,sColLabel,sQty } = stock
       
-      sQty = parseInt(sQty)
-
       const currData = await Sales.findById(_id)
       const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
+      const currStock = await RecordStock.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
 
       const currQty = currData.sQty
 
       if (currQty != sQty){
         var currSQty = currData.sQty
-        
-        
+
         currData.sQty = sQty
         await currData.save()
+
         currSale.soldQty += sQty - currSQty
         await currSale.save()
+
+        if (currStock){
+          currStock.totalStock += currSQty - sQty
+
+          await currStock.save()
+        }
       }
 
     }
