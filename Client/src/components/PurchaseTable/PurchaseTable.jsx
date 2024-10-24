@@ -81,20 +81,26 @@ function PurchaseTable({
                 </td>
                 {editClicked ? (
                   <td className="edits-btns">
-                    <button onClick={() => handleStockDecrease(item._id)}>
-                      -
-                    </button>
-                    <input
-                      onChange={(e) =>
-                        handleStockChange(item._id, e.target.value)
-                      }
-                      className="edit-input"
-                      type="text"
-                      value={item?.stock}
-                    />
-                    <button onClick={() => handleStockIncrease(item._id)}>
-                      +
-                    </button>
+                    {allowSave ? (
+                      <>{item?.stock || 0}</>
+                    ) : (
+                      <>
+                        <button onClick={() => handleStockDecrease(item._id)}>
+                          -
+                        </button>
+                        <input
+                          onChange={(e) =>
+                            handleStockChange(item._id, e.target.value)
+                          }
+                          className="edit-input"
+                          type="text"
+                          value={item?.stock}
+                        />
+                        <button onClick={() => handleStockIncrease(item._id)}>
+                          +
+                        </button>
+                      </>
+                    )}
                   </td>
                 ) : (
                   <td>{item?.stock || 0}</td>
@@ -122,7 +128,7 @@ function PurchaseTable({
                 <p className="bx-sale">Confirm Edit</p>
               </button>
               <button
-                onClick={() => setEditClicked(!editClicked)}
+                onClick={() => window.location.reload()}
                 style={{
                   backgroundColor: "red",
                   cursor: "pointer",
@@ -134,7 +140,12 @@ function PurchaseTable({
               </button>
             </div>
           ) : (
-            <></>
+            <>
+              <div className="total-calculate">
+                <span>Total Quantity:</span>
+                <span>{totalQuantity}</span>
+              </div>
+            </>
           )}
         </>
       ) : (

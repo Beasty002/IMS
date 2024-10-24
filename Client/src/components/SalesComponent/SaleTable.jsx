@@ -87,20 +87,26 @@ function SaleTable({
                 </td>
                 {editClicked ? (
                   <td className="edits-btns">
-                    <button onClick={() => handleStockDecrease(item._id)}>
-                      -
-                    </button>
-                    <input
-                      onChange={(e) =>
-                        handleStockChange(item._id, e.target.value)
-                      }
-                      className="edit-input"
-                      type="text"
-                      value={item?.sQty}
-                    />
-                    <button onClick={() => handleStockIncrease(item._id)}>
-                      +
-                    </button>
+                    {allowSave ? (
+                      <>{item?.sQty || 0}</>
+                    ) : (
+                      <>
+                        <button onClick={() => handleStockDecrease(item._id)}>
+                          -
+                        </button>
+                        <input
+                          onChange={(e) =>
+                            handleStockChange(item._id, e.target.value)
+                          }
+                          className="edit-input"
+                          type="text"
+                          value={item?.sQty}
+                        />
+                        <button onClick={() => handleStockIncrease(item._id)}>
+                          +
+                        </button>
+                      </>
+                    )}
                   </td>
                 ) : (
                   <td>{item?.sQty || 0}</td>
@@ -129,7 +135,9 @@ function SaleTable({
                 <p className="bx-sale">Confirm Edit</p>
               </button>
               <button
-                onClick={() => setEditClicked(!editClicked)}
+                onClick={() => {
+                  window.location.reload();
+                }}
                 style={{
                   backgroundColor: "red",
                   cursor: "pointer",
