@@ -319,13 +319,10 @@ const getBrand = async (req,res) => {
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
 const salesEntry = async (req,res) => {
   try{
-      // console.log(req.body);
       var saleIds = [];
       var count =0;
 
-      const sales = req.body;
-
-      console.log(sales)
+      const sales = req.body
 
       for(var sale of sales.addInput){
         count++;
@@ -1347,6 +1344,51 @@ const getReport = async (req, res) => {
       return res.status(406).json({ err: `${brandName} has no recorded stock`})
     }
 
+    const today = new Date().toISOString().split('T')[0]
+
+    const todaysPurchases = await Purchase.find({
+      dop: today
+    });
+
+    const todaysSales = await SalesRecord.find({
+      dos: today
+    });
+
+    const purchaseQuantities = {};
+    const saleQuantities = {};
+
+    // process purchase (IN)
+    for (const purchase of todaysPurchases) {
+      const stockIds = purchase.purchaseIds;
+      
+      // Get all stocks referenced in this purchase
+      const purchasedStocks = await Stock.find({
+        _id: { $in: stockIds },
+        parentBrandId: brandId
+      });
+
+      // Sum up stocks by row and column
+      for (const stock of purchasedStocks) {
+        const key = `${stock.rowLabel}-${stock.colLabel}`;
+        purchaseQuantities[key] = (purchaseQuantities[key] || 0) + stock.stock;
+      }
+    }
+
+    // Process sales (OUT)
+    for (const sale of todaysSales) {
+      const saleIds = sale.saleIds;
+      
+      const soldItems = await Sales.find({
+        _id: { $in: saleIds },
+        sBrandId: brandId
+      });
+
+      for (const item of soldItems) {
+        const key = `${item.sRowLabel}-${item.sColLabel}`;
+        saleQuantities[key] = (saleQuantities[key] || 0) + item.sQty;
+      }
+    }
+
     var matrix = {};
     
     for (let i = 0; i < allTypes.length; i++) {
@@ -1362,8 +1404,6 @@ const getReport = async (req, res) => {
     }
     // return res.json(allEntries)
 
-
-    
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
       const currBrandId = entry.brandId
@@ -1373,28 +1413,25 @@ const getReport = async (req, res) => {
 
       const forOp = await ReportStock.findOne({brandId:currBrandId, rowLabel:rowLabel, colLabel:colLabel})
       
-      var opVal = 0;
-      if (forOp){
-        opVal = forOp.totalStock
-      }
+      var opVal = forOp ? forOp.totalStock : 0;
       
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
         matrix[rowLabel][colLabel].op += opVal || 0;
-        matrix[rowLabel][colLabel].in += 0;
-        matrix[rowLabel][colLabel].out += 0;
+        matrix[rowLabel][colLabel].in += purchaseQuantities[`${rowLabel}-${colLabel}`] || 0;
+        matrix[rowLabel][colLabel].out += saleQuantities[`${rowLabel}-${colLabel}`] || 0;
         matrix[rowLabel][colLabel].bal += stock;
 
       } else {
         matrix[rowLabel][colLabel] = {
           op: opVal || 0,
-          in:0,
-          out:0,
+          in:purchaseQuantities[`${rowLabel}-${colLabel}`] || 0,
+          out:saleQuantities[`${rowLabel}-${colLabel}`] || 0,
           bal:stock
         };
       }
     }
 
-    return res.json({ matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
+    return res.json({today:today, matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
   } catch (err) {
     console.error("Error get report", err);
     res.status(500).json({ message:`Error getReport : ${err.message}`});
