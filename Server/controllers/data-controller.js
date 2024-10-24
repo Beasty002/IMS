@@ -1376,12 +1376,10 @@ const getReport = async (req, res) => {
       var opVal = 0;
       if (forOp){
         opVal = forOp.totalStock
-        console.log(forOp)
       }
       
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
         matrix[rowLabel][colLabel].op += opVal || 0;
-        return
         matrix[rowLabel][colLabel].in += 0;
         matrix[rowLabel][colLabel].out += 0;
         matrix[rowLabel][colLabel].bal += stock;
