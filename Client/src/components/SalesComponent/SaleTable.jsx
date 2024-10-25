@@ -58,16 +58,14 @@ function SaleTable({
 
   const checkValidation = async (itemId) => {
     const newQuantity = editData.find((item) => item._id === itemId);
-    const productId = newQuantity._id;
-    const productQuantity = newQuantity.sQty;
-    const productName = newQuantity.sColLabel;
-    console.log("Naya quantity", newQuantity);
+    // const productId = newQuantity._id;
+    // const productQuantity = newQuantity.sQty;
+    // const productName = newQuantity.sColLabel;
+    // console.log("Naya quantity", newQuantity);
     console.log(
       "Fetch hanne data",
       JSON.stringify({
-        productId: productId,
-        productQuantity: productQuantity,
-        colLabel: productName,
+        newQuantity,
       })
     );
     try {
@@ -77,8 +75,7 @@ function SaleTable({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productId: productId,
-          productQuantity: productQuantity,
+          newQuantity,
         }),
       });
       const data = await response.json();
