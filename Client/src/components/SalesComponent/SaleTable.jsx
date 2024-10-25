@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 function SaleTable({
   data = [],
@@ -83,7 +84,14 @@ function SaleTable({
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+      console.log("Repsone yo hai", data.updateStatus);
+      if (data.updateStatus === false) {
+        console.log("Fetch bhitra ko id", itemId);
+        toast.error("Not enough stock",{
+          autoClose:800
+        });
+        handleStockDecrease(itemId);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -158,6 +166,7 @@ function SaleTable({
           </tbody>
         </table>
       </div>
+      <ToastContainer />
 
       {editClicked ? (
         <>
