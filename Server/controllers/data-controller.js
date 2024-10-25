@@ -1506,9 +1506,13 @@ const editReportStock = async(req,res) => {
 const validateStock = async (req,res) => {
   try{
     console.log(req.body)
-    const { _id , sBrandId,sRowLabel,sColLabel ,sQty} = req.body.newQuantity
+    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty} = req.body.newQuantity
 
-    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
+    const stock = await RecordSale.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
+
+    if (!stock){
+      return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
+    }
 
     if (stock.totalStock < sQty){
       return res.json({ updateStatus : false, totalStock: stock.totalStock})
