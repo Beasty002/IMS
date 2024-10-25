@@ -1273,7 +1273,7 @@ const editSales = async (req,res) => {
     const {resData} = req.body
 
     for (var stock of resData){
-      var { _id ,sBrandId, sRowLabel,sColLabel,sQty } = stock
+      var { _id ,sBrandId, sBrand, sCategory, sRowLabel,sColLabel,sQty } = stock
       
       const currData = await Sales.findById(_id)
       const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
@@ -1291,7 +1291,12 @@ const editSales = async (req,res) => {
         await currSale.save()
 
         if (currStock){
+          const currStockQty = currStock.totalStock
           currStock.totalStock += currSQty - sQty
+
+          if (currStock.totalStock <0){
+            return res.status(408).json({ err: `${sBrand} ${sCategory} has only ${currStockQty} stock`})
+          }
 
           await currStock.save()
         }
@@ -1309,17 +1314,16 @@ const editSales = async (req,res) => {
 
 const editPurchase = async (req,res) => {
   try{
-    // console.log(req.body)
     const {resData} = req.body
-
+    
     
     for (var oneStock of resData){
       var { _id ,parentBrandId, rowLabel,colLabel,stock } = oneStock
       
-      stock = parseInt(stock)
-
       const currData = await Stock.findById(_id)
       const currStock = await RecordStock.findOne({brandId:parentBrandId, rowLabel:rowLabel, colLabel:colLabel})
+      console.log(currData)
+      return
 
       const currQty = currData.stock
 
@@ -1334,7 +1338,9 @@ const editPurchase = async (req,res) => {
       }
 
     }
+    return res.status(200).json({msg: "Purchase history updated!"})
   }
+
   catch(err){
     console.error(`Error edit transaction:`, err);
     return res.status(500).json({ message: `Error edit transaction : ${err.message}` });
@@ -1497,6 +1503,25 @@ const editReportStock = async(req,res) => {
   }
 } 
 
+const validateStock = async (req,res) => {
+  try{
+    console.log(req.body)
+    const { _id , sBrandId,sRowLabel,sColLabel ,sQty} = req.body.newQuantity
+
+    const stock = await RecordStock.find({ brandId: sBrandId})
+
+    if (stock.totalStock < sQty){
+      return res.json({ updateStatus : false, totalStock: stock.totalStock})
+    }
+
+    return res.json({ updateStatus: true})
+  }
+  catch(err){
+    console.error(`Error validate stock:`, err);
+    return res.status(500).json({ message: `Error validate stock : ${err.message}` });
+
+  }
+}
 
 module.exports = {
   getAllCategories,
@@ -1554,4 +1579,6 @@ module.exports = {
   getReport,
 
   editReportStock,
+
+  validateStock,
 };
