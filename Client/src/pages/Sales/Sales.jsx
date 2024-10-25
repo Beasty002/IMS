@@ -80,7 +80,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
     } catch (error) {
       console.log(error);
     }
-  };
+  };  
   return (
     <section className="sale-purchase">
       <h1>{title} Summary </h1>

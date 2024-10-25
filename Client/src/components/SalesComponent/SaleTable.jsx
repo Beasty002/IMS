@@ -39,6 +39,7 @@ function SaleTable({
     setEditData((prevState) =>
       prevState.map((item) => (item._id === itemId ? item.sQty++ : item))
     );
+    checkValidation(itemId);
   };
 
   const handleStockDecrease = (itemId) => {
@@ -54,6 +55,46 @@ function SaleTable({
     console.log("Delete vayo hai");
     setEditData((prevState) => prevState.filter((item) => item._id !== itemId));
   };
+
+  const checkValidation = async (itemId) => {
+    const newQuantity = editData.find((item) => item._id === itemId);
+    const productId = newQuantity._id;
+    const productQuantity = newQuantity.sQty;
+    const productName = newQuantity.sColLabel;
+    console.log("Naya quantity", newQuantity);
+    console.log(
+      "Fetch hanne data",
+      JSON.stringify({
+        productId: productId,
+        productQuantity: productQuantity,
+        colLabel: productName,
+      })
+    );
+    try {
+      const response = await fetch("http://localhost:3000/api/stock", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: productId,
+          productQuantity: productQuantity,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(editData);
+  }, [editData]);
 
   return (
     <>
@@ -102,7 +143,11 @@ function SaleTable({
                           type="text"
                           value={item?.sQty}
                         />
-                        <button onClick={() => handleStockIncrease(item._id)}>
+                        <button
+                          onClick={() => {
+                            handleStockIncrease(item._id);
+                          }}
+                        >
                           +
                         </button>
                       </>
