@@ -1514,7 +1514,9 @@ const validateStock = async (req,res) => {
       return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
     }
 
-    if (stock.totalStock < sQty){
+    console.log
+
+    if (stock.soldQty < sQty){
       return res.json({ updateStatus : false, totalStock: stock.totalStock})
     }
 
