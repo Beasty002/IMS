@@ -1508,7 +1508,7 @@ const validateStock = async (req,res) => {
     console.log(req.body)
     const { _id , sBrandId,sRowLabel,sColLabel ,sQty} = req.body.newQuantity
 
-    const stock = await RecordStock.find({ brandId: sBrandId})
+    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
 
     if (stock.totalStock < sQty){
       return res.json({ updateStatus : false, totalStock: stock.totalStock})
