@@ -1469,32 +1469,32 @@ const getReport = async (req, res) => {
 
 const editReportStock = async(req,res) => {
   try{
-      const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date().toISOString().split('T')[0];
+    
+    const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
+    
+    if (!checkDate || checkDate.length ===0){
+      // await ReportStock.deleteMany({});
+      const allRecordStocks = await RecordStock.find()
       
-      const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
+      const newReportStocks = allRecordStocks.map(stock => ({
+        // Include all the fields from the RecordStock
+        ...stock.toObject(), // Convert Mongoose document to plain object
+        stockUntilThisDate: todayDate // Add today's date
+      }));
+      console.log("newReportStocksssss🙌🙌🙌🙌")
       
-      if (!checkDate || checkDate.length ===0){
-        // await ReportStock.deleteMany({});
-        const allRecordStocks = await RecordStock.find()
-        
-        const newReportStocks = allRecordStocks.map(stock => ({
-          // Include all the fields from the RecordStock
-          ...stock.toObject(), // Convert Mongoose document to plain object
-          stockUntilThisDate: todayDate // Add today's date
-        }));
-        console.log("newReportStocksssss🙌🙌🙌🙌")
-        
-        await ReportStock.insertMany(newReportStocks);
-      }
-      else{
-        for (var eachReport of checkDate){
-          const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
-          if (reportDate != todayDate){
-            await eachReport.deleteOne()
-          }
+      await ReportStock.insertMany(newReportStocks);
+    }
+    else{
+      for (var eachReport of checkDate){
+        const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
+        if (reportDate != todayDate){
+          await eachReport.deleteOne()
         }
       }
-      return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
+    }
+    return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
 
   }
   catch(err){
@@ -1506,17 +1506,15 @@ const editReportStock = async(req,res) => {
 const validateStock = async (req,res) => {
   try{
     console.log(req.body)
-    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty} = req.body.newQuantity
+    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty, oldValue} = req.body.newQuantity
 
-    const stock = await RecordSale.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
+    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
 
     if (!stock){
       return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
     }
-
-    console.log(sQty - stock.soldQty)
-
-    if (stock.soldQty < sQty - stock.soldQty ){
+    console.log(sQty)
+    if ( stock.totalStock < sQty - oldValue ){
       return res.json({ updateStatus : false, totalStock: stock.totalStock})
     }
 
