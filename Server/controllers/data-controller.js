@@ -520,9 +520,23 @@ const getSpecificSale = async (req,res) => {
           
           var specificSale = await schema.findById(saleId)
           // console.log(specificSale)
-          
-          specificSales.push(specificSale)
+          // specificSales.push(specificSale)
+          const existingIndex = specificSales.findIndex(item => 
+            item.sCategory === specificSale.sCategory &&
+            item.sBrand === specificSale.sBrand &&
+            item.sRowLabel === specificSale.sRowLabel &&
+            item.sColLabel === specificSale.sColLabel
+          );
+      
+          if (existingIndex !== -1) {
+              // If match found, add the quantities
+              specificSales[existingIndex].sQty += specificSale.sQty;
+          } else {
+              // If no match, push as new item
+              specificSales.push(specificSale);
+          }
         }
+
       }
     }
 
