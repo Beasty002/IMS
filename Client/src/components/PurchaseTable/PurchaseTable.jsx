@@ -99,7 +99,7 @@ function PurchaseTable({
       if (data.updateStatus === false) {
         // console.log("Fetch bhitra ko id", itemId);
         // toast.error("Not enough stock");
-        handleStockDecrease(itemId);
+        handleStockIncrease(itemId);
         return;
       } else {
         console.log("Chalxa");
