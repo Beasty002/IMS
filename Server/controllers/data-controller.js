@@ -1302,8 +1302,8 @@ const editSales = async (req,res) => {
       const currData = await Sales.findById(_id)
       const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
       const currStock = await RecordStock.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
-      console.log(req.body)
-      return
+      // console.log(req.body)
+      // return
 
       const currQty = currData.sQty
 
@@ -1311,9 +1311,10 @@ const editSales = async (req,res) => {
         var currSQty = currData.sQty
 
         currData.sQty = sQty
+        currSale.soldQty += sQty - currSQty
+
         await currData.save()
 
-        currSale.soldQty += sQty - currSQty
         await currSale.save()
 
         if (currStock){
