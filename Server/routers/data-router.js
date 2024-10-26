@@ -27,7 +27,8 @@ router.route("/rename").put(datac.renameBrand)
 router.route("/sales")
   .get(datac.getAllSales)
   .post(datac.salesEntry)
-  .patch(datac.editSales);
+  .patch(datac.editSales)
+  .delete(datac.delSale);
 
 router.route("/topSelling").get(datac.getTopSelling)
 
@@ -37,6 +38,7 @@ router.route("/getSpecificSale").post(datac.getSpecificSale)
 router.route("/purchase")
   .post(datac.addPurchase)
   .patch(datac.editPurchase)
+  .delete(datac.delPurchase)
 
 router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
 router.route("/getPastMonthSales").get(datac.getPastMonthSales); 

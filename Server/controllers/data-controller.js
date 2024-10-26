@@ -1587,9 +1587,31 @@ const validatePurchStock = async (req,res) => {
   catch(err){
     console.error(`Error validate purchase stock:`, err);
     return res.status(500).json({ message: `Error validate purchase stock : ${err.message}` });
-
+    
   }
 }
+const deleteDocument = async (req, res, Model, type = 'item') => {
+  try {
+    console.log(req.body);
+    const { _id } = req.body;
+    const deletedDoc = await Model.findByIdAndDelete(_id);
+
+    if (deletedDoc) {
+      return res.status(200).json({ msg: `${type} deleted successfully` });
+    } else {
+      return res.status(404).json({ err: `No such ${type} found` });
+    }
+  } catch (err) {
+    console.error(`Error deleting ${type}:`, err);
+    return res.status(500).json({ message: `Error deleting ${type}: ${err.message}` });
+  }
+};
+
+// Usage
+const delSale = (req, res) => deleteDocument(req, res, Sales, 'sale');
+const delPurchase = (req, res) => deleteDocument(req, res, Stock, 'purchase');
+
+
 
 module.exports = {
   getAllCategories,
@@ -1650,4 +1672,7 @@ module.exports = {
 
   validateStock,
   validatePurchStock,
+
+  delSale,
+  delPurchase
 };
