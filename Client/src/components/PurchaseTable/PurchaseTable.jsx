@@ -9,6 +9,7 @@ function PurchaseTable({
 }) {
   const [editData, setEditData] = useState([]);
   const [allowSave, setAllowSave] = useState(false);
+  const [startingStock, setStartingStock] = useState({});
 
   let totalQuantity = 0;
 
@@ -33,6 +34,20 @@ function PurchaseTable({
   //   );
   // };
 
+  useEffect(() => {
+    if (data) {
+      setEditData(data);
+
+      const initialStockData = data.reduce((acc, item) => {
+        acc[item._id] = item.stock;
+        return acc;
+      }, {});
+      setStartingStock(initialStockData);
+
+      console.log("Initial stock data set:", initialStockData);
+    }
+  }, [data]);
+
   const handleStockIncrease = (itemId) => {
     console.log(itemId);
     setEditData((prevState) =>
@@ -47,6 +62,51 @@ function PurchaseTable({
         item._id === itemId ? (item.stock >= 1 ? item.stock-- : item) : item
       )
     );
+    checkValidation(itemId);
+  };
+
+  const checkValidation = async (itemId) => {
+    const newQuantity = editData.find((item) => item._id === itemId);
+    // const productId = newQuantity._id;
+    // const productQuantity = newQuantity.sQty;
+    // const productName = newQuantity.sColLabel;
+    // console.log("Naya quantity", newQuantity);
+    const initialQuantity = startingStock[itemId];
+    console.log(
+      "Fetch hanne data",
+      JSON.stringify({
+        newQuantity,
+        initialQuantity: initialQuantity,
+      })
+    );
+    try {
+      const response = await fetch("http://localhost:3000/api/stock", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newQuantity,
+          initialQuantity: initialQuantity,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log("Repsone yo hai", data.updateStatus);
+      if (data.updateStatus === false) {
+        // console.log("Fetch bhitra ko id", itemId);
+        // toast.error("Not enough stock");
+        handleStockDecrease(itemId);
+        return;
+      } else {
+        console.log("Chalxa");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
