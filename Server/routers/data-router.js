@@ -62,6 +62,7 @@ router.route("/getTable").post(datac.getTable)
 router.route("/stock")
     .get(datac.getTotalStock)
     .post(datac.validateStock)
+    .patch(datac.validatePurchStock)
 router.route("/editStock").post(datac.editStock)
 
 router.route("/code").post(datac.getCodes)

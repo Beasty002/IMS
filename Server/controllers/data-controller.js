@@ -1565,6 +1565,33 @@ const validateStock = async (req,res) => {
   catch(err){
     console.error(`Error validate stock:`, err);
     return res.status(500).json({ message: `Error validate stock : ${err.message}` });
+    
+  }
+}
+
+const validatePurchStock = async (req,res) => {
+  try{
+    console.log(req.body)
+
+    const {newQuantity , initialQuantity} = req.body
+
+    const { parentBrandId: brandId, rowLabel, colLabel, stock} = newQuantity
+
+    const forTotalStock = await RecordStock.findOne({ brandId, rowLabel, colLabel })
+    const currStock = forTotalStock.totalStock
+
+    const editedStock = initialQuantity - stock
+
+    if (editedStock > currStock){
+      return res.json({ updateStatus : false, totalStock: currStock})
+    }
+
+    return res.json({ updateStatus: true})
+
+  } 
+  catch(err){
+    console.error(`Error validate purchase stock:`, err);
+    return res.status(500).json({ message: `Error validate purchase stock : ${err.message}` });
 
   }
 }
@@ -1627,4 +1654,5 @@ module.exports = {
   editReportStock,
 
   validateStock,
+  validatePurchStock,
 };
