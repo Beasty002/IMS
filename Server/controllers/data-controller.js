@@ -481,7 +481,7 @@ const getSpecificSale = async (req,res) => {
     
     title = title.toLowerCase()
     
-    var model,schema,givenId,givenDate
+    var model,schema,givenId,givenDate,cat,brandN,rowL,colL,qty
 
 
     if (title==="sales"){
@@ -489,14 +489,22 @@ const getSpecificSale = async (req,res) => {
       schema = Sales
       givenId = "saleIds"
       givenDate = "dos"
-      
+      cat = "sCategory"
+      brandN= "sBrand"
+      rowL = "sRowLabel"
+      colL = "sColLabel"
+      qty = "sQty"
     }
     else if (title==="purchases"){
       model = Purchase
       schema = Stock
       givenId = "purchaseIds"
       givenDate = "dop"
-      
+      cat = "parentCat"
+      brandN= "parentBrand"
+      rowL = "rowLabel"
+      colL = "colLabel"
+      qty = "stock"
     }else{
       return res.status(400).json({ err: `No such entry found for ${title}`})
     }
@@ -523,15 +531,15 @@ const getSpecificSale = async (req,res) => {
           // console.log(specificSale)
           // specificSales.push(specificSale)
           const existingIndex = specificSales.findIndex(item => 
-            item.sCategory === specificSale.sCategory &&
-            item.sBrand === specificSale.sBrand &&
-            item.sRowLabel === specificSale.sRowLabel &&
-            item.sColLabel === specificSale.sColLabel
+            item[cat] === specificSale[cat] &&
+            item[brandN] === specificSale[brandN] &&
+            item[rowL] === specificSale[rowL] &&
+            item[colL] === specificSale[colL]
           );
       
           if (existingIndex !== -1) {
               // If match found, add the quantities
-              specificSales[existingIndex].sQty += specificSale.sQty;
+              specificSales[existingIndex][qty] += specificSale[qty];
           } else {
               // If no match, push as new item
               specificSales.push(specificSale);
