@@ -246,6 +246,7 @@ const delBrand = async (req, res) => {
     await Type.deleteMany({ brandId: delBrandId})
     // await Stock.deleteMany({ parentBrandId: delBrandId})
     await RecordStock.deleteMany({ brandId: delBrandId})
+    await RecordSale.deleteMany({ brandId: delBrandId})
     // await Sales.deleteMany({ sBrandId: delBrandId})
 
     return res.json({ msg: delBrandName + " brand deleted!" });
@@ -1311,11 +1312,14 @@ const editSales = async (req,res) => {
         var currSQty = currData.sQty
 
         currData.sQty = sQty
-        currSale.soldQty += sQty - currSQty
+        if (currSale){
+
+          currSale.soldQty += sQty - currSQty
+          await currSale.save()
+        }
 
         await currData.save()
 
-        await currSale.save()
 
         if (currStock){
           const currStockQty = currStock.totalStock
