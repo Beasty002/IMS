@@ -530,20 +530,20 @@ const getSpecificSale = async (req,res) => {
           var specificSale = await schema.findById(saleId)
           // console.log(specificSale)
           // specificSales.push(specificSale)
-          const existingIndex = specificSales.findIndex(item => 
-            item[cat] === specificSale[cat] &&
-            item[brandN] === specificSale[brandN] &&
-            item[rowL] === specificSale[rowL] &&
-            item[colL] === specificSale[colL]
-          );
+          // const existingIndex = specificSales.findIndex(item => 
+          //   item[cat] === specificSale[cat] &&
+          //   item[brandN] === specificSale[brandN] &&
+          //   item[rowL] === specificSale[rowL] &&
+          //   item[colL] === specificSale[colL]
+          // );
       
-          if (existingIndex !== -1) {
-              // If match found, add the quantities
-              specificSales[existingIndex][qty] += specificSale[qty];
-          } else {
+          // if (existingIndex !== -1) {
+          //     // If match found, add the quantities
+          //     specificSales[existingIndex][qty] += specificSale[qty];
+          // } else {
               // If no match, push as new item
               specificSales.push(specificSale);
-          }
+          // }
         }
 
       }
@@ -1354,11 +1354,6 @@ const editSales = async (req,res) => {
 const editPurchase = async (req,res) => {
   try{
     const {resData} = req.body
-
-    console.log(req.body)
-
-    return
-    
     
     for (var oneStock of resData){
       var { _id ,parentBrandId, rowLabel,colLabel,stock:editedStock } = oneStock
