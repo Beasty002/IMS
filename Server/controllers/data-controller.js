@@ -953,12 +953,21 @@ const addPurchase = async (req,res) =>  {
       }
     }
 
-    const newPurchase = new Purchase({
-      purchaseIds: purchaseIds,
-    });
+    const todayDate = new Date().toISOString().split('T')[0];
 
-    await newPurchase.save()
+    const checkCurrPurchase = await Purchase.findOne({ dop: todayDate})
 
+    if (!checkCurrPurchase){
+      const newPurchase = new Purchase({
+        purchaseIds: purchaseIds,
+      });
+
+      await newPurchase.save()
+    }else{
+      checkCurrPurchase.purchaseIds.push(...purchaseIds)
+
+      await checkCurrPurchase.save()
+    }
     return res.json({msg: "New Stocks Added!"})
 
   }
@@ -1285,13 +1294,16 @@ const getTopSelling = async (req,res) => {
 const editSales = async (req,res) => {
   try{
     const {resData} = req.body
-
+    
+    
     for (var stock of resData){
       var { _id ,sBrandId, sBrand, sCategory, sRowLabel,sColLabel,sQty } = stock
       
       const currData = await Sales.findById(_id)
       const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
       const currStock = await RecordStock.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
+      console.log(req.body)
+      return
 
       const currQty = currData.sQty
 
@@ -1329,25 +1341,27 @@ const editSales = async (req,res) => {
 const editPurchase = async (req,res) => {
   try{
     const {resData} = req.body
+
+    console.log(req.body)
+
+    return
     
     
     for (var oneStock of resData){
-      var { _id ,parentBrandId, rowLabel,colLabel,stock } = oneStock
+      var { _id ,parentBrandId, rowLabel,colLabel,stock:editedStock } = oneStock
       
       const currData = await Stock.findById(_id)
       const currStock = await RecordStock.findOne({brandId:parentBrandId, rowLabel:rowLabel, colLabel:colLabel})
-      console.log(currData)
-      return
 
       const currQty = currData.stock
 
-      if (currQty != stock){
+      if (currQty != editedStock){
         var currStockQty = currData.stock
         
-        currData.stock = stock
+        currData.stock = editedStock
         await currData.save()
 
-        currStock.totalStock += stock - currStockQty
+        currStock.totalStock += editedStock - currStockQty
         await currStock.save()
       }
 
@@ -1520,7 +1534,8 @@ const editReportStock = async(req,res) => {
 const validateStock = async (req,res) => {
   try{
     console.log(req.body)
-    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty, oldValue} = req.body.newQuantity
+    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty } = req.body.newQuantity
+    const initQty = req.body.initialQuantity
 
     const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
 
@@ -1528,7 +1543,7 @@ const validateStock = async (req,res) => {
       return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
     }
     console.log(sQty)
-    if ( stock.totalStock < sQty - oldValue ){
+    if ( stock.totalStock < sQty - initQty ){
       return res.json({ updateStatus : false, totalStock: stock.totalStock})
     }
 
