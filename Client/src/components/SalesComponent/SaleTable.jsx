@@ -10,6 +10,7 @@ function SaleTable({
 }) {
   const [editData, setEditData] = useState([]);
   const [allowSave, setAllowSave] = useState(false);
+  const [startingStock, setStartingStock] = useState({});
 
   let totalQuantity;
 
@@ -27,6 +28,20 @@ function SaleTable({
     }
   }, [data, editData]);
 
+  useEffect(() => {
+    if (data) {
+      setEditData(data);
+
+      const initialStockData = data.reduce((acc, item) => {
+        acc[item._id] = item.sQty;
+        return acc;
+      }, {});
+      setStartingStock(initialStockData);
+
+      console.log("Initial stock data set:", initialStockData);
+    }
+  }, [data]);
+
   // const handleStockChange = (itemId, newQty) => {
   //   setEditData((prevState) =>
   //     prevState.map((item) =>
@@ -37,6 +52,12 @@ function SaleTable({
 
   const handleStockIncrease = (itemId) => {
     console.log(itemId);
+
+    // const previousStockData = editData.find((item) => item._id === itemId);
+    // setStartingStock(previousStockData.sQty);
+
+    // console.log("Starting stock is",startingStock);
+
     setEditData((prevState) =>
       prevState.map((item) => (item._id === itemId ? item.sQty++ : item))
     );
@@ -44,7 +65,7 @@ function SaleTable({
   };
 
   const handleStockDecrease = (itemId) => {
-    console.log(itemId);
+    console.log("Yo call vaxa hai");
     setEditData((prevState) =>
       prevState.map((item) =>
         item._id === itemId ? (item.sQty >= 1 ? item.sQty-- : item) : item
@@ -57,16 +78,24 @@ function SaleTable({
     setEditData((prevState) => prevState.filter((item) => item._id !== itemId));
   };
 
+  // const getStartingStock = (itemId) => {
+  //   const stocks = editData.find((item) => item._id === itemId);
+  //   console.log("STocks haru yei ho hai ta kta ho", stocks);
+  //   setStartingStock([...startingStock, stocks]);
+  // };
+
   const checkValidation = async (itemId) => {
     const newQuantity = editData.find((item) => item._id === itemId);
     // const productId = newQuantity._id;
     // const productQuantity = newQuantity.sQty;
     // const productName = newQuantity.sColLabel;
     // console.log("Naya quantity", newQuantity);
+    const initialQuantity = startingStock[itemId];
     console.log(
       "Fetch hanne data",
       JSON.stringify({
         newQuantity,
+        initialQuantity: initialQuantity,
       })
     );
     try {
@@ -77,6 +106,7 @@ function SaleTable({
         },
         body: JSON.stringify({
           newQuantity,
+          initialQuantity: initialQuantity,
         }),
       });
       const data = await response.json();
@@ -86,11 +116,12 @@ function SaleTable({
       }
       console.log("Repsone yo hai", data.updateStatus);
       if (data.updateStatus === false) {
-        console.log("Fetch bhitra ko id", itemId);
-        toast.error("Not enough stock",{
-          autoClose:800
-        });
+        // console.log("Fetch bhitra ko id", itemId);
+        // toast.error("Not enough stock");
         handleStockDecrease(itemId);
+        return;
+      } else {
+        console.log("Chalxa");
       }
     } catch (error) {
       console.error(error);
@@ -166,7 +197,6 @@ function SaleTable({
           </tbody>
         </table>
       </div>
-      <ToastContainer />
 
       {editClicked ? (
         <>
@@ -211,6 +241,13 @@ function SaleTable({
           </div>
         </>
       )}
+      {/* <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover={false}
+      /> */}
     </>
   );
 }
