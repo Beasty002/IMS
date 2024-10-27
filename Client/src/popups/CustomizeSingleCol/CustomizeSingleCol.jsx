@@ -8,6 +8,7 @@ export default function CustomizeSingleCol({
   specificId,
   selectedKey,
   fetchSingleVarData,
+  codeDropDown
 }) {
   const [formData, setFormData] = useState([
     {
@@ -19,6 +20,10 @@ export default function CustomizeSingleCol({
       isNew: true,
     },
   ]);
+
+  useEffect(()=>{
+    console.log("CodeDropDown yo ho hai", codeDropDown);
+  },[codeDropDown])
 
   useEffect(() => {
     if (fetchSingleVarData) {

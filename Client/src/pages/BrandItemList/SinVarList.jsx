@@ -75,14 +75,12 @@ export default function SinVarList() {
         setFetchSingleVarData();
         return;
       }
-      console.log("Code ko data yo hai",data);
+      console.log("Code ko data yo hai", data);
       setFetchSingleVarData(data);
     } catch (error) {
       console.error(error);
     }
   };
-
-  
 
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
@@ -131,10 +129,10 @@ export default function SinVarList() {
 
           <div className="btn-container sp">
             <button onClick={enableCustPortal} className="secondary-btn">
-              <i className="bx bx-filter-alt"></i> Customize Types
+              <i className="bx bx-filter-alt"></i> Customize Items
             </button>
             <button onClick={enableCatPortal} className="primary-btn">
-              <i className="bx bx-plus-circle"></i> New Item
+              <i className="bx bx-plus-circle"></i> New Type
             </button>
           </div>
         </section>
@@ -155,6 +153,7 @@ export default function SinVarList() {
           specificId={specificId}
           selectedKey={selectedKey}
           fetchSingleVarData={fetchSingleVarData}
+          codeDropDown={codeDropDown}
         />
         <AddCat
           isOpen={catPortal}

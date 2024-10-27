@@ -60,7 +60,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
   };
 
   const handleStockSave = async () => {
-    console.log(JSON.stringify({ updateStock: resData, titleName }));
+    console.log(JSON.stringify({ resData }));
     try {
       const response = await fetch(`http://localhost:3000/api/${titleName}`, {
         method: "PATCH",
@@ -69,6 +69,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         },
         body: JSON.stringify({ resData }),
       });
+      x;
 
       const data = await response.json();
       if (!response.ok) {
@@ -80,7 +81,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
     } catch (error) {
       console.log(error);
     }
-  };  
+  };
   return (
     <section className="sale-purchase">
       <h1>{title} Summary </h1>

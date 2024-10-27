@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import DelPop from "../../popups/DelPop/DelPop";
+import Rename from "../../popups/Rename/Rename";
 
 function SingleVarTable({
   specificId,
@@ -11,6 +13,11 @@ function SingleVarTable({
   const [editableData, setEditableData] = useState({});
 
   const { categoryName, brandName } = useParams();
+
+  const [protalOn, setPortalOn] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [enableDel, setEnableDel] = useState(false);
+  const [enableEdit, setEnableEdit] = useState(false);
 
   useEffect(() => {
     if (fetchSingleVarData && fetchSingleVarData.codeStocks) {
@@ -108,8 +115,49 @@ function SingleVarTable({
     }
   };
 
+  const togglePortal = () => {
+    setPortalOn(!protalOn);
+    setDropdownVisible(!dropdownVisible);
+  };
+
   return (
     <div className="brand-item-table single-var">
+      <div className="setting-info">
+        <h1>{selectedKey}</h1>
+        <div className="portal-setting">
+          {protalOn ? (
+            <i onClick={togglePortal} className="fa-solid fa-gear fa-spin"></i>
+          ) : (
+            <i onClick={togglePortal} className="fa-solid fa-gear"></i>
+          )}
+
+          {dropdownVisible && (
+            <div className="list-setting">
+              <ul>
+                <li
+                  onClick={() => {
+                    setEnableEdit(!enableEdit);
+                    setPortalOn(!protalOn);
+                    setDropdownVisible(!dropdownVisible);
+                  }}
+                >
+                  <i class="fa-solid fa-pen-to-square"></i> <p>Edit Type</p>
+                </li>
+                <li
+                  onClick={() => {
+                    setEnableDel(!enableDel);
+                    setPortalOn(!protalOn);
+                    setDropdownVisible(!dropdownVisible);
+                  }}
+                >
+                  <i className="bx bx-trash del-icon"></i>
+                  <p> Delete Type</p>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -176,6 +224,9 @@ function SingleVarTable({
           )}
         </tbody>
       </table>
+      <DelPop isOpen={enableDel} onClose={() => setEnableDel(!enableDel)} />
+
+      <Rename isOpen={enableEdit} onClose={() => setEnableEdit(!enableEdit)} />
     </div>
   );
 }
