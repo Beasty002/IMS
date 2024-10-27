@@ -1,4 +1,6 @@
 const path = require("path");
+const mongoose = require('mongoose');
+
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
 const Sales = require("../models/sales-model");
@@ -1590,10 +1592,60 @@ const validatePurchStock = async (req,res) => {
     
   }
 }
-const deleteDocument = async (req, res, Model, type = 'item') => {
+const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockName, type = 'item') => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
+    const mongoose = require('mongoose');
     const { _id } = req.body;
+
+    // Convert to ObjectId for precise matching
+    const idToRemove = new mongoose.Types.ObjectId(_id);
+
+    await ParentModel.updateMany(
+      { [idName]: idToRemove },    // Filter documents where `purchaseIds` contains ObjectId `_id`
+      { $pull: { [idName]: idToRemove } },  // Pull ObjectId `_id` from `purchaseIds` array
+      { new: true }
+    );
+    
+    // const allParents = await ParentModel.find();
+    // for (var parent of allParents) {
+    //   const allIds = parent[idName];
+    //   for (var oneId of allIds) {
+    //     if (oneId.toString() === idToRemove) {
+    //       console.log(oneId)
+    //       // Use MongoDB's pull method and save
+    //       await ParentModel.findByIdAndUpdate(
+    //           parent._id,
+    //           { $pull: { purchaseIds: _id } },
+    //           { new: true }
+    //       );
+    //       break; // Exit loop once found and removed
+    //     }
+    //   }
+    // } 
+    const toDelProduct = await Model.findById(_id)
+
+    if (!toDelProduct){
+      return res.status(404).json({ err: `No such ${type} found`})
+    }
+
+    const {sBrandId, parentBrandId, rowLabel, colLabel,stock,sQty} = toDelProduct
+    const brandId = sBrandId || parentBrandId
+    const qty = stock || sQty
+    
+    const forRecord = await Record.findOne({ brandId,rowLabel,colLabel})
+    
+    if (forRecord){
+      forRecord[stockName] -= qty
+
+      if (forRecord[stockName] < 0){
+        return res.json({ err: "the record has less stock than history"})
+      }
+
+      await forRecord.save()
+    }
+    
+
     const deletedDoc = await Model.findByIdAndDelete(_id);
 
     if (deletedDoc) {
@@ -1608,8 +1660,8 @@ const deleteDocument = async (req, res, Model, type = 'item') => {
 };
 
 // Usage
-const delSale = (req, res) => deleteDocument(req, res, Sales, 'sale');
-const delPurchase = (req, res) => deleteDocument(req, res, Stock, 'purchase');
+const delSale = (req, res) => deleteDocument(req, res, Sales,SaleRecordModel,'saleIds', RecordSale,'soldQty', 'sale');
+const delPurchase = (req, res) => deleteDocument(req, res, Stock,Purchase,'purchaseIds', RecordStock,'totalStock', 'purchase');
 
 
 
