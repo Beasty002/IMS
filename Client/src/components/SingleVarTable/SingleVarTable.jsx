@@ -8,6 +8,7 @@ function SingleVarTable({
   fetchSingleVarData,
   selectedKey,
   searchTerm,
+  codeDropDown,
 }) {
   const [editIndex, setEditIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
@@ -24,6 +25,10 @@ function SingleVarTable({
       setEditableData(fetchSingleVarData.codeStocks);
     }
   }, [fetchSingleVarData]);
+
+  useEffect(() => {
+    console.log(selectedKey, specificId, codeDropDown);
+  }, [selectedKey, specificId, codeDropDown]);
 
   const handleInputChange = (key, event) => {
     const newValue = event.target.value;
@@ -224,9 +229,21 @@ function SingleVarTable({
           )}
         </tbody>
       </table>
-      <DelPop isOpen={enableDel} onClose={() => setEnableDel(!enableDel)} />
+      <DelPop
+        isOpen={enableDel}
+        selectedKey={selectedKey}
+        codeDropDown={codeDropDown}
+        onClose={() => setEnableDel(!enableDel)}
+        type={'type'}
+        
+      />
 
-      <Rename isOpen={enableEdit} onClose={() => setEnableEdit(!enableEdit)} />
+      <Rename
+        isOpen={enableEdit}
+        selectedKey={selectedKey}
+        codeDropDown={codeDropDown}
+        onClose={() => setEnableEdit(!enableEdit)}
+      />
     </div>
   );
 }

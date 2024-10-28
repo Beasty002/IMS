@@ -134,6 +134,7 @@ export default function CatBrandList() {
         onClose={() => setDelPopupOpen(false)}
         specificId={selDeleteId}
         delBrandName={delBrandName}
+        type={'brand'}
       />
     </section>
   );

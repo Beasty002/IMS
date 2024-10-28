@@ -12,6 +12,8 @@ export default function SinVarList() {
   const { fetchBrandData, fetchBrand } = useAuth();
   const [specificId, setSpecificId] = useState();
   const [selectedKey, setSelectedKey] = useState("");
+  const [selectedId, setSelectedId] = useState("");
+
   const [fetchSingleVarData, setFetchSingleVarData] = useState({});
   const [codeDropDown, setCodeDropDown] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,6 +64,7 @@ export default function SinVarList() {
   const fetchSelectedData = async (event) => {
     const selectedData = event.target.value;
     setSelectedKey(selectedData);
+
     try {
       const response = await fetch("http://localhost:3000/api/code", {
         method: "POST",
@@ -85,9 +88,9 @@ export default function SinVarList() {
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
 
-  useEffect(() => {
-    console.log("YO aauna prne ho", brandName);
-  }, [brandName]);
+  // useEffect(() => {
+  //   console.log("YO aauna prne ho", fetchSingleVarData);
+  // }, [fetchSingleVarData]);
 
   return (
     <>
@@ -145,6 +148,7 @@ export default function SinVarList() {
             fetchSingleVarData={fetchSingleVarData}
             selectedKey={selectedKey}
             searchTerm={searchTerm}
+            codeDropDown={codeDropDown}
           />
         )}
         <CustomizeSingleCol

@@ -3,18 +3,40 @@ import ReactDOM from "react-dom";
 import "./DelPop.css";
 import { ToastContainer, toast } from "react-toastify";
 
-export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
+export default function DelPop({
+  isOpen,
+  onClose,
+  specificId,
+  selectedKey,
+  delBrandName,
+  codeDropDown,
+  type,
+}) {
   // useEffect(() => {
   //   console.log(delBrandName);
   // }, [delBrandName]);
 
+  let typeId;
+  let body;
+
   const handleBrandDeletion = async () => {
-    const body = {
-      delBrandId: specificId,
-    };
+    if (type == "type") {
+      const typeIdArray = codeDropDown.find(
+        (item) => item.type === selectedKey
+      );
+      typeId = typeIdArray._id;
+      body = {
+        delTypeId: typeId,
+      };
+    } else {
+      body = {
+        delBrandId: specificId,
+      };
+    }
+    console.log(JSON.stringify(body));
 
     try {
-      const response = await fetch("http://localhost:3000/api/brand", {
+      const response = await fetch(`http://localhost:3000/api/${type}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +49,7 @@ export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
         return;
       }
       console.log(data);
-      toast.success("Brand deleted successfully", {
+      toast.success(`${type} deleted successfully`, {
         autoClose: 1000,
       });
       setTimeout(() => {
@@ -48,7 +70,9 @@ export default function DelPop({ isOpen, onClose, specificId, delBrandName }) {
         <p className="del-msg">
           {" "}
           Are you sure you want to{" "}
-          <span className="del-item-name">{delBrandName}</span> ?{" "}
+          <span className="del-item-name">
+            {delBrandName || selectedKey}
+          </span> ?{" "}
         </p>
         <div className="btn-container">
           <button onClick={onClose} className="cancel-btn">
