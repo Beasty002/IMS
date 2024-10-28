@@ -677,7 +677,7 @@ const getSalesByWeekday = async (req, res) => {
 //   }
 // };
 
-
+// ////////////////////////////////// TYPE ////////////////////////////////////////////
 const addType = async (req,res) => {
   try{  
 
@@ -710,23 +710,21 @@ const addType = async (req,res) => {
 
 const delType = async (req,res) => {
   try{
-    if (req.body.itemName){
-      const { selectedKey, itemName, brandId} = req.body
+    if (req.body.delTypeId) {
 
-      const delRow = await Type.findOne({ brandId: brandId , type: selectedKey})
-      const delRowId = delRow._id
+      const { delTypeId } = req.body
 
-      
-      await RecordStock.deleteMany({ brandId: brandId, rowLabel: selectedKey, colLabel: itemName})
-      
-      await Column.deleteOne({ brandId: brandId, column:itemName, typeId: delRowId})
-      console.log(delRowId)
-      return
+      const forDelType = await Type.findByIdAndDelete(delTypeId)
+      console.log(forDelType)
 
-      return res.status(200).json({ msg: `${itemName} deleted successfully!`})
-
-    }else{
-
+      if (forDelType){
+        return res.status(200).json({ msg: "Type deleted"})
+      }
+      else{
+        return res.status(404).json({ msg: "Type deletion failed!"})
+      }
+    }
+    else{
       const { rowKey, brandId } = req.body
       
       const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
@@ -748,6 +746,28 @@ const delType = async (req,res) => {
   }
 }
 
+const renameType = async (req,res) => {
+  try{
+    const { newName, typeId } = req.body
+
+    const forTypeName = await Type.findById(typeId)
+    const typeN = forTypeName.type
+
+    const updateType = await Type.findByIdAndUpdate(typeId, {type: newName})
+
+    if (updateType){
+      return res.json({msg : `${typeN} is renamed to ${newName}`})
+    }else{
+      return res.json({err : `${typeN} rename not possible`})
+    }
+  }
+  catch(err){
+    console.error(`Error renaming type :`, err);
+    return res.status(500).json({ message: `Error renaming type: ${err.message}` });
+  }
+}
+
+// ///////////////////////////////////////////// COLUMN/ITEM ////////////////////////////////////////////////////
 const addColumn = async (req, res) => {
   try {
     const bodies = req.body;
@@ -828,25 +848,38 @@ const editColumn = async (req,res) => {
 const delColumn = async (req,res) => {
   try{
     // console.log(req.body)
-    const { columnId, brandId } = req.body
+    if (req.body.itemName){
+      const { selectedKey, itemName, brandId} = req.body
 
-    const forDelColName = await Column.findById(columnId)
-    if (!forDelColName){
-      return res.status(404).json({ message: "Column not found" });
-      
-    }
-    const delColName = forDelColName.column
-    
-    const toDelStock = await RecordStock.find({ brandId: brandId, colLabel: delColName})
-    if (toDelStock || toDelStock.length >0){
-      
-      // console.log("delsto: ",delStock)
-      await RecordStock.deleteMany({ brandId: brandId, colLabel: delColName})
-    }
-    
-    await Column.deleteOne({ _id: columnId})
-    return res.status(200).json({ message: "Column and related stock deleted successfully" });
+      const delRow = await Type.findOne({ brandId: brandId , type: selectedKey})
+      const delRowId = delRow._id
 
+      await RecordStock.deleteMany({ brandId: brandId, rowLabel: selectedKey, colLabel: itemName})
+      
+      await Column.deleteOne({ brandId: brandId, column:itemName, typeId: delRowId})
+
+      return res.status(200).json({ msg: `${itemName} deleted successfully!`})
+
+    }else{
+      const { columnId, brandId } = req.body
+
+      const forDelColName = await Column.findById(columnId)
+      if (!forDelColName){
+        return res.status(404).json({ message: "Column not found" });
+        
+      }
+      const delColName = forDelColName.column
+      
+      const toDelStock = await RecordStock.find({ brandId: brandId, colLabel: delColName})
+      if (toDelStock || toDelStock.length >0){
+        
+        // console.log("delsto: ",delStock)
+        await RecordStock.deleteMany({ brandId: brandId, colLabel: delColName})
+      }
+      
+      await Column.deleteOne({ _id: columnId})
+      return res.status(200).json({ message: "Column and related stock deleted successfully" });
+    }
 
   }
   catch(err){
@@ -1693,6 +1726,7 @@ module.exports = {
 
   addType,
   delType,
+  renameType,
 
   addColumn,
   editColumn,
