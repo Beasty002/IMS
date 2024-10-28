@@ -714,6 +714,13 @@ const delType = async (req,res) => {
 
       const { delTypeId } = req.body
 
+      const forTypeName = await Type.findById(delTypeId)
+      const typeN = forTypeName.type
+
+      await RecordStock.deleteMany({ rowLabel: typeN})
+      await RecordSale.deleteMany({ rowLabel: typeN})
+      await ReportStock.deleteMany({ rowLabel: typeN})
+
       const forDelType = await Type.findByIdAndDelete(delTypeId)
       console.log(forDelType)
 
@@ -746,12 +753,46 @@ const delType = async (req,res) => {
   }
 }
 
+async function updateRelatedDocuments(oldLabel, newLabel) {
+  try {
+      // Define models to update and their queries in an array
+      const updates = [
+          { model: Sales, query: { rowLabel: oldLabel } },
+          { model: Stock, query: { rowLabel: oldLabel } },
+          { model: RecordSale, query: { rowLabel: oldLabel } },
+          { model: RecordStock, query: { rowLabel: oldLabel } },
+          { model: ReportStock, query: { rowLabel: oldLabel } },
+      ];
+
+      // Process all updates
+      for (const { model, query } of updates) {
+          const documents = await model.find(query);
+          
+          // Update each document
+          const updatePromises = documents.map(doc => {
+              doc.rowLabel = newLabel;
+              return doc.save();
+          });
+
+          // Wait for all updates to complete for this model
+          await Promise.all(updatePromises);
+      }
+
+      return { success: true, message: 'All documents updated successfully' };
+  } catch (error) {
+      console.error('Error updating documents:', error);
+      throw error;
+  }
+}
+
 const renameType = async (req,res) => {
   try{
     const { newName, typeId } = req.body
 
     const forTypeName = await Type.findById(typeId)
     const typeN = forTypeName.type
+
+    await updateRelatedDocuments(typeN, newName);
 
     const updateType = await Type.findByIdAndUpdate(typeId, {type: newName})
 
@@ -811,6 +852,38 @@ const addColumn = async (req, res) => {
   }
 };
 
+
+async function updateRelatedColumns(oldLabel, newLabel) {
+  try {
+      // Define models to update and their queries in an array
+      const updates = [
+          { model: Sales, query: { colLabel: oldLabel } },
+          { model: Stock, query: { colLabel: oldLabel } },
+          { model: RecordSale, query: { colLabel: oldLabel } },
+          { model: RecordStock, query: { colLabel: oldLabel } },
+          { model: ReportStock, query: { colLabel: oldLabel } },
+      ];
+
+      // Process all updates
+      for (const { model, query } of updates) {
+          const documents = await model.find(query);
+          
+          // Update each document
+          const updatePromises = documents.map(doc => {
+              doc.colLabel = newLabel;
+              return doc.save();
+          });
+
+          // Wait for all updates to complete for this model
+          await Promise.all(updatePromises);
+      }
+
+      return { success: true, message: 'All columns updated successfully' };
+  } catch (error) {
+      console.error('Error updating documents:', error);
+      throw error;
+  }
+}
 const editColumn = async (req,res) => {
   try{
     
@@ -819,23 +892,9 @@ const editColumn = async (req,res) => {
     const oldCol = await Column.findById(id)
     const oldColName = oldCol.column
 
+    await updateRelatedColumns(oldColName, columnName);
+
     await Column.findByIdAndUpdate(id, { column: columnName })
-
-    const updateCorrStocks = await Stock.find({ colLabel: oldColName, parentBrandId: brandId})
-    const updateCorrRecordStocks = await RecordStock.find({ colLabel: oldColName, brandId: brandId})
-    
-    for (var updateCorrStock of updateCorrStocks ){
-      updateCorrStock.colLabel = columnName
-      await updateCorrStock.save();
-    }
-
-    for( var updateCorrRecordStock of updateCorrRecordStocks){
-
-      updateCorrRecordStock.colLabel = columnName
-      await updateCorrRecordStock.save()
-    }
-    // console.log(updateCorrStock)
-    // return
 
     return res.status(200).json({msg: `${columnName} updated`})
   }
