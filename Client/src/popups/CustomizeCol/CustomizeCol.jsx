@@ -3,6 +3,7 @@ import "./CustomizeCol.css";
 import ReactDOM from "react-dom";
 
 export default function CustomizeCol({ isOpen, onClose, specificId }) {
+  const [enableEdit, setEnableEdit] = useState(false);
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
@@ -208,7 +209,11 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                       ) : (
                         <i
                           className="bx bxs-edit-alt edit-icon"
-                          onClick={() => toggleEditMode(item.id)}
+                          onClick={() => {
+                            setEnableEdit(!enableEdit);
+
+                            toggleEditMode(item.id);
+                          }}
                         ></i>
                       )}
                     </>
@@ -234,6 +239,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
               type="button"
               onClick={fetchColumnData}
               className="save-btn"
+              disabled={enableEdit ? true : false}
             >
               Save
             </button>
