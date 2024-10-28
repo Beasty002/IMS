@@ -61,9 +61,14 @@ function FinalReport() {
           <thead class="report-table-head">
             <tr>
               <th rowspan="2">S.N</th>
-              <th rowspan="2">
-                {rowLabel}/{colLabel}
-              </th>
+
+              {colLabel ? (
+                <th rowspan="2">
+                  {rowLabel}/{colLabel}
+                </th>
+              ) : (
+                <th rowspan="2">{rowLabel}</th>
+              )}
               {fetchedData?.map((item) => (
                 <td colSpan={4} key={item._id}>
                   {item.column}

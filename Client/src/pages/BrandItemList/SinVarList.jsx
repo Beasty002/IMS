@@ -131,9 +131,14 @@ export default function SinVarList() {
           </div>
 
           <div className="btn-container sp">
-            <button onClick={enableCustPortal} className="secondary-btn">
-              <i className="bx bx-filter-alt"></i> Customize Items
-            </button>
+            {selectedKey ? (
+              <button onClick={enableCustPortal} className="secondary-btn">
+                <i className="bx bx-filter-alt"></i> Customize Items
+              </button>
+            ) : (
+              <></>
+            )}
+
             <button onClick={enableCatPortal} className="primary-btn">
               <i className="bx bx-plus-circle"></i> New Type
             </button>
