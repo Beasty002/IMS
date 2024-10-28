@@ -249,6 +249,14 @@ function SaleEntry() {
     console.log(addInput);
   }, [addInput]);
 
+  const changeValue = (itemId, value) => {
+    const numericValue = parseInt(value) ;
+    setAddInput((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, counter: numericValue } : item
+      )
+    );
+  };
   return (
     <div id="newSales">
       <h2>Sales Entry</h2>
@@ -356,7 +364,13 @@ function SaleEntry() {
                     onMouseLeave={handleLongPressEndDecrement}
                     className="bx bxs-minus-circle"
                   ></i>
-                  <input type="number" value={item.counter} readOnly />
+                  <input
+                    type="number"
+                    value={item.counter}
+                    onChange={(event) =>
+                      changeValue(item.id, event.target.value)
+                    }
+                  />
                   <i
                     onClick={() => handleIncrement(item.id)}
                     onMouseDown={() => handleLongPressIncrement(item.id)}

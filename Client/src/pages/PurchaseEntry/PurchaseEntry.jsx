@@ -154,7 +154,7 @@ function PurchaseEntry() {
       }, 1300);
     } catch (error) {
       console.error(error);
-      toast.error("Unexpected Error occured")
+      toast.error("Unexpected Error occured");
     }
   };
 
@@ -201,6 +201,15 @@ function PurchaseEntry() {
   useEffect(() => {
     fetchCategory();
   }, [fetchCategory]);
+
+  const changeValue = (itemId, value) => {
+    const numericValue = parseInt(value, 10);
+    setAddInput((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, counter: numericValue } : item
+      )
+    );
+  };
 
   return (
     <div id="newSales">
@@ -310,7 +319,13 @@ function PurchaseEntry() {
                     onMouseLeave={handleLongPressEndDecrement}
                     className="bx bxs-minus-circle"
                   ></i>
-                  <input type="number" value={item.counter} readOnly />
+                  <input
+                    type="number"
+                    value={item.counter}
+                    onChange={(event) =>
+                      changeValue(item.id, event.target.value)
+                    }
+                  />
                   <i
                     onClick={() => handleIncrement(item.id)}
                     onMouseDown={() => handleLongPressIncrement(item.id)}

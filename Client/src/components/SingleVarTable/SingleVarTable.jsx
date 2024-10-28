@@ -166,9 +166,7 @@ function SingleVarTable({
       <table>
         <thead>
           <tr>
-            <th className="table-checkbox">
-              <input type="checkbox" />
-            </th>
+            <th>S.N</th>
             <th>Code</th>
             <th className="stock-count-single">Stock</th>
             <th className="table-action-container">Actions</th>
@@ -179,7 +177,7 @@ function SingleVarTable({
             filteredData.map(([key, value], index) => (
               <tr key={index}>
                 <td className="table-checkbox">
-                  <input type="checkbox" />
+                  <td>{index + 1}</td>
                 </td>
                 <td>{key}</td>
                 <td>

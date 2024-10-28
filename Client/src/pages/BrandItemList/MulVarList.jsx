@@ -118,7 +118,6 @@ export default function MulVarList() {
       console.log(searchQuery);
       const filtered = Object.keys(tableData)
         .filter((rowKey) => {
-
           if (rowKey.toLowerCase().includes(searchQuery.toLowerCase())) {
             return true;
           }
@@ -243,9 +242,7 @@ export default function MulVarList() {
           <table>
             <thead>
               <tr>
-                <th className="table-checkbox">
-                  <input type="checkbox" />
-                </th>
+                <th>S.N</th>
                 <th>
                   {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
                 </th>
@@ -259,9 +256,7 @@ export default function MulVarList() {
               {filteredData &&
                 Object.keys(filteredData).map((rowKey, rowIndex) => (
                   <tr key={rowIndex}>
-                    <td className="table-checkbox">
-                      <input type="checkbox" />
-                    </td>
+                    <td>{rowIndex + 1}</td>
                     <td>{rowKey}</td>
                     {filteredData[rowKey] &&
                       Object.entries(filteredData[rowKey])
