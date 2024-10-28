@@ -10,6 +10,7 @@ export default function CustomizeSingleCol({
   fetchSingleVarData,
   codeDropDown
 }) {
+  const [enableEdit, setEnableEdit] = useState(false);
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
@@ -262,7 +263,10 @@ export default function CustomizeSingleCol({
                       ) : (
                         <i
                           className="bx bxs-edit-alt edit-icon"
-                          onClick={() => toggleEditMode(item.id)}
+                          onClick={() => {
+                            toggleEditMode(item.id)
+                            setEnableEdit(!enableEdit)
+                          }}
                         ></i>
                       )}
                     </>
@@ -288,6 +292,7 @@ export default function CustomizeSingleCol({
               type="button"
               onClick={fetchColumnData}
               className="save-btn"
+              disabled={enableEdit ? true : false}
             >
               Save
             </button>
