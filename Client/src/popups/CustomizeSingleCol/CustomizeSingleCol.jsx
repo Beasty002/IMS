@@ -8,7 +8,7 @@ export default function CustomizeSingleCol({
   specificId,
   selectedKey,
   fetchSingleVarData,
-  codeDropDown
+  codeDropDown,
 }) {
   const [enableEdit, setEnableEdit] = useState(false);
   const [formData, setFormData] = useState([
@@ -22,9 +22,9 @@ export default function CustomizeSingleCol({
     },
   ]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("CodeDropDown yo ho hai", codeDropDown);
-  },[codeDropDown])
+  }, [codeDropDown]);
 
   useEffect(() => {
     if (fetchSingleVarData) {
@@ -255,7 +255,9 @@ export default function CustomizeSingleCol({
                               specificId,
                               item.columnName
                             );
-                            toggleEditMode(item.id);
+                            toggleEditMode(item.id)
+                            setEnableEdit(!enableEdit);
+
                           }}
                         >
                           Save
@@ -264,8 +266,8 @@ export default function CustomizeSingleCol({
                         <i
                           className="bx bxs-edit-alt edit-icon"
                           onClick={() => {
-                            toggleEditMode(item.id)
-                            setEnableEdit(!enableEdit)
+                            toggleEditMode(item.id);
+                            setEnableEdit(!enableEdit);
                           }}
                         ></i>
                       )}
@@ -288,14 +290,17 @@ export default function CustomizeSingleCol({
           </div>
 
           <div className="btn-container main-col-btn">
-            <button
-              type="button"
-              onClick={fetchColumnData}
-              className="save-btn"
-              disabled={enableEdit ? true : false}
-            >
-              Save
-            </button>
+            {!enableEdit ? (
+              <button
+                type="button"
+                onClick={fetchColumnData}
+                className="save-btn"
+              >
+                Save
+              </button>
+            ) : (
+              <></>
+            )}
             <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
             </button>

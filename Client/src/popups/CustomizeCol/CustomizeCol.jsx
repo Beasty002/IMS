@@ -201,7 +201,9 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                               specificId,
                               item.columnName
                             );
+                            toggleEditMode(item.id)
                             toggleEditMode(item.id);
+
                           }}
                         >
                           Save
@@ -235,14 +237,17 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
           </div>
 
           <div className="btn-container main-col-btn">
-            <button
-              type="button"
-              onClick={fetchColumnData}
-              className="save-btn"
-              disabled={enableEdit ? true : false}
-            >
-              Save
-            </button>
+            {!enableEdit ? (
+              <button
+                type="button"
+                onClick={fetchColumnData}
+                className="save-btn"
+              >
+                Save
+              </button>
+            ) : (
+              <></>
+            )}
             <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
             </button>
