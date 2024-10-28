@@ -95,7 +95,7 @@ function SingleVarTable({
           brandId: specificId,
         })
       );
-      const response = await fetch("http://localhost:3000/api/type", {
+      const response = await fetch("http://localhost:3000/api/column", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -234,8 +234,7 @@ function SingleVarTable({
         selectedKey={selectedKey}
         codeDropDown={codeDropDown}
         onClose={() => setEnableDel(!enableDel)}
-        type={'type'}
-        
+        type={"type"}
       />
 
       <Rename
