@@ -13,6 +13,8 @@ const RecordStock = require("../models/record-stock")
 const RecordSale = require("../models/record-sale")
 const ReportStock = require("../models/report-stock")
 
+const ReportModel = require("../models/report-model")
+
 const { Collection } = require("mongoose");
 const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
@@ -1477,6 +1479,177 @@ const editPurchase = async (req,res) => {
   }
 }
 
+const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockName, type = 'item') => {
+  try {
+    // console.log(req.body);
+    const mongoose = require('mongoose');
+    const { _id } = req.body;
+
+    // Convert to ObjectId for precise matching
+    const idToRemove = new mongoose.Types.ObjectId(_id);
+
+    await ParentModel.updateMany(
+      { [idName]: idToRemove },    // Filter documents where `purchaseIds` contains ObjectId `_id`
+      { $pull: { [idName]: idToRemove } },  // Pull ObjectId `_id` from `purchaseIds` array
+      { new: true }
+    );
+    
+    // const allParents = await ParentModel.find();
+    // for (var parent of allParents) {
+    //   const allIds = parent[idName];
+    //   for (var oneId of allIds) {
+    //     if (oneId.toString() === idToRemove) {
+    //       console.log(oneId)
+    //       // Use MongoDB's pull method and save
+    //       await ParentModel.findByIdAndUpdate(
+    //           parent._id,
+    //           { $pull: { purchaseIds: _id } },
+    //           { new: true }
+    //       );
+    //       break; // Exit loop once found and removed
+    //     }
+    //   }
+    // } 
+    const toDelProduct = await Model.findById(_id)
+
+    if (!toDelProduct){
+      return res.status(404).json({ err: `No such ${type} found`})
+    }
+
+    const {sBrandId, parentBrandId, rowLabel, colLabel,stock,sQty} = toDelProduct
+    const brandId = sBrandId || parentBrandId
+    const qty = stock || sQty
+    
+    const forRecord = await Record.findOne({ brandId,rowLabel,colLabel})
+    
+    if (forRecord){
+      forRecord[stockName] -= qty
+
+      if (forRecord[stockName] < 0){
+        return res.json({ err: "the record has less stock than history"})
+      }
+
+      await forRecord.save()
+    }
+    
+
+    const deletedDoc = await Model.findByIdAndDelete(_id);
+
+    if (deletedDoc) {
+      return res.status(200).json({ msg: `${type} deleted successfully` });
+    } else {
+      return res.status(404).json({ err: `No such ${type} found` });
+    }
+  } catch (err) {
+    console.error(`Error deleting ${type}:`, err);
+    return res.status(500).json({ message: `Error deleting ${type}: ${err.message}` });
+  }
+};
+
+// Usage
+const delSale = (req, res) => deleteDocument(req, res, Sales,SaleRecordModel,'saleIds', RecordSale,'soldQty', 'sale');
+const delPurchase = (req, res) => deleteDocument(req, res, Stock,Purchase,'purchaseIds', RecordStock,'totalStock', 'purchase');
+
+
+
+
+const editReportStock = async(req,res) => {
+  try{
+    const todayDate = new Date().toISOString().split('T')[0];
+    
+    const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
+    
+    if (!checkDate || checkDate.length ===0){
+      // await ReportStock.deleteMany({});
+      const allRecordStocks = await RecordStock.find()
+      
+      const newReportStocks = allRecordStocks.map(stock => ({
+        // Include all the fields from the RecordStock
+        ...stock.toObject(), // Convert Mongoose document to plain object
+        stockUntilThisDate: todayDate // Add today's date
+      }));
+      console.log("newReportStocksssss🙌🙌🙌🙌")
+      for (const reportStock of newReportStocks) {
+        const existingReportStock = await ReportStock.findOne({ _id: reportStock._id });
+        if (existingReportStock) {
+          // Update the existing document
+          await ReportStock.updateOne({ _id: reportStock._id }, reportStock);
+        } else {
+          // Insert a new document
+          await ReportStock.create(reportStock);
+        }
+      }
+    }
+    else{
+      for (var eachReport of checkDate){
+        const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
+        if (reportDate != todayDate){
+          await eachReport.deleteOne()
+        }
+      }
+    }
+    return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
+
+  }
+  catch(err){
+    console.error(`Error edit report stock:`, err);
+    return res.status(500).json({ message: `Error edit report stock : ${err.message}` });
+  }
+} 
+
+const validateStock = async (req,res) => {
+  try{
+    console.log(req.body)
+    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty } = req.body.newQuantity
+    const initQty = req.body.initialQuantity
+
+    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
+
+    if (!stock){
+      return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
+    }
+    console.log(sQty)
+    if ( stock.totalStock < sQty - initQty ){
+      return res.json({ updateStatus : false, totalStock: stock.totalStock})
+    }
+
+    return res.json({ updateStatus: true})
+  }
+  catch(err){
+    console.error(`Error validate stock:`, err);
+    return res.status(500).json({ message: `Error validate stock : ${err.message}` });
+    
+  }
+}
+
+const validatePurchStock = async (req,res) => {
+  try{
+    console.log(req.body)
+
+    const {newQuantity , initialQuantity} = req.body
+
+    const { parentBrandId: brandId, rowLabel, colLabel, stock} = newQuantity
+
+    const forTotalStock = await RecordStock.findOne({ brandId, rowLabel, colLabel })
+    const currStock = forTotalStock.totalStock
+
+    const editedStock = initialQuantity - stock
+
+    if (editedStock > currStock){
+      return res.json({ updateStatus : false, totalStock: currStock})
+    }
+
+    return res.json({ updateStatus: true})
+
+  } 
+  catch(err){
+    console.error(`Error validate purchase stock:`, err);
+    return res.status(500).json({ message: `Error validate purchase stock : ${err.message}` });
+    
+  }
+}
+
+
 const getReport = async (req, res) => {
   try {
     const {brandId} = req.body
@@ -1596,172 +1769,228 @@ const getReport = async (req, res) => {
   }
 };
 
-
-const editReportStock = async(req,res) => {
-  try{
-    const todayDate = new Date().toISOString().split('T')[0];
-    
-    const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
-    
-    if (!checkDate || checkDate.length ===0){
-      // await ReportStock.deleteMany({});
-      const allRecordStocks = await RecordStock.find()
-      
-      const newReportStocks = allRecordStocks.map(stock => ({
-        // Include all the fields from the RecordStock
-        ...stock.toObject(), // Convert Mongoose document to plain object
-        stockUntilThisDate: todayDate // Add today's date
-      }));
-      console.log("newReportStocksssss🙌🙌🙌🙌")
-      for (const reportStock of newReportStocks) {
-        const existingReportStock = await ReportStock.findOne({ _id: reportStock._id });
-        if (existingReportStock) {
-          // Update the existing document
-          await ReportStock.updateOne({ _id: reportStock._id }, reportStock);
-        } else {
-          // Insert a new document
-          await ReportStock.create(reportStock);
-        }
-      }
-    }
-    else{
-      for (var eachReport of checkDate){
-        const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
-        if (reportDate != todayDate){
-          await eachReport.deleteOne()
-        }
-      }
-    }
-    return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
-
-  }
-  catch(err){
-    console.error(`Error edit report stock:`, err);
-    return res.status(500).json({ message: `Error edit report stock : ${err.message}` });
-  }
-} 
-
-const validateStock = async (req,res) => {
-  try{
-    console.log(req.body)
-    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty } = req.body.newQuantity
-    const initQty = req.body.initialQuantity
-
-    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
-
-    if (!stock){
-      return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
-    }
-    console.log(sQty)
-    if ( stock.totalStock < sQty - initQty ){
-      return res.json({ updateStatus : false, totalStock: stock.totalStock})
-    }
-
-    return res.json({ updateStatus: true})
-  }
-  catch(err){
-    console.error(`Error validate stock:`, err);
-    return res.status(500).json({ message: `Error validate stock : ${err.message}` });
-    
-  }
-}
-
-const validatePurchStock = async (req,res) => {
-  try{
-    console.log(req.body)
-
-    const {newQuantity , initialQuantity} = req.body
-
-    const { parentBrandId: brandId, rowLabel, colLabel, stock} = newQuantity
-
-    const forTotalStock = await RecordStock.findOne({ brandId, rowLabel, colLabel })
-    const currStock = forTotalStock.totalStock
-
-    const editedStock = initialQuantity - stock
-
-    if (editedStock > currStock){
-      return res.json({ updateStatus : false, totalStock: currStock})
-    }
-
-    return res.json({ updateStatus: true})
-
-  } 
-  catch(err){
-    console.error(`Error validate purchase stock:`, err);
-    return res.status(500).json({ message: `Error validate purchase stock : ${err.message}` });
-    
-  }
-}
-const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockName, type = 'item') => {
+const saveAllBrandReports = async (req,res) => {
   try {
-    // console.log(req.body);
-    const mongoose = require('mongoose');
-    const { _id } = req.body;
+    console.log(req.body.overallData.matrix)
+    return
+    const allBrands = await Brand.find({});
+    const today = new Date().toISOString().split("T")[0]; // Format as "YYYY-MM-DD"
 
-    // Convert to ObjectId for precise matching
-    const idToRemove = new mongoose.Types.ObjectId(_id);
+    const savedReports = [];
 
-    await ParentModel.updateMany(
-      { [idName]: idToRemove },    // Filter documents where `purchaseIds` contains ObjectId `_id`
-      { $pull: { [idName]: idToRemove } },  // Pull ObjectId `_id` from `purchaseIds` array
-      { new: true }
-    );
-    
-    // const allParents = await ParentModel.find();
-    // for (var parent of allParents) {
-    //   const allIds = parent[idName];
-    //   for (var oneId of allIds) {
-    //     if (oneId.toString() === idToRemove) {
-    //       console.log(oneId)
-    //       // Use MongoDB's pull method and save
-    //       await ParentModel.findByIdAndUpdate(
-    //           parent._id,
-    //           { $pull: { purchaseIds: _id } },
-    //           { new: true }
-    //       );
-    //       break; // Exit loop once found and removed
-    //     }
-    //   }
-    // } 
-    const toDelProduct = await Model.findById(_id)
+    for (const brand of allBrands) {
+      // Simulate the request object for getReport
+      const req = {
+        body: { brandId: brand._id }
+      };
 
-    if (!toDelProduct){
-      return res.status(404).json({ err: `No such ${type} found`})
-    }
+      // Create a response object to capture the response
+      const res = {
+        json: (data) => data,
+        status: (code) => ({
+          json: (data) => ({ code, ...data })
+        })
+      };
 
-    const {sBrandId, parentBrandId, rowLabel, colLabel,stock,sQty} = toDelProduct
-    const brandId = sBrandId || parentBrandId
-    const qty = stock || sQty
-    
-    const forRecord = await Record.findOne({ brandId,rowLabel,colLabel})
-    
-    if (forRecord){
-      forRecord[stockName] -= qty
+      // Get report data for this brand
+      const reportData = await getReport(req, res);
 
-      if (forRecord[stockName] < 0){
-        return res.json({ err: "the record has less stock than history"})
+      // Skip if there was an error
+      if (reportData.code >= 400) {
+        console.log(`Skipping brand ${brand.brandName}: ${reportData.message}`);
+        continue;
       }
 
-      await forRecord.save()
-    }
-    
+      // Convert matrix data to a plain object for MongoDB
+      const matrixObject = {};
+      Object.entries(reportData.matrix).forEach(([rowKey, rowValue]) => {
+        matrixObject[rowKey] = {};
+        Object.entries(rowValue).forEach(([colKey, colValue]) => {
+          matrixObject[rowKey][colKey] = colValue;
+        });
+      });
 
-    const deletedDoc = await Model.findByIdAndDelete(_id);
+      // Create new report document
+      const newReport = new ReportModel({
+        today,                          // The current date as a string
+        brandId: brand._id,             // Brand ID
+        brandCol: reportData.brandCol,  // Column label
+        brandRow: reportData.brandRow,  // Row label
+        matrix: matrixObject,           // Converted matrix object
+        allColumns: reportData.allColumns, // Array of column data
+      });
 
-    if (deletedDoc) {
-      return res.status(200).json({ msg: `${type} deleted successfully` });
-    } else {
-      return res.status(404).json({ err: `No such ${type} found` });
+      // Save the report
+      const savedReport = await newReport.save();
+      savedReports.push(savedReport);
     }
+
+    return savedReports;
   } catch (err) {
-    console.error(`Error deleting ${type}:`, err);
-    return res.status(500).json({ message: `Error deleting ${type}: ${err.message}` });
+    console.error("Error saving brand reports:", err);
+    throw err;
   }
 };
 
-// Usage
-const delSale = (req, res) => deleteDocument(req, res, Sales,SaleRecordModel,'saleIds', RecordSale,'soldQty', 'sale');
-const delPurchase = (req, res) => deleteDocument(req, res, Stock,Purchase,'purchaseIds', RecordStock,'totalStock', 'purchase');
+
+
+const saveCatReports = async (req, res) => {
+  try {
+    const { categories } = req.body;
+    const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as "YYYY-MM-DD"
+
+    for (var oneCat of categories){
+      var catTitle = oneCat.title
+
+      const brandsOfCat = await Brand.find({ parentCategory: catTitle})
+      
+      for (var forBrandId of brandsOfCat){
+        var brandId = forBrandId._id
+
+        const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
+        if (existingReport) {
+          const brandN = forBrandId.brandName
+          const brandC = forBrandId.parentCategory
+          console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
+          continue;
+        }
+
+        const req = {
+          body: {brandId: brandId} 
+        };
+        const res = {
+          json: (data) => data,
+          status: (code) => ({
+            json: (data) => ({ code, ...data })
+          })
+        };
+
+        const reportData = await getReport(req, res);
+
+        const { today, matrix, allColumns, brandRow, brandCol } = reportData;
+    
+        // Convert matrix data to a MongoDB-compatible format
+        const matrixObject = {};
+        Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+          matrixObject[rowKey] = {};
+          Object.entries(rowValue).forEach(([colKey, colValue]) => {
+            matrixObject[rowKey][colKey] = colValue;
+          });
+        });
+    
+        // Create new report document
+        const newReport = new ReportModel({
+          today,          // The date from overallData
+          brandId,        // Brand ID from req.body
+          brandCol,       // Column label from overallData
+          brandRow,       // Row label from overallData
+          matrix: matrixObject, // Converted matrix object
+          allColumns      // Array of column data from overallData
+        });
+    
+        // Save the report
+        await newReport.save();
+        // res.json(savedReport); // Send the saved report as the response
+      }
+    }
+
+    // Destructure the fields from overallData
+  } catch (err) {
+    console.error("Error saving brand report:", err);
+    res.status(500).json({ error: "Failed to save brand report" });
+  }
+};
+//////////////////////////////////////////////////////// WORKING ///////////////////////////////////////////
+const saveBrandsReports = async (req, res) => {
+  try {
+    const { fetchBrand } = req.body;
+    
+    // console.log(fetchBrand)
+    // return
+    for (var forBrandId of fetchBrand){
+      var brandId = forBrandId._id
+
+      const req = {
+        body: {brandId: brandId} 
+      };
+      const res = {
+        json: (data) => data,
+        status: (code) => ({
+          json: (data) => ({ code, ...data })
+        })
+      };
+
+      const reportData = await getReport(req, res);
+
+      const { today, matrix, allColumns, brandRow, brandCol } = reportData;
+  
+      // Convert matrix data to a MongoDB-compatible format
+      const matrixObject = {};
+      Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+        matrixObject[rowKey] = {};
+        Object.entries(rowValue).forEach(([colKey, colValue]) => {
+          matrixObject[rowKey][colKey] = colValue;
+        });
+      });
+  
+      // Create new report document
+      const newReport = new ReportModel({
+        today,          // The date from overallData
+        brandId,        // Brand ID from req.body
+        brandCol,       // Column label from overallData
+        brandRow,       // Row label from overallData
+        matrix: matrixObject, // Converted matrix object
+        allColumns      // Array of column data from overallData
+      });
+  
+      // Save the report
+      await newReport.save();
+      // res.json(savedReport); // Send the saved report as the response
+    }
+
+    // Destructure the fields from overallData
+  } catch (err) {
+    console.error("Error saving brand report:", err);
+    res.status(500).json({ error: "Failed to save brand report" });
+  }
+};
+
+////////////////////////////////////////////////// WORKINGGGG ///////////////////////////////////////////
+const saveOneBrandReport = async (req, res) => {
+  try {
+    const { overallData, brandId } = req.body;
+
+    // Destructure the fields from overallData
+    const { today, matrix, allColumns, brandRow, brandCol } = overallData;
+
+    // Convert matrix data to a MongoDB-compatible format
+    const matrixObject = {};
+    Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+      matrixObject[rowKey] = {};
+      Object.entries(rowValue).forEach(([colKey, colValue]) => {
+        matrixObject[rowKey][colKey] = colValue;
+      });
+    });
+
+    // Create new report document
+    const newReport = new ReportModel({
+      today,          // The date from overallData
+      brandId,        // Brand ID from req.body
+      brandCol,       // Column label from overallData
+      brandRow,       // Row label from overallData
+      matrix: matrixObject, // Converted matrix object
+      allColumns      // Array of column data from overallData
+    });
+
+    // Save the report
+    const savedReport = await newReport.save();
+    res.json(savedReport); // Send the saved report as the response
+  } catch (err) {
+    console.error("Error saving brand report:", err);
+    res.status(500).json({ error: "Failed to save brand report" });
+  }
+};
+
 
 
 
@@ -1827,5 +2056,10 @@ module.exports = {
   validatePurchStock,
 
   delSale,
-  delPurchase
+  delPurchase,
+
+  saveAllBrandReports,
+  saveOneBrandReport,
+  saveBrandsReports,
+  saveCatReports,
 };
