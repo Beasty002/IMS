@@ -1613,8 +1613,16 @@ const editReportStock = async(req,res) => {
         stockUntilThisDate: todayDate // Add today's date
       }));
       console.log("newReportStocksssss🙌🙌🙌🙌")
-      
-      await ReportStock.insertMany(newReportStocks);
+      for (const reportStock of newReportStocks) {
+        const existingReportStock = await ReportStock.findOne({ _id: reportStock._id });
+        if (existingReportStock) {
+          // Update the existing document
+          await ReportStock.updateOne({ _id: reportStock._id }, reportStock);
+        } else {
+          // Insert a new document
+          await ReportStock.create(reportStock);
+        }
+      }
     }
     else{
       for (var eachReport of checkDate){
