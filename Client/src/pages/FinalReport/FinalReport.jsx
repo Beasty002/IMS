@@ -39,7 +39,7 @@ function FinalReport() {
       setColLabel(data.brandCol);
     } catch (error) {
       console.error(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -111,6 +111,15 @@ function FinalReport() {
       {isLoading ? (
         <div className="center-hanne">
           <div className="bhitri-center">
+            <span
+              style={{
+                textAlign: "center",
+                color:'white',
+                fontSize:'25px'
+              }}
+            >
+              Generating Report
+            </span>
             <div className="box"></div>
           </div>
         </div>
