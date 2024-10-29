@@ -63,6 +63,27 @@ function Report() {
     }
   };
 
+  const fetchCategoryReport = async () => {
+    console.log(JSON.stringify({ catStock }));
+    try {
+      const response = await fetch("http://localhost:3000/api/fetchCat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ catStock }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <section>
@@ -87,6 +108,9 @@ function Report() {
             <div className="left-sale">
               <input type="date" />
             </div>
+            <button onClick={fetchCategoryReport} className="primary-btn">
+              Save
+            </button>
             <div
               onClick={() => setEnablePortal(!enablePortal)}
               className="btn-container"
