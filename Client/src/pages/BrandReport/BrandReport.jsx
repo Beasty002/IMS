@@ -53,12 +53,22 @@ function BrandReport() {
             />
           </div>
           <div
-            onClick={() => setEnablePortal(!enablePortal)}
-            className="btn-container"
+            style={{
+              display: "flex",
+              gap: "20px",
+            }}
           >
-            <button className="primary-btn">
-              <i className="bx bxs-printer"></i> Print
-            </button>
+            <div className="left-sale">
+              <input type="date" />
+            </div>
+            <div
+              onClick={() => setEnablePortal(!enablePortal)}
+              className="btn-container"
+            >
+              <button className="primary-btn">
+                <i class="bx bxs-printer"></i> Print
+              </button>
+            </div>
           </div>
         </div>
         {!filteredBrands || filteredBrands.length < 1 ? (

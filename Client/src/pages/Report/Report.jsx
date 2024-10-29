@@ -39,7 +39,6 @@ function Report() {
     navigate(`/catReport/${categoryName}`);
   };
 
-
   const getCategoryStock = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/getCatStock", {
@@ -75,12 +74,22 @@ function Report() {
           />
         </div>
         <div
-          onClick={() => setEnablePortal(!enablePortal)}
-          className="btn-container"
+          style={{
+            display: "flex",
+            gap: "20px",
+          }}
         >
-          <button className="primary-btn">
-            <i class="bx bxs-printer"></i> Print
-          </button>
+          <div className="left-sale">
+            <input type="date" />
+          </div>
+          <div
+            onClick={() => setEnablePortal(!enablePortal)}
+            className="btn-container"
+          >
+            <button className="primary-btn">
+              <i class="bx bxs-printer"></i> Print
+            </button>
+          </div>
         </div>
       </div>
       <div className="cat-list">

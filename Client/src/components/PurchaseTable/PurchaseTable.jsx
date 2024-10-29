@@ -89,7 +89,7 @@ function PurchaseTable({
           newQuantity,
           initialQuantity: initialQuantity,
         }),
-      });
+      }); 
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);

@@ -201,9 +201,8 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                               specificId,
                               item.columnName
                             );
-                            toggleEditMode(item.id)
                             toggleEditMode(item.id);
-
+                            toggleEditMode(item.id);
                           }}
                         >
                           Save
