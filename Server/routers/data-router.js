@@ -77,4 +77,9 @@ router.route("/checkStock").get(datac.checkStock)
 
 router.route("/report").post(datac.getReport)
 router.route("/reportStock").get(datac.editReportStock)
+
+router.route("/saveReport").post(datac.saveOneBrandReport)
+router.route("/brandsReports").post(datac.saveBrandsReports)
+router.route("/fetchCat").post(datac.saveCatReports)
+
 module.exports = router;
