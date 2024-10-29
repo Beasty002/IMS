@@ -20,6 +20,10 @@ function BrandReport() {
   }, []);
 
   useEffect(() => {
+    console.log("Yo fetchBrand ho hai", fetchBrand);
+  }, [fetchBrand]);
+
+  useEffect(() => {
     setFilteredBrands(fetchBrand);
   }, [fetchBrand]);
 
@@ -35,6 +39,28 @@ function BrandReport() {
   const handleFinalRedirect = (brandId, parentCategory) => {
     console.log(" brandname yo ho hai", brandId, parentCategory);
     navigate(`/finalReport/${parentCategory}/${brandId}`);
+  };
+
+  const fetchBrandReport = async () => {
+    console.log(JSON.stringify({ fetchBrand }));
+    try {
+      const response = await fetch("http://localhost:3000/api/brandsReports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fetchBrand }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -61,6 +87,9 @@ function BrandReport() {
             <div className="left-sale">
               <input type="date" />
             </div>
+            <button onClick={fetchBrandReport} className="primary-btn">
+              Save
+            </button>
             <div
               onClick={() => setEnablePortal(!enablePortal)}
               className="btn-container"
