@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./ReportPrint.css";
 import ReactDOM from "react-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ReportPrint({ isOpen, onClose, data }) {
   const [selectedItems, setSelectedItems] = useState([]);
 
+  const navigate = useNavigate();
+
+
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    console.log(selectedItems);
+  }, [selectedItems]);
 
   const handleCheckboxChange = (id) => {
     setSelectedItems((prevSelected) =>
@@ -17,6 +21,18 @@ export default function ReportPrint({ isOpen, onClose, data }) {
     );
   };
 
+ 
+
+  // useEffect(() => {
+  //   if (data) {
+  //     const fetchingIds = data.map((item) => item._id);
+  //     setFetchIds(fetchingIds);
+  //     console.log("Fetch hanne id yo ho hai", fetchingIds);
+  //   }
+  // }, [data]);
+
+  
+
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const allIds = data.map((item) => item._id);
@@ -24,6 +40,11 @@ export default function ReportPrint({ isOpen, onClose, data }) {
     } else {
       setSelectedItems([]);
     }
+  };
+
+  const handleDataFetch = () => {
+    navigate("/previewReport", { state: { selectedItems } });
+    onClose();
   };
 
   const isAllSelected =
@@ -63,7 +84,9 @@ export default function ReportPrint({ isOpen, onClose, data }) {
           <button onClick={onClose} className="cancel-btn">
             Cancel
           </button>
-          <button className="primary-btn">Print</button>
+          <button onClick={handleDataFetch} className="primary-btn">
+            Print
+          </button>
         </div>
       </section>
     </>,

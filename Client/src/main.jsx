@@ -8,9 +8,9 @@ import { AuthProvider } from "./customHooks/useAuth.jsx";
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <Router>
-      <StrictMode>
+      {/* <StrictMode> */}
         <App />
-      </StrictMode>
+      {/* </StrictMode> */}
     </Router>
   </AuthProvider>
 );

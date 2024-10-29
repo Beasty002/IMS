@@ -18,6 +18,7 @@ import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
 import { ToastContainer, toast } from "react-toastify";
 import BrandReport from "./pages/BrandReport/BrandReport";
 import FinalReport from "./pages/FinalReport/FinalReport";
+import Preview from "./pages/Preview/Preview";
 // import EditSaleEntry from "./pages/EditSaleEntry/EditSaleEntry";
 
 export default function App() {
@@ -74,6 +75,7 @@ export default function App() {
               <Route path="/sales" element={<SalesPage />} />
               <Route path="/salesEntry" element={<SaleEntry />} />
               <Route path="/purchasesEntry" element={<PurchaseEntry />} />
+              <Route path="/previewReport" element={<Preview />} />
               <Route
                 path="/catband/:categoryName/:brandName/:multi"
                 element={<CatBrandPage />}

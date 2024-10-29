@@ -10,6 +10,7 @@ function BrandReport() {
   const [enablePortal, setEnablePortal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBrands, setFilteredBrands] = useState([]);
+ 
 
   const navigate = useNavigate();
 
@@ -132,6 +133,7 @@ function BrandReport() {
         )}
         <ReportPrint
           isOpen={enablePortal}
+          // fetchBrand={fetchBrand}
           onClose={() => setEnablePortal(!enablePortal)}
           data={fetchBrand}
         />
