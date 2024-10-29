@@ -9,6 +9,7 @@ function Report() {
   const [enablePortal, setEnablePortal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState(catStock || {});
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +41,7 @@ function Report() {
   };
 
   const getCategoryStock = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/getCatStock", {
         method: "POST",
@@ -56,63 +58,78 @@ function Report() {
       console.log(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <section>
-      <h1>Reports</h1>
-      <div className="cat-list-top">
-        <div className="search-box">
-          <i className="bx bx-search-alt"></i>
-          <input
-            type="text"
-            placeholder="Search categories..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Search input"
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-          }}
-        >
-          <div className="left-sale">
-            <input type="date" />
+    <>
+      <section>
+        <h1>Reports</h1>
+        <div className="cat-list-top">
+          <div className="search-box">
+            <i className="bx bx-search-alt"></i>
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search input"
+            />
           </div>
           <div
-            onClick={() => setEnablePortal(!enablePortal)}
-            className="btn-container"
+            style={{
+              display: "flex",
+              gap: "20px",
+            }}
           >
-            <button className="primary-btn">
-              <i class="bx bxs-printer"></i> Print
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="cat-list">
-        {Object.entries(filteredCategories).map(([key, value], index) => (
-          <div
-            onClick={() => handleReportNavigation(key)}
-            key={index}
-            className="cat-box"
-          >
-            <h3>{key}</h3>
-            <p className="cat-stock-availability">Stock available : {value}</p>
-            <div className="action-container">
-              <i class="bx bx-printer print-icon"></i>
+            <div className="left-sale">
+              <input type="date" />
+            </div>
+            <div
+              onClick={() => setEnablePortal(!enablePortal)}
+              className="btn-container"
+            >
+              <button className="primary-btn">
+                <i class="bx bxs-printer"></i> Print
+              </button>
             </div>
           </div>
-        ))}
-      </div>
-      <ReportPrint
-        isOpen={enablePortal}
-        onClose={() => setEnablePortal(!enablePortal)}
-        data={categories}
-      />
-    </section>
+        </div>
+        <div className="cat-list">
+          {Object.entries(filteredCategories).map(([key, value], index) => (
+            <div
+              onClick={() => handleReportNavigation(key)}
+              key={index}
+              className="cat-box"
+            >
+              <h3>{key}</h3>
+              <p className="cat-stock-availability">
+                Stock available : {value}
+              </p>
+              <div className="action-container">
+                <i class="bx bx-printer print-icon"></i>
+              </div>
+            </div>
+          ))}
+        </div>
+        <ReportPrint
+          isOpen={enablePortal}
+          onClose={() => setEnablePortal(!enablePortal)}
+          data={categories}
+        />
+      </section>
+      {isLoading ? (
+        <div className="center-hanne">
+          <div className="bhitri-center">
+            <div className="box"></div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }
 
