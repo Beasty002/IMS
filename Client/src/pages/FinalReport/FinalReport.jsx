@@ -8,6 +8,7 @@ function FinalReport() {
   const [matrixKey, setMatrixKey] = useState({});
   const [rowLabel, setRowLabel] = useState("");
   const [colLabel, setColLabel] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchTotalData = async () => {
     console.log(
@@ -15,6 +16,7 @@ function FinalReport() {
         brandId: brandId,
       })
     );
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/report", {
         method: "POST",
@@ -37,6 +39,8 @@ function FinalReport() {
       setColLabel(data.brandCol);
     } catch (error) {
       console.error(error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -104,6 +108,15 @@ function FinalReport() {
           </tbody>
         </table>
       </div>
+      {isLoading ? (
+        <div className="center-hanne">
+          <div className="bhitri-center">
+            <div className="box"></div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
     </>
   );
 }
