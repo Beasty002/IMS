@@ -27,3 +27,16 @@
   text-align: center;
   padding: 10px;
 }
+
+.save-report {
+  width: 100%;
+}
+.save-report button {
+  float: right;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  border: none;
+  outline: none;
+
+}

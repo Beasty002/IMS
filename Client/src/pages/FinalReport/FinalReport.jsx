@@ -9,6 +9,7 @@ function FinalReport() {
   const [rowLabel, setRowLabel] = useState("");
   const [colLabel, setColLabel] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [overallData, setOverallData] = useState({});
 
   const fetchTotalData = async () => {
     console.log(
@@ -33,6 +34,7 @@ function FinalReport() {
         return;
       }
       console.log(data);
+      setOverallData(data);
       setFetchedData(data.allColumns);
       setMatrixKey(data.matrix);
       setRowLabel(data.brandRow);
@@ -58,8 +60,34 @@ function FinalReport() {
     console.log("Matrix fata yo hai", matrixKey);
   }, [matrixKey]);
 
+  const fetchReportData = async () => {
+    console.log(JSON.stringify({ overallData, brandId }));
+    try {
+      const response = await fetch("http://localhost:3000/api/saveReport", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ overallData, brandId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
+      <div className="save-report">
+        <button onClick={fetchReportData} className="primary-btn">
+          Save Report
+        </button>
+      </div>
       <div class="report-table-container">
         <table id="finalReport">
           <thead class="report-table-head">
@@ -114,8 +142,8 @@ function FinalReport() {
             <span
               style={{
                 textAlign: "center",
-                color:'white',
-                fontSize:'25px'
+                color: "white",
+                fontSize: "25px",
               }}
             >
               Generating Report
