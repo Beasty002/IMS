@@ -10,6 +10,7 @@ function Report() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState(catStock || {});
   const [isLoading, setIsLoading] = useState(false);
+  const [getData, setGetData] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,7 +56,9 @@ function Report() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+
+      console.log("Data yo ho hai ta kta ho", data);
+      setGetData(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -64,14 +67,14 @@ function Report() {
   };
 
   const fetchCategoryReport = async () => {
-    console.log(JSON.stringify({ catStock }));
+    console.log(JSON.stringify({ categories }));
     try {
       const response = await fetch("http://localhost:3000/api/fetchCat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ catStock }),
+        body: JSON.stringify({ categories }),
       });
       const data = await response.json();
       if (!response.ok) {
