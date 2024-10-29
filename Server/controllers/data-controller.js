@@ -1837,6 +1837,8 @@ const saveAllBrandReports = async (req,res) => {
 const saveCatReports = async (req, res) => {
   try {
     const { categories } = req.body;
+    const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as "YYYY-MM-DD"
+
     for (var oneCat of categories){
       var catTitle = oneCat.title
 
@@ -1844,6 +1846,14 @@ const saveCatReports = async (req, res) => {
       
       for (var forBrandId of brandsOfCat){
         var brandId = forBrandId._id
+
+        const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
+        if (existingReport) {
+          const brandN = forBrandId.brandName
+          const brandC = forBrandId.parentCategory
+          console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
+          continue;
+        }
 
         const req = {
           body: {brandId: brandId} 
