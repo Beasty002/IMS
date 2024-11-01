@@ -18,6 +18,7 @@ const ReportModel = require("../models/report-model")
 const { Collection } = require("mongoose");
 const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
+const { search } = require("../routers/data-router");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -1834,6 +1835,85 @@ const saveAllBrandReports = async (req,res) => {
 
 
 
+const saveReports = async (req, res) => {
+  try {
+    const categories = await Category.find({}) 
+
+    if (!categories || categories.length ===0){
+      return res.status(404).json({err: "No categories available!"})
+    }
+    // return res.json(categories)
+    const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as "YYYY-MM-DD"
+    
+    // for (var category )
+    for (var oneCat of categories){
+      var catTitle = oneCat.title
+      
+      const brandsOfCat = await Brand.find({ parentCategory: catTitle})
+
+      // if (!brandsOfCat || brandsOfCat.length ===0){
+      //   res.status(404).json({err: `No brands found for ${catTitle} available!`});
+      // }
+      
+      for (var forBrandId of brandsOfCat){
+        var brandId = forBrandId._id
+
+        const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
+        if (existingReport) {
+          const brandN = forBrandId.brandName
+          const brandC = forBrandId.parentCategory
+          console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
+          continue;
+        }
+
+        const req = {
+          body: {brandId: brandId} 
+        };
+        const res = {
+          json: (data) => data,
+          status: (code) => ({
+            json: (data) => ({ code, ...data })
+          })
+        };
+
+        const reportData = await getReport(req, res);
+
+        const { today, matrix, allColumns, brandRow, brandCol } = reportData;
+    
+        // Convert matrix data to a MongoDB-compatible format
+        const matrixObject = {};
+        Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+          matrixObject[rowKey] = {};
+          Object.entries(rowValue).forEach(([colKey, colValue]) => {
+            matrixObject[rowKey][colKey] = colValue;
+          });
+        });
+    
+        // Create new report document
+        const newReport = new ReportModel({
+          today,          // The date from overallData
+          brandId,        // Brand ID from req.body
+          brandCol,       // Column label from overallData
+          brandRow,       // Row label from overallData
+          matrix: matrixObject, // Converted matrix object
+          allColumns      // Array of column data from overallData
+        });
+    
+        // Save the report
+        await newReport.save();
+        // res.json(savedReport); // Send the saved report as the response
+
+      }
+    }
+
+    return res.status(200).json({ msg: "Reports saved successfully!"})
+
+    // Destructure the fields from overallData
+  } catch (err) {
+    console.error("Error saving brand report:", err);
+    res.status(500).json({ error: "Failed to save brand report" });
+  }
+};
 const saveCatReports = async (req, res) => {
   try {
     const { categories } = req.body;
@@ -1991,7 +2071,171 @@ const saveOneBrandReport = async (req, res) => {
   }
 };
 
+const searchItem = async (req,res) => {
+  try{
+    // console.log(req.body)
+    // return 
 
+    const { searchedItem } = req.body
+
+    const splitItem = searchedItem.split(" ");
+
+    const searchedBrand = splitItem[0];
+    const searchedCat = splitItem[1];
+
+    const rowLabel = splitItem.slice(2).join(" ").split(" (")[0];
+    console.log(rowLabel)
+    let colLabel = "";
+    let searchedColRegex = null;
+    if (searchedItem.includes("(")) {
+      colLabel = splitItem.at(-1).replace(/[()]/g, "");
+      searchedColRegex = new RegExp(`${colLabel}`, 'i');
+    }
+
+    console.log("Rowlabel: ",rowLabel, "   Collalbel: ",colLabel)
+    const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
+    const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
+    const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
+    // const searchedColRegex = new RegExp(`${colLabel}`, 'i');
+
+    var allBrands;
+    allBrands = await Brand.find({ brandName : searchedBrandRegex })
+    
+    if (searchedCat){
+      allBrands = await Brand.find({ brandName : searchedBrandRegex , parentCategory: searchedCatRegex})
+    }
+
+    var searchList = []
+    for (var brand of allBrands){
+      const brandId = brand._id
+      const cat = brand.parentCategory
+      const brandN = brand.brandName
+      const multivar = brand.multiVar
+
+      var types;
+      types = await Type.find({ brandId });
+      if (rowLabel){
+        types = await Type.find({ brandId, type: searchedRowRegex });
+      }
+
+      if (multivar){
+        const cols = colLabel
+          ? await Column.find({ brandId, column: searchedColRegex })
+          : await Column.find({ brandId });
+
+        for (var type of types){
+          for (var col of cols){
+            searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+          }
+        }
+      }else{
+        for (var type of types){
+          
+          const typeId = type._id
+          const cols = colLabel
+            ? await Column.find({ brandId, typeId, column: searchedColRegex })
+            : await Column.find({ brandId, typeId });          
+          
+          for (var col of cols){
+            searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+          }
+        }
+      }
+    }
+    return res.status(200).json(searchList)
+
+  }
+  catch(err){
+    console.error("Error in search item:", err);
+    res.status(500).json({ error: "Failed to search item" });
+  }
+}
+
+// const searchItem = async (req, res) => {
+//   try {
+//     const { searchedItem } = req.body
+
+//     const splitItem = searchedItem.split(" ");
+
+//     const searchedBrand = splitItem[0];
+//     const searchedCat = splitItem[1];
+
+//     // Modify the row label extraction
+//     const rowLabel = splitItem.slice(2).join(" ")
+//       .replace(/\s*\(.*\)\s*$/, '').trim();
+
+//     console.log('Row Label:', rowLabel);
+
+//     let colLabel = "";
+//     let searchedColRegex = null;
+    
+//     // Modify column label extraction
+//     if (searchedItem.includes("(")) {
+//       // Extract the column label more robustly
+//       // const match = searchedItem.match(/\(([^)]+)\)/);
+//       // colLabel = match ? match[1] : "";
+//       colLabel = splitItem.at(-1).replace(/[()]/g, ""); 
+
+      
+//       if (colLabel) {
+//         searchedColRegex = new RegExp(`${colLabel}`, 'i');
+//       }
+//     }
+
+//     console.log('Column Label:', colLabel);
+
+//     const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
+//     const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
+//     const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
+
+//     let allBrands = await Brand.find({ 
+//       brandName: searchedBrandRegex,
+//       ...(searchedCat && { parentCategory: searchedCatRegex }) 
+//     });
+
+//     let searchList = [];
+//     for (let brand of allBrands) {
+//       const brandId = brand._id;
+//       const cat = brand.parentCategory;
+//       const brandN = brand.brandName;
+//       const multivar = brand.multiVar;
+
+//       let types = await Type.find({ 
+//         brandId, 
+//         ...(rowLabel && { type: searchedRowRegex }) 
+//       });
+
+//       if (multivar) {
+//         const cols = colLabel
+//           ? await Column.find({ brandId, column: searchedColRegex })
+//           : await Column.find({ brandId });
+
+//         for (let type of types) {
+//           for (let col of cols) {
+//             searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+//           }
+//         }
+//       } else {
+//         for (let type of types) {
+//           const typeId = type._id;
+//           const cols = colLabel
+//             ? await Column.find({ brandId, typeId, column: searchedColRegex })
+//             : await Column.find({ brandId, typeId });          
+          
+//           for (let col of cols) {
+//             searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+//           }
+//         }
+//       }
+//     }
+
+//     return res.status(200).json(searchList);
+//   }
+//   catch(err) {
+//     console.error("Error in search item:", err);
+//     res.status(500).json({ error: "Failed to search item" });
+//   }
+// }
 
 
 module.exports = {
@@ -2062,4 +2306,7 @@ module.exports = {
   saveOneBrandReport,
   saveBrandsReports,
   saveCatReports,
+  saveReports,
+
+  searchItem,
 };
