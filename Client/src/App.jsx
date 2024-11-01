@@ -14,12 +14,10 @@ import SaleEntry from "./popups/SaleEntry/SaleEntry";
 import MulVarList from "./pages/BrandItemList/MulVarList";
 import SinVarList from "./pages/BrandItemList/SinVarList";
 import PurchaseEntry from "./pages/PurchaseEntry/PurchaseEntry";
-// import ReportPrint from "./popups/ReportPrint/ReportPrint";
 import { ToastContainer, toast } from "react-toastify";
 import BrandReport from "./pages/BrandReport/BrandReport";
 import FinalReport from "./pages/FinalReport/FinalReport";
 import Preview from "./pages/Preview/Preview";
-// import EditSaleEntry from "./pages/EditSaleEntry/EditSaleEntry";
 
 export default function App() {
   const location = useLocation();
@@ -90,7 +88,6 @@ export default function App() {
                 element={<FinalReport />}
               />
 
-              {/* <Route path="/editSaleEntry" element={<EditSaleEntry />} /> */}
             </Routes>
             <ToastContainer />
           </main>

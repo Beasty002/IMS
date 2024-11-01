@@ -4,12 +4,11 @@ import "./Preview.css";
 
 function Preview() {
   const [totalFetchData, setTotalFetchData] = useState([]);
-
   const location = useLocation();
-  const { selectedItems } = location.state || { selectedItems: [] };
+  const { selectedItems = [], selectedTitles = [] } = location.state || {};
 
   useEffect(() => {
-    if (selectedItems) {
+    if (selectedItems.length > 0) {
       selectedItems.forEach((item) => fetchTotalData(item));
     }
   }, [selectedItems]);
@@ -41,85 +40,101 @@ function Preview() {
 
   return (
     <div className="total-out">
-      {totalFetchData.map((item, index) => (
-        <div key={index} className="report-table-container">
-          <table>
-            <thead className="report-table-head">
-              <tr>
-                <th rowSpan={2}>S.N</th>
-                {item.brandCol ? (
-                  <th rowSpan={2}>
-                    {item.brandRow}/{item.brandCol}
-                  </th>
-                ) : (
-                  <th rowSpan={2}>{item.brandRow}</th>
-                )}
-                {item.allColumns?.map((col, colIndex) => (
-                  <th key={colIndex} colSpan={4}>
-                    {col.column}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                {item.allColumns?.map((_, colIndex) => (
-                  <React.Fragment key={colIndex}>
-                    <th>OP</th>
-                    <th>IN</th>
-                    <th>OUT</th>
-                    <th>BAL</th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(item.matrix).map(
-                ([rowLabel, rowData], rowIndex) => {
-                  if (!rowData || Object.keys(rowData).length === 0)
-                    return null;
+      <div id="report-content">
+        {totalFetchData.map((item, index) => {
+          return (
+            <div key={index} className="report-table-container">
+              <h1>{selectedTitles[index] || "Unnamed Report"}</h1>
+              <table>
+                <thead className="report-table-head">
+                  <tr>
+                    <th rowSpan={2}>S.N</th>
+                    {item.brandCol ? (
+                      <th rowSpan={2}>
+                        {item.brandRow}/{item.brandCol}
+                      </th>
+                    ) : (
+                      <th rowSpan={2}>{item.brandRow}</th>
+                    )}
+                    {item.allColumns?.map((col, colIndex) => (
+                      <th key={colIndex} colSpan={4}>
+                        {col.column}
+                      </th>
+                    ))}
+                  </tr>
+                  <tr>
+                    {item.allColumns?.map((_, colIndex) => (
+                      <React.Fragment key={colIndex}>
+                        <th>OP</th>
+                        <th>IN</th>
+                        <th>OUT</th>
+                        <th>BAL</th>
+                      </React.Fragment>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(item.matrix).map(
+                    ([rowLabel, rowData], rowIndex) => {
+                      if (!rowData || Object.keys(rowData).length === 0)
+                        return null;
 
-                  return (
-                    <tr key={rowIndex}>
-                      <td>{rowIndex + 1}</td>
-                      <td>{rowLabel}</td>
-                      {item.allColumns.map((col, colIndex) => {
-                        const colData = rowData[col.column];
+                      return (
+                        <tr key={rowIndex}>
+                          <td>{rowIndex + 1}</td>
+                          <td>{rowLabel}</td>
+                          {item.allColumns.map((col, colIndex) => {
+                            const colData = rowData[col.column];
 
-                        return (
-                          <React.Fragment key={colIndex}>
-                            {colData ? (
-                              <>
-                                <td>
-                                  {colData.op !== undefined ? colData.op : ""}
-                                </td>
-                                <td>
-                                  {colData.in !== undefined ? colData.in : ""}
-                                </td>
-                                <td>
-                                  {colData.out !== undefined ? colData.out : ""}
-                                </td>
-                                <td>
-                                  {colData.bal !== undefined ? colData.bal : ""}
-                                </td>
-                              </>
-                            ) : (
-                              <>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                              </>
-                            )}
-                          </React.Fragment>
-                        );
-                      })}
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
-        </div>
-      ))}
+                            return (
+                              <React.Fragment key={colIndex}>
+                                {colData ? (
+                                  <>
+                                    <td>
+                                      {colData.op !== undefined
+                                        ? colData.op
+                                        : ""}
+                                    </td>
+                                    <td>
+                                      {colData.in !== undefined
+                                        ? colData.in
+                                        : ""}
+                                    </td>
+                                    <td>
+                                      {colData.out !== undefined
+                                        ? colData.out
+                                        : ""}
+                                    </td>
+                                    <td>
+                                      {colData.bal !== undefined
+                                        ? colData.bal
+                                        : ""}
+                                    </td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                  </>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </table>
+            </div>
+          );
+        })}
+      </div>
+      <button onClick={() => window.print()} className="primary-btn" id="print-btn">
+        Print Report
+      </button>
     </div>
   );
 }

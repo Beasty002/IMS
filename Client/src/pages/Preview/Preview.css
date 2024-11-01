@@ -1,5 +1,40 @@
-.total-out{
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
+.total-out {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+/* General Styles */
+.total-out {
+  padding: 20px;
+}
+
+.report-table-container {
+  margin-bottom: 20px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #report-content,
+  #report-content * {
+    visibility: visible;
+  }
+  #report-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+  }
+}
+
+#print-btn {
+  padding: 10px;
+  width: max-content;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  outline: none;
 }

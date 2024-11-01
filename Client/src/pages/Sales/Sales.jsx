@@ -69,8 +69,6 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         },
         body: JSON.stringify({ resData }),
       });
-      x;
-
       const data = await response.json();
       if (!response.ok) {
         console.log(response.statusText);

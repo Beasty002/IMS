@@ -44,7 +44,7 @@ function SalesPage() {
         console.log(response.statusText);
         return;
       }
-      console.log("Initial fetch yo hai", data);
+      // console.log("Initial fetch yo hai", data);
       localStorage.setItem("initialData", JSON.stringify(data.msg));
       const filteredData = data.msg.filter((item) => item !== null);
       if (data.msg.every((element) => element === null)) {
