@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../customHooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import "./SaleEntry.css";
 
 function SaleEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
@@ -11,6 +12,7 @@ function SaleEntry() {
   const [typeStatus, setTypeStatus] = useState(false);
   const [fetchStatus, setFetchStatus] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [resData, setResData] = useState([]);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -198,6 +200,10 @@ function SaleEntry() {
   }, []);
 
   useEffect(() => {
+    console.log("Yo ho hai addINput", addInput);
+  }, [addInput]);
+
+  useEffect(() => {
     if (typeStatus) {
       const updateStatus = fetchBrand?.find(
         (item) => item.brandName === typeStatus
@@ -275,10 +281,40 @@ function SaleEntry() {
         console.log(response.statusText);
         return;
       }
-      console.log(data);
+      setResData(data);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const getTheData = (data) => {
+    const parts = data.split(" ");
+    const category = parts.length > 1 ? parts[1] : "";
+    const brand = parts.length > 0 ? parts[0] : "";
+    const rowLabel = parts.length > 2 ? parts[2] : "";
+    const str = "Mayur Plywood 12FD (9mm)";
+    const match = str.match(/\((\d+mm)\)/);
+    const thickness = match ? match[1] : "";
+
+    const newInput = {
+      id: Date.now(),
+      category: category,
+      brand: brand,
+      rowLabel: rowLabel,
+      colLabel: thickness,
+      counter: 0,
+      fetchData: [],
+      brandData: [],
+      colArray: [],
+    };
+
+    setAddInput((prevInputs) => [...prevInputs, newInput]);
+    setResData([]);
+
+    console.log(category);
+    console.log(brand);
+    console.log(rowLabel);
+    console.log(thickness);
   };
 
   return (
@@ -286,18 +322,29 @@ function SaleEntry() {
       <h2>Sales Entry</h2>
       <section className="page-top-container">
         <div className="search-box">
-          <i className="bx bx-search-alt"></i>
-          <input
-            type="text"
-            placeholder="Search items to add..."
-            aria-label="Search input"
-            value={searchValue}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setSearchValue(newValue);
-              searchInputValue(newValue);
-            }}
-          />
+          <div className="search">
+            <i className="bx bx-search-alt"></i>
+            <input
+              type="text"
+              placeholder="Search items to add..."
+              aria-label="Search input"
+              value={searchValue}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setSearchValue(newValue);
+                searchInputValue(newValue);
+              }}
+            />
+          </div>
+          <div className="search-list">
+            <ul>
+              {resData?.map((item, index) => (
+                <li onClick={() => getTheData(item)} key={index}>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div onClick={addNewList} className="btn-container">
           <button className="secondary-btn">+ New Item</button>
@@ -332,7 +379,7 @@ function SaleEntry() {
                 </select>
 
                 <select
-                  value={item.brand}
+                  value={item.brand || ""}
                   onChange={(event) =>
                     handleDataInsert(item.id, "brand", event.target.value)
                   }
@@ -340,11 +387,15 @@ function SaleEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
+                  item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
                       </option>
-                    ))}
+                    ))
+                  ) : (
+                    <option value={item.brand}>{item.brand}</option>
+                  )}
                 </select>
 
                 <select
@@ -355,12 +406,16 @@ function SaleEntry() {
                   className="row-select"
                 >
                   <option value="">Select RowLabel</option>
-                  {Array.isArray(item.brandData.type) &&
+                  {Array.isArray(item.brandData?.type) &&
+                  item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
                       </option>
-                    ))}
+                    ))
+                  ) : (
+                    <option value={item.rowLabel}>{item.rowLabel}</option>
+                  )}
                 </select>
 
                 <select
@@ -371,19 +426,22 @@ function SaleEntry() {
                   className="column-select"
                 >
                   <option value="">Select ColLabel</option>
-                  {item.colArray.length > 0
-                    ? Array.isArray(item.colArray) &&
-                      item.colArray.map((label, index) => (
-                        <option key={index} value={label}>
-                          {label}
-                        </option>
-                      ))
-                    : Array.isArray(item.brandData.column) &&
-                      item.brandData.column.map((label) => (
-                        <option key={label._id} value={label.column}>
-                          {label.column}
-                        </option>
-                      ))}
+                  {Array.isArray(item.colArray) && item.colArray.length > 0 ? (
+                    item.colArray.map((label, index) => (
+                      <option key={index} value={label}>
+                        {label}
+                      </option>
+                    ))
+                  ) : Array.isArray(item.brandData?.column) &&
+                    item.brandData.column.length > 0 ? (
+                    item.brandData.column.map((label) => (
+                      <option key={label._id} value={label.column}>
+                        {label.column}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={item.colLabel}>{item.colLabel}</option>
+                  )}
                 </select>
 
                 <div className="sales-entry-qty">
