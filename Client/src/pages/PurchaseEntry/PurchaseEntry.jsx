@@ -6,6 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 function PurchaseEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+  const [resData, setResData] = useState([]);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -211,6 +213,58 @@ function PurchaseEntry() {
     );
   };
 
+  const searchInputValue = async (currentValue) => {
+    console.log(JSON.stringify({ searchedItem: currentValue }));
+    try {
+      const response = await fetch("http://localhost:3000/api/searchItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchedItem: currentValue }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      setResData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getTheData = (data) => {
+    const parts = data.split(" ");
+    const category = parts.length > 1 ? parts[1] : "";
+    const brand = parts.length > 0 ? parts[0] : "";
+    const rowLabel = parts.length > 2 ? parts[2] : "";
+    const str = "Mayur Plywood 12FD (9mm)";
+    const match = str.match(/\((\d+mm)\)/);
+    const thickness = match ? match[1] : "";
+
+    const newInput = {
+      id: Date.now(),
+      category: category,
+      brand: brand,
+      rowLabel: rowLabel,
+      colLabel: thickness,
+      counter: 0,
+      fetchData: [],
+      brandData: [],
+      colArray: [],
+    };
+
+    setAddInput((prevInputs) => [...prevInputs, newInput]);
+    setResData([]);
+
+    console.log(category);
+    console.log(brand);
+    console.log(rowLabel);
+    console.log(thickness);
+  };
+
   return (
     <div id="newSales">
       <h2>Purchase Entry</h2>
@@ -221,7 +275,22 @@ function PurchaseEntry() {
             type="text"
             placeholder="Search items to add..."
             aria-label="Search input"
+            value={searchValue}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setSearchValue(newValue);
+              searchInputValue(newValue);
+            }}
           />
+          <div className="search-list">
+            <ul>
+              {resData?.map((item, index) => (
+                <li onClick={() => getTheData(item)} key={index}>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div className="btn-container">
           <button onClick={addNewList} className="secondary-btn">
@@ -257,7 +326,7 @@ function PurchaseEntry() {
                 </select>
 
                 <select
-                  value={item.brand}
+                  value={item.brand || ""}
                   onChange={(event) =>
                     handleDataInsert(item.id, "brand", event.target.value)
                   }
@@ -265,11 +334,15 @@ function PurchaseEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
+                  item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
                       </option>
-                    ))}
+                    ))
+                  ) : (
+                    <option value={item.brand}>{item.brand}</option>
+                  )}
                 </select>
 
                 <select
@@ -280,12 +353,16 @@ function PurchaseEntry() {
                   className="row-select"
                 >
                   <option value="">Select RowLabel</option>
-                  {Array.isArray(item.brandData.type) &&
+                  {Array.isArray(item.brandData?.type) &&
+                  item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
                       </option>
-                    ))}
+                    ))
+                  ) : (
+                    <option value={item.rowLabel}>{item.rowLabel}</option>
+                  )}
                 </select>
 
                 <select
@@ -296,19 +373,22 @@ function PurchaseEntry() {
                   className="column-select"
                 >
                   <option value="">Select ColLabel</option>
-                  {item.colArray.length > 0
-                    ? Array.isArray(item.colArray) &&
-                      item.colArray.map((label, index) => (
-                        <option key={index} value={label}>
-                          {label}
-                        </option>
-                      ))
-                    : Array.isArray(item.brandData.column) &&
-                      item.brandData.column.map((label) => (
-                        <option key={label._id} value={label.column}>
-                          {label.column}
-                        </option>
-                      ))}
+                  {Array.isArray(item.colArray) && item.colArray.length > 0 ? (
+                    item.colArray.map((label, index) => (
+                      <option key={index} value={label}>
+                        {label}
+                      </option>
+                    ))
+                  ) : Array.isArray(item.brandData?.column) &&
+                    item.brandData.column.length > 0 ? (
+                    item.brandData.column.map((label) => (
+                      <option key={label._id} value={label.column}>
+                        {label.column}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={item.colLabel}>{item.colLabel}</option>
+                  )}
                 </select>
 
                 <div className="sales-entry-qty">
