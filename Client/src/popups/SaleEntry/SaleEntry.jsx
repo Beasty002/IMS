@@ -10,6 +10,7 @@ function SaleEntry() {
   const [brandId, setBrandId] = useState(null);
   const [typeStatus, setTypeStatus] = useState(false);
   const [fetchStatus, setFetchStatus] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -250,13 +251,36 @@ function SaleEntry() {
   }, [addInput]);
 
   const changeValue = (itemId, value) => {
-    const numericValue = parseInt(value) ;
+    const numericValue = parseInt(value);
     setAddInput((prev) =>
       prev.map((item) =>
         item.id === itemId ? { ...item, counter: numericValue } : item
       )
     );
   };
+
+  const searchInputValue = async (currentValue) => {
+    console.log(JSON.stringify({ searchedItem: currentValue }));
+    try {
+      const response = await fetch("http://localhost:3000/api/searchItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchedItem: currentValue }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div id="newSales">
       <h2>Sales Entry</h2>
@@ -267,6 +291,12 @@ function SaleEntry() {
             type="text"
             placeholder="Search items to add..."
             aria-label="Search input"
+            value={searchValue}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setSearchValue(newValue);
+              searchInputValue(newValue);
+            }}
           />
         </div>
         <div onClick={addNewList} className="btn-container">
