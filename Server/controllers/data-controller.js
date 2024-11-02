@@ -15,10 +15,9 @@ const ReportStock = require("../models/report-stock")
 
 const ReportModel = require("../models/report-model")
 
-const { Collection } = require("mongoose");
-const { isString, getSystemErrorMap } = require("util");
+// const { Collection } = require("mongoose");
+// const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
-const { search } = require("../routers/data-router");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -2084,7 +2083,7 @@ const searchItem = async (req,res) => {
     const searchedCat = splitItem[1];
 
     const rowLabel = splitItem.slice(2).join(" ").split(" (")[0];
-    console.log(rowLabel)
+    // console.log(rowLabel)
     let colLabel = "";
     let searchedColRegex = null;
     if (searchedItem.includes("(")) {
@@ -2092,7 +2091,7 @@ const searchItem = async (req,res) => {
       searchedColRegex = new RegExp(`${colLabel}`, 'i');
     }
 
-    console.log("Rowlabel: ",rowLabel, "   Collalbel: ",colLabel)
+    // console.log("Rowlabel: ",rowLabel, "   Collalbel: ",colLabel)
     const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
     const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
     const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
@@ -2150,92 +2149,6 @@ const searchItem = async (req,res) => {
     res.status(500).json({ error: "Failed to search item" });
   }
 }
-
-// const searchItem = async (req, res) => {
-//   try {
-//     const { searchedItem } = req.body
-
-//     const splitItem = searchedItem.split(" ");
-
-//     const searchedBrand = splitItem[0];
-//     const searchedCat = splitItem[1];
-
-//     // Modify the row label extraction
-//     const rowLabel = splitItem.slice(2).join(" ")
-//       .replace(/\s*\(.*\)\s*$/, '').trim();
-
-//     console.log('Row Label:', rowLabel);
-
-//     let colLabel = "";
-//     let searchedColRegex = null;
-    
-//     // Modify column label extraction
-//     if (searchedItem.includes("(")) {
-//       // Extract the column label more robustly
-//       // const match = searchedItem.match(/\(([^)]+)\)/);
-//       // colLabel = match ? match[1] : "";
-//       colLabel = splitItem.at(-1).replace(/[()]/g, ""); 
-
-      
-//       if (colLabel) {
-//         searchedColRegex = new RegExp(`${colLabel}`, 'i');
-//       }
-//     }
-
-//     console.log('Column Label:', colLabel);
-
-//     const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
-//     const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
-//     const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
-
-//     let allBrands = await Brand.find({ 
-//       brandName: searchedBrandRegex,
-//       ...(searchedCat && { parentCategory: searchedCatRegex }) 
-//     });
-
-//     let searchList = [];
-//     for (let brand of allBrands) {
-//       const brandId = brand._id;
-//       const cat = brand.parentCategory;
-//       const brandN = brand.brandName;
-//       const multivar = brand.multiVar;
-
-//       let types = await Type.find({ 
-//         brandId, 
-//         ...(rowLabel && { type: searchedRowRegex }) 
-//       });
-
-//       if (multivar) {
-//         const cols = colLabel
-//           ? await Column.find({ brandId, column: searchedColRegex })
-//           : await Column.find({ brandId });
-
-//         for (let type of types) {
-//           for (let col of cols) {
-//             searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
-//           }
-//         }
-//       } else {
-//         for (let type of types) {
-//           const typeId = type._id;
-//           const cols = colLabel
-//             ? await Column.find({ brandId, typeId, column: searchedColRegex })
-//             : await Column.find({ brandId, typeId });          
-          
-//           for (let col of cols) {
-//             searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
-//           }
-//         }
-//       }
-//     }
-
-//     return res.status(200).json(searchList);
-//   }
-//   catch(err) {
-//     console.error("Error in search item:", err);
-//     res.status(500).json({ error: "Failed to search item" });
-//   }
-// }
 
 
 module.exports = {
