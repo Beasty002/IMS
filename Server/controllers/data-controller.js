@@ -1650,6 +1650,7 @@ const validatePurchStock = async (req,res) => {
 }
 
 
+
 const getReport = async (req, res) => {
   try {
     const {brandId} = req.body
@@ -1913,6 +1914,35 @@ const saveReports = async (req, res) => {
     res.status(500).json({ error: "Failed to save brand report" });
   }
 };
+
+const getSpecificDayReports = async(req,res) => {
+  try{
+    const { date } = req.body
+
+    const allReports = await ReportModel.find({ today: date})
+
+    if (allReports || allReports.length > 0){
+
+      return res.status(200).json({allReports})
+    }
+    return res.status(404).json({ err: `No report found for ${date} date.`})
+
+  }
+  catch(err){
+    console.error("Error getting specific day reports:", err);
+    throw err;
+  }
+}
+const getSpecificDayReportsStock = async (req,res) => {
+  try{
+    ////////////////////// to be continude ///////////////////////////////
+  }
+  catch(err){
+    console.error("Error getting specific day reports stock:", err);
+    throw err;
+  }
+}
+
 const saveCatReports = async (req, res) => {
   try {
     const { categories } = req.body;
@@ -2220,6 +2250,8 @@ module.exports = {
   saveBrandsReports,
   saveCatReports,
   saveReports,
+  getSpecificDayReports,
+  getSpecificDayReportsStock,
 
   searchItem,
 };

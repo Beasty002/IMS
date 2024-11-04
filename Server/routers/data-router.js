@@ -81,7 +81,11 @@ router.route("/reportStock").get(datac.editReportStock)
 router.route("/saveReport").post(datac.saveOneBrandReport)
 router.route("/brandsReports").post(datac.saveBrandsReports)
 router.route("/fetchCat").post(datac.saveCatReports)
+
 router.route("/saveReports").get(datac.saveReports)
+router.route("/specificDayReports").post(datac.getSpecificDayReports)
+router.route("/specificDayReportsStock").post(datac.getSpecificDayReportsStock)
+
 
 router.route("/searchItem").post(datac.searchItem)
 
