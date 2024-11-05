@@ -27,6 +27,29 @@ const Dashboard = () => {
     checkForNewDate();
   }, []);
 
+  useEffect(() => {
+    saveReports();
+  });
+
+  const saveReports = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/saveReports", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(data);
+      } else {
+        console.log("error occured");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const checkForNewDate = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/reportStock", {
