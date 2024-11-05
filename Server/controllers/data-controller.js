@@ -1660,6 +1660,7 @@ const getReport = async (req, res) => {
     const brandName = brandData.brandName
     const brandRow = brandData.rowLabel
     const brandCol = brandData.colLabel
+    const multiVar = brandData.multiVar
     
     const allTypes = await Type.find({ brandId: brandId });
     if (!allTypes){
@@ -1763,7 +1764,7 @@ const getReport = async (req, res) => {
       }
     }
 
-    return res.json({today:today, matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
+    return res.json({today:today, matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol, multiVar: multiVar});
   } catch (err) {
     console.error("Error get report", err);
     res.status(500).json({ message:`Error getReport : ${err.message}`});
