@@ -10,7 +10,6 @@ function BrandReport() {
   const [enablePortal, setEnablePortal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBrands, setFilteredBrands] = useState([]);
- 
 
   const navigate = useNavigate();
 
@@ -37,9 +36,9 @@ function BrandReport() {
     }
   }, [searchTerm, fetchBrand]);
 
-  const handleFinalRedirect = (brandId, parentCategory) => {
+  const handleFinalRedirect = (brandId, parentCategory, multiVar) => {
     console.log(" brandname yo ho hai", brandId, parentCategory);
-    navigate(`/finalReport/${parentCategory}/${brandId}`);
+    navigate(`/finalReport/${parentCategory}/${brandId}/${multiVar}`);
   };
 
   const fetchBrandReport = async () => {
@@ -115,7 +114,11 @@ function BrandReport() {
             {filteredBrands.map((item, index) => (
               <div
                 onClick={() =>
-                  handleFinalRedirect(item._id, item.parentCategory)
+                  handleFinalRedirect(
+                    item._id,
+                    item.parentCategory,
+                    item.multiVar
+                  )
                 }
                 key={item._id}
                 className="cat-box"

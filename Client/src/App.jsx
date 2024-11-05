@@ -84,10 +84,9 @@ export default function App() {
                 element={<BrandReport />}
               />
               <Route
-                path="/finalReport/:parentCategory/:brandId"
+                path="/finalReport/:parentCategory/:brandId/:multiVar"
                 element={<FinalReport />}
               />
-
             </Routes>
             <ToastContainer />
           </main>
