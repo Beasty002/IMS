@@ -1,0 +1,11 @@
+{
+  "name": "ims-proj",
+  "version": "1.0.0",
+  "description": "- Dashboard\r     - Graph\r     - piechart\r - sales & purchase\r     - edit popup\r     - new entry\r     - record according to date\r - inventory \r     - new brand popup\r     - brand edit and delete\r     - brands item list page/table\r - Report page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
