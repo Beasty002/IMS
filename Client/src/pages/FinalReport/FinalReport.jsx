@@ -101,7 +101,7 @@ function FinalReport() {
                   marginBottom: "30px",
                 }}
                 class="table1"
-              >
+              > 
                 <thead class="report-table-head">
                   <tr>
                     <th rowspan="2">S.N</th>
