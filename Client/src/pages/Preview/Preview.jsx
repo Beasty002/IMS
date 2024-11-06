@@ -48,19 +48,20 @@ function Preview() {
     } finally {
       setIsLoading(false);
       for (let i = 0; i <= matrixKey.length; i++) {
-        fetchSpecificSingleData(matrixKey[i]);
+        fetchSpecificSingleData(matrixKey[i],brandId);
       }
     }
   };
 
-  const fetchSpecificSingleData = async (matrixKey) => {
+  const fetchSpecificSingleData = async (matrixKey,brandId) => {
+    console.log(JSON.stringify({ matrixKey }));
     try {
       const response = await fetch("http://localhost:3000/api/getReport", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ matrixKey }),
+        body: JSON.stringify({ matrixKey, brandId }),
       });
       const data = await response.json();
 
