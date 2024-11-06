@@ -9,6 +9,8 @@ function Preview() {
   const { selectedItems = [], selectedTitles = [] } = location.state || {};
   const [matrixKey, setMatrixKey] = useState({});
   const [brandId, setBrandId] = useState("");
+  const [title, setTitle] = useState("");
+  const [singleVarFetch, setSingleVarFetch] = useState([]);
 
   useEffect(() => {
     if (selectedItems.length > 0) {
@@ -45,6 +47,7 @@ function Preview() {
         ...prevState,
         { data, title: selectedTitles[index] || "Unnamed Report" },
       ]);
+      setTitle(totalFetchData.title);
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,7 +61,7 @@ function Preview() {
         fetchSpecificSingleData(matrixKey[i], brandId);
       }
     }
-  }, [matrixKey, brandId]);
+  }, [matrixKey]);
 
   const fetchSpecificSingleData = async (matrixKey, brandId) => {
     console.log(JSON.stringify({ matrixKey, brandId }));
@@ -77,20 +80,21 @@ function Preview() {
         return;
       }
       console.log(data);
+      setSingleVarFetch((prevState) => [...prevState, { data }]);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    console.log("Yo ho hai te key", matrixKey);
-  }, [matrixKey]);
+    console.log("Yo ho hai te key", totalFetchData);
+  }, [totalFetchData]);
 
   return (
     <>
       <div className="total-out">
         <div id="report-content">
-          {totalFetchData.map((item, index) => {
+          {singleVarFetch.slice(0, -1).map((item, index) => {
             return (
               <div key={index} className="report-table-container">
                 <h1>{item.title}</h1>
