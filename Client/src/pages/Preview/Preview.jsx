@@ -8,6 +8,7 @@ function Preview() {
   const [isLoading, setIsLoading] = useState(false);
   const { selectedItems = [], selectedTitles = [] } = location.state || {};
   const [matrixKey, setMatrixKey] = useState({});
+  const [brandId, setBrandId] = useState("");
 
   useEffect(() => {
     if (selectedItems.length > 0) {
@@ -23,6 +24,7 @@ function Preview() {
 
   const fetchTotalData = async (brandId, index) => {
     console.log("Fetching data for brandId:", brandId);
+    setBrandId(brandId);
 
     setIsLoading(true);
     try {
@@ -43,9 +45,6 @@ function Preview() {
         ...prevState,
         { data, title: selectedTitles[index] || "Unnamed Report" },
       ]);
-      for (let i = 0; i <= matrixKey.length; i++) {
-        fetchSpecificSingleData(matrixKey[i], brandId);
-      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -53,8 +52,16 @@ function Preview() {
     }
   };
 
+  useEffect(() => {
+    if (matrixKey && brandId) {
+      for (let i = 0; i <= matrixKey.length; i++) {
+        fetchSpecificSingleData(matrixKey[i], brandId);
+      }
+    }
+  }, [matrixKey, brandId]);
+
   const fetchSpecificSingleData = async (matrixKey, brandId) => {
-    console.log(JSON.stringify({ matrixKey }));
+    console.log(JSON.stringify({ matrixKey, brandId }));
     try {
       const response = await fetch("http://localhost:3000/api/getReport", {
         method: "POST",
