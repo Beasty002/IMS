@@ -63,7 +63,7 @@ function Preview() {
   const fetchSpecificSingleData = async (matrixKey, brandId) => {
     console.log(JSON.stringify({ matrixKey, brandId }));
     try {
-      const response = await fetch("http://localhost:3000/api/getReport", {
+      const response = await fetch("http://localhost:3000/api/report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
