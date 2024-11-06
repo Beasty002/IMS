@@ -47,6 +47,30 @@ function Preview() {
       console.error(error);
     } finally {
       setIsLoading(false);
+      for (let i = 0; i <= matrixKey.length; i++) {
+        fetchSpecificSingleData(matrixKey[i]);
+      }
+    }
+  };
+
+  const fetchSpecificSingleData = async (matrixKey) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/getReport", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ matrixKey }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
