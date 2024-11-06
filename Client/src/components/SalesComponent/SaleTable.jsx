@@ -25,7 +25,7 @@ function SaleTable({
     if (data) {
       setEditData(data);
       console.log("Yo edit data ho", editData);
-    }
+    } 
   }, [data, editData]);
 
   useEffect(() => {

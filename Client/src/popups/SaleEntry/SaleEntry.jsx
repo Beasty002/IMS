@@ -313,16 +313,16 @@ function SaleEntry() {
     const category = parts.length > 1 ? parts[1] : "";
     const brand = parts.length > 0 ? parts[0] : "";
     const rowLabel = parts.length > 2 ? parts[2] : "";
-    const str = "Mayur Plywood 12FD (9mm)";
-    const match = str.match(/\((\d+mm)\)/);
-    const thickness = match ? match[1] : "";
+    const str = parts.at(-1).replace(/[()]/g, "");
+    console.log(str);
+    // const thickness = match ? match[1] : "";
 
     const newInput = {
       id: Date.now(),
       category: category,
       brand: brand,
       rowLabel: rowLabel,
-      colLabel: thickness,
+      colLabel: str,
       counter: 0,
       fetchData: [],
       brandData: [],
@@ -335,7 +335,7 @@ function SaleEntry() {
     console.log(category);
     console.log(brand);
     console.log(rowLabel);
-    console.log(thickness);
+    console.log(str);
   };
 
   return (
