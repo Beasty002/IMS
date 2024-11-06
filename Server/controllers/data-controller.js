@@ -1653,8 +1653,11 @@ const validatePurchStock = async (req,res) => {
 
 const getReport = async (req, res) => {
   try {
-    const {brandId, typeId} = req.body
+    // console.log(req.body)
+    // return res.json(req.body)
+    const {brandId} = req.body
     
+    const typeN = req.body.matrixKey
     const brandData = await Brand.findById(brandId);
 
     const brandName = brandData.brandName
@@ -1664,7 +1667,7 @@ const getReport = async (req, res) => {
 
     var allTypes, allCols, allEntries;
 
-    if (multiVar){
+    if (!typeN){
       allTypes = await Type.find({ brandId: brandId });
       if (!allTypes){
         return res.status(404).json({err: `${brandName} has no types` })
@@ -1680,15 +1683,16 @@ const getReport = async (req, res) => {
       }
     }
     else{
-      allTypes = await Type.find({_id: typeId})
+      allTypes = await Type.find({ brandId: brandId, type: typeN})
       if (!allTypes){
         return res.status(404).json({err: `${brandName} has no types` })
       }
       
-      allCols = await Column.find({ brandId: brandId , typeId: typeId});
+      allCols = await Column.find({ brandId: brandId , typeId: allTypes[0]._id});
       if (!allCols){
         return res.status(405).json({err: `${brandName} has no column/items` })
       }
+      // return res.json(allTypes)
 
       allEntries = await RecordStock.find( {brandId: brandId, rowLabel: allTypes[0].type});
       if (!allEntries){
@@ -1754,9 +1758,9 @@ const getReport = async (req, res) => {
         const col = allCols[j];
         matrix[type.type][col.column] = { op: 0, in: 0, out: 0, bal: 0 } // init each cell to 0
       }
+      // return res.json(matrix)
 
     }
-    // return res.json(matrix)
 
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
