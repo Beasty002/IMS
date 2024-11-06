@@ -192,6 +192,27 @@ function SaleEntry() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      checkForNewDate();
+    }
+  };
+  const checkForNewDate = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/reportStock", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
