@@ -1653,7 +1653,7 @@ const validatePurchStock = async (req,res) => {
 
 const getReport = async (req, res) => {
   try {
-    const {brandId} = req.body
+    const {brandId, typeId} = req.body
     
     const brandData = await Brand.findById(brandId);
 
@@ -1661,22 +1661,43 @@ const getReport = async (req, res) => {
     const brandRow = brandData.rowLabel
     const brandCol = brandData.colLabel
     const multiVar = brandData.multiVar
-    
-    const allTypes = await Type.find({ brandId: brandId });
-    if (!allTypes){
-      return res.status(404).json({err: `${brandName} has no types` })
-    }
-    
-    const allCols = await Column.find({ brandId: brandId });
-    if (!allCols){
-      return res.status(405).json({err: `${brandName} has no column/items` })
-    }
-    
-    const allEntries = await RecordStock.find( {brandId: brandId});
-    if (!allEntries){
-      return res.status(406).json({ err: `${brandName} has no recorded stock`})
-    }
 
+    var allTypes, allCols, allEntries;
+
+    if (multiVar){
+      allTypes = await Type.find({ brandId: brandId });
+      if (!allTypes){
+        return res.status(404).json({err: `${brandName} has no types` })
+      }
+      
+      allCols = await Column.find({ brandId: brandId });
+      if (!allCols){
+        return res.status(405).json({err: `${brandName} has no column/items` })
+      }
+      allEntries = await RecordStock.find( {brandId: brandId});
+      if (!allEntries){
+        return res.status(406).json({ err: `${brandName} has no recorded stock`})
+      }
+    }
+    else{
+      allTypes = await Type.find({_id: typeId})
+      if (!allTypes){
+        return res.status(404).json({err: `${brandName} has no types` })
+      }
+      
+      allCols = await Column.find({ brandId: brandId , typeId: typeId});
+      if (!allCols){
+        return res.status(405).json({err: `${brandName} has no column/items` })
+      }
+
+      allEntries = await RecordStock.find( {brandId: brandId, rowLabel: allTypes[0].type});
+      if (!allEntries){
+        return res.status(406).json({ err: `${brandName} has no recorded stock`})
+      }
+
+    }
+    
+    //////////////////////////// WORKING //////////////////////////////////////////////
     const today = new Date().toISOString().split('T')[0]
 
     const todaysPurchases = await Purchase.find({
@@ -1735,7 +1756,7 @@ const getReport = async (req, res) => {
       }
 
     }
-    // return res.json(allEntries)
+    // return res.json(matrix)
 
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
@@ -1753,8 +1774,9 @@ const getReport = async (req, res) => {
         matrix[rowLabel][colLabel].in += purchaseQuantities[`${rowLabel}-${colLabel}`] || 0;
         matrix[rowLabel][colLabel].out += saleQuantities[`${rowLabel}-${colLabel}`] || 0;
         matrix[rowLabel][colLabel].bal += stock;
-
-      } else {
+        
+      } 
+      else {
         matrix[rowLabel][colLabel] = {
           op: opVal || 0,
           in:purchaseQuantities[`${rowLabel}-${colLabel}`] || 0,
