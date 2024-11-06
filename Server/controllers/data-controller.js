@@ -1653,7 +1653,7 @@ const validatePurchStock = async (req,res) => {
 
 const getReport = async (req, res) => {
   try {
-    // console.log(req.body)
+    console.log(req.body)
     // return res.json(req.body)
     const {brandId} = req.body
     
