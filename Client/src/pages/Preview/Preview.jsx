@@ -43,17 +43,17 @@ function Preview() {
         ...prevState,
         { data, title: selectedTitles[index] || "Unnamed Report" },
       ]);
+      for (let i = 0; i <= matrixKey.length; i++) {
+        fetchSpecificSingleData(matrixKey[i], brandId);
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
-      for (let i = 0; i <= matrixKey.length; i++) {
-        fetchSpecificSingleData(matrixKey[i],brandId);
-      }
     }
   };
 
-  const fetchSpecificSingleData = async (matrixKey,brandId) => {
+  const fetchSpecificSingleData = async (matrixKey, brandId) => {
     console.log(JSON.stringify({ matrixKey }));
     try {
       const response = await fetch("http://localhost:3000/api/getReport", {
