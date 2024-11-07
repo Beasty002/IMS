@@ -10,6 +10,8 @@ function FinalReport() {
   const [colLabel, setColLabel] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [overallData, setOverallData] = useState({});
+  const [singleVarFetch, setSingleVarFetch] = useState([]);
+  const [matrixKeys, setMatrisKeys] = useState([]);
 
   useEffect(() => {
     console.log("YO muli var ho hai", multiVar);
@@ -57,6 +59,50 @@ function FinalReport() {
   }, []);
 
   useEffect(() => {
+    if (matrixKey) {
+      const keys = Object.keys(matrixKey);
+      setMatrisKeys(keys);
+    }
+  }, [matrixKey]);
+
+  useEffect(() => {
+    if (matrixKeys && brandId) {
+      for (let i = 0; i <= matrixKeys.length - 1; i++) {
+        fetchSpecificSingleData(matrixKeys[i], brandId);
+      }
+    }
+  }, [matrixKeys]);
+
+  const fetchSpecificSingleData = async (matrixKey, brandId) => {
+    console.log(JSON.stringify({ matrixKey, brandId }));
+    try {
+      const response = await fetch("http://localhost:3000/api/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ matrixKey, brandId }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log("Yo data ho hai", data);
+      setSingleVarFetch((prevState) => [...prevState, data]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (singleVarFetch) {
+      console.log("Yo ho hai fetch data", singleVarFetch);
+    }
+  }, [singleVarFetch]);
+
+  useEffect(() => {
     console.log("Lyako fata yo hai", fetchedData);
   }, [fetchedData]);
 
@@ -95,18 +141,21 @@ function FinalReport() {
       <div class="report-table-container">
         {multiVar === "false" ? (
           <>
-            {Object.entries(matrixKey).map(([key, value], index) => (
+            {singleVarFetch?.map((item, index) => (
               <table
-                style={{
-                  marginBottom: "30px",
-                }}
-                class="table1"
-              > 
-                <thead class="report-table-head">
+                key={index}
+                style={{ marginBottom: "30px" }}
+                className="table1"
+              >
+                <thead className="report-table-head">
                   <tr>
-                    <th rowspan="2">S.N</th>
-                    <th rowspan="2">Code</th>
-                    <th colspan="4">{key}</th>
+                    <th rowSpan="2">S.N</th>
+                    <th rowSpan="2">Code</th>
+                    {Object.entries(item?.matrix)?.map(
+                      ([key, value], index) => (
+                        <th colSpan={4}>{key}</th>
+                      )
+                    )}
                   </tr>
                   <tr>
                     <th>OP</th>
@@ -116,17 +165,27 @@ function FinalReport() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(value).map(([key, innerValue], index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{key}</td>
-                      {Object.entries(innerValue).map(([key, value], index) => (
-                        <>
-                          <td>{value}</td>
-                        </>
-                      ))}
-                    </tr>
-                  ))}
+                  {Object.entries(item?.matrix || {}).map(
+                    ([code, metrics], rowIndex) => (
+                      <>
+                        {Object.entries(metrics)?.map(([key, value], index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{key}</td>
+                            {
+                              <>
+                                {Object.entries(value)?.map(
+                                  ([key, value], index) => (
+                                    <td>{value}</td>
+                                  )
+                                )}
+                              </>
+                            }
+                          </tr>
+                        ))}
+                      </>
+                    )
+                  )}
                 </tbody>
               </table>
             ))}
