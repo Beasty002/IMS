@@ -42,6 +42,7 @@ function Preview() {
         console.log(response.statusText);
         return;
       }
+      console.log(data);
       setMatrixKey(Object.keys(data.matrix));
       setTotalFetchData((prevState) => [
         ...prevState,
@@ -57,7 +58,7 @@ function Preview() {
 
   useEffect(() => {
     if (matrixKey && brandId) {
-      for (let i = 0; i <= matrixKey.length-1; i++) {
+      for (let i = 0; i <= matrixKey.length - 1; i++) {
         fetchSpecificSingleData(matrixKey[i], brandId);
       }
     }
@@ -94,7 +95,7 @@ function Preview() {
     <>
       <div className="total-out">
         <div id="report-content">
-          {singleVarFetch.map((item, index) => {
+          {totalFetchData.map((item, index) => {
             return (
               <div key={index} className="report-table-container">
                 <h1>{item.title}</h1>
@@ -171,45 +172,60 @@ function Preview() {
                     </tbody>
                   </table>
                 ) : (
-                  item.data &&
-                  Object.entries(item.data.matrix || {}).map(
-                    ([key, value], index) => (
-                      <table
-                        key={index}
-                        style={{ marginBottom: "30px" }}
-                        className="table1"
-                      >
-                        <thead className="report-table-head">
-                          <tr>
-                            <th rowSpan="2">S.N</th>
-                            <th rowSpan="2">Code</th>
-                            <th colSpan="4">{key}</th>
-                          </tr>
-                          <tr>
-                            <th>OP</th>
-                            <th>IN</th>
-                            <th>OUT</th>
-                            <th>BAL</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(value || {}).map(
-                            ([innerKey, innerValue], innerIndex) => (
-                              <tr key={innerIndex}>
-                                <td>{innerIndex + 1}</td>
-                                <td>{innerKey}</td>
-                                {Object.entries(innerValue || {}).map(
-                                  ([_, value], colIndex) => (
-                                    <td key={colIndex}>{value}</td>
-                                  )
-                                )}
-                              </tr>
+                  <>
+                    {singleVarFetch &&
+                      singleVarFetch.map((item, itemIndex) => (
+                        <div
+                          key={`item-${itemIndex}`}
+                          style={{ marginBottom: "30px" }}
+                        >
+                          {Object.entries(item.data.matrix || {}).map(
+                            ([key, value], index) => (
+                              <table
+                                key={`table-${key}-${index}`}
+                                style={{ marginBottom: "30px" }}
+                                className="table1"
+                              >
+                                <thead className="report-table-head">
+                                  <tr>
+                                    <th rowSpan="2">S.N</th>
+                                    <th rowSpan="2">Code</th>
+                                    <th colSpan="4">{key}</th>
+                                  </tr>
+                                  <tr>
+                                    <th>OP</th>
+                                    <th>IN</th>
+                                    <th>OUT</th>
+                                    <th>BAL</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {Object.entries(value || {}).map(
+                                    ([innerKey, innerValue], innerIndex) => (
+                                      <tr
+                                        key={`row-${key}-${innerKey}-${innerIndex}`}
+                                      >
+                                        <td>{innerIndex + 1}</td>
+                                        <td>{innerKey}</td>
+                                        {Object.entries(innerValue || {}).map(
+                                          ([_, cellValue], colIndex) => (
+                                            <td
+                                              key={`cell-${key}-${innerKey}-${colIndex}`}
+                                            >
+                                              {cellValue}
+                                            </td>
+                                          )
+                                        )}
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              </table>
                             )
                           )}
-                        </tbody>
-                      </table>
-                    )
-                  )
+                        </div>
+                      ))}
+                  </>
                 )}
               </div>
             );
