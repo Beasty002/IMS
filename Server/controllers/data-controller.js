@@ -18,6 +18,7 @@ const ReportModel = require("../models/report-model")
 // const { Collection } = require("mongoose");
 // const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
+const { title } = require("process");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -1653,7 +1654,7 @@ const validatePurchStock = async (req,res) => {
 
 const getReport = async (req, res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     // return res.json(req.body)
     const {brandId} = req.body
     
@@ -2134,70 +2135,148 @@ const searchItem = async (req,res) => {
 
     const { searchedItem } = req.body
 
-    const splitItem = searchedItem.split(" ");
-
-    const searchedBrand = splitItem[0];
-    const searchedCat = splitItem[1];
-
-    const rowLabel = splitItem.slice(2).join(" ").split(" (")[0];
-    // console.log(rowLabel)
-    let colLabel = "";
-    let searchedColRegex = null;
-    if (searchedItem.includes("(")) {
-      colLabel = splitItem.at(-1).replace(/[()]/g, "");
-      searchedColRegex = new RegExp(`${colLabel}`, 'i');
-    }
-
-    // console.log("Rowlabel: ",rowLabel, "   Collalbel: ",colLabel)
-    const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
-    const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
-    const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
-    // const searchedColRegex = new RegExp(`${colLabel}`, 'i');
-
-    var allBrands;
-    allBrands = await Brand.find({ brandName : searchedBrandRegex })
+    const splitItems = searchedItem ? searchedItem.split(" ") : [];
     
-    if (searchedCat){
-      allBrands = await Brand.find({ brandName : searchedBrandRegex , parentCategory: searchedCatRegex})
-    }
-
     var searchList = []
-    for (var brand of allBrands){
-      const brandId = brand._id
-      const cat = brand.parentCategory
-      const brandN = brand.brandName
-      const multivar = brand.multiVar
 
-      var types;
-      types = await Type.find({ brandId });
-      if (rowLabel){
-        types = await Type.find({ brandId, type: searchedRowRegex });
-      }
+    // const searchedBrand = splitItem[0];
+    for (var splitItem of splitItems){
 
-      if (multivar){
-        const cols = colLabel
-          ? await Column.find({ brandId, column: searchedColRegex })
-          : await Column.find({ brandId });
-
-        for (var type of types){
-          for (var col of cols){
-            searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+      const zeroSearch = splitItem;
+      const zeroSearchRegex = new RegExp(`${zeroSearch}`, 'i');
+  
+      var allZeroSearchBrand = [], allZeroSearchCat = [], allBrandByType = [], allBrandByCol = [];
+  
+      // Find brands by brand name and category
+      allZeroSearchBrand = await Brand.find({ brandName: zeroSearchRegex });
+      allZeroSearchCat = await Brand.find({ parentCategory: zeroSearchRegex });
+  
+      var ifType = false;
+      const allZeroSearchTypes = await Type.find({ type: zeroSearchRegex });
+      if (allZeroSearchTypes && allZeroSearchTypes.length > 0) {
+        ifType = true
+        for (const allZeroSearchType of allZeroSearchTypes) {
+          const typesBrandId = allZeroSearchType.brandId;
+          const brandByType = await Brand.findById(typesBrandId);
+          if (brandByType) {
+            allBrandByType.push(brandByType);
           }
         }
-      }else{
-        for (var type of types){
-          
-          const typeId = type._id
+      }
+  
+      // Find columns and add corresponding brands to `allBrandByCol`
+      var ifCol = false;
+      const allZeroSearchCols = await Column.find({ column: zeroSearchRegex });
+      if (allZeroSearchCols && allZeroSearchCols.length > 0) {
+        ifCol = true
+        for (const allZeroSearchCol of allZeroSearchCols) {
+          const colsBrandId = allZeroSearchCol.brandId;
+          const brandByCol = await Brand.findById(colsBrandId);
+          if (brandByCol) {
+            allBrandByCol.push(brandByCol);
+          }
+        }
+      }
+  
+      // Combine results
+      const allZeroSearch = [
+        ...allZeroSearchBrand,
+        ...allZeroSearchCat,
+        ...allBrandByType,
+        ...allBrandByCol,
+      ];
+  
+      // Remove duplicates based on `_id`
+      const uniqueResultsMap = new Map();
+      allZeroSearch.forEach(item => {
+        uniqueResultsMap.set(item._id.toString(), item);
+      });
+  
+      // Convert the Map values back to an array
+      const uniqueResults = Array.from(uniqueResultsMap.values());
+  
+      // return res.json(uniqueResults);
+  
+  
+      // const searchedCat = splitItem[1];
+      var rowLabel;
+      // rowLabel= splitItem.slice(2).join(" ").split(" (")[0];
+      if(ifType){
+        rowLabel = zeroSearch
+      }
+      var colLabel;
+      if (ifCol){
+        colLabel = zeroSearch
+      }
+      // if (searchedItem.includes("(")) {
+      //   colLabel = splitItem.at(-1).replace(/[()]/g, "");
+      // }
+      const searchedColRegex = new RegExp(`${colLabel}`, 'i');
+  
+      // const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
+      // const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
+      const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
+  
+      // var allBrands;
+      // allBrands = await Brand.find({ brandName : searchedBrandRegex })
+      
+      // if (searchedCat){
+      //   allBrands = await Brand.find({ brandName : searchedBrandRegex , parentCategory: searchedCatRegex})
+      // }
+  
+      for (var brand of uniqueResults){
+        const brandId = brand._id
+        const cat = brand.parentCategory
+        const brandN = brand.brandName
+        const multivar = brand.multiVar
+  
+        var types;
+        types = await Type.find({ brandId });
+        if (rowLabel){
+          types = await Type.find({ brandId, type: searchedRowRegex });
+        }
+  
+        if (multivar){
           const cols = colLabel
-            ? await Column.find({ brandId, typeId, column: searchedColRegex })
-            : await Column.find({ brandId, typeId });          
-          
-          for (var col of cols){
-            searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+            ? await Column.find({ brandId, column: searchedColRegex })
+            : await Column.find({ brandId });
+  
+          for (var type of types){
+            for (var col of cols){
+              searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+            }
+          }
+        }else{
+          for (var type of types){
+            
+            const typeId = type._id
+            const cols = colLabel
+              ? await Column.find({ brandId, typeId, column: searchedColRegex })
+              : await Column.find({ brandId, typeId });          
+            
+            for (var col of cols){
+              searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
+            }
           }
         }
       }
     }
+    
+    // if the searched item is more than one word
+    if (splitItems.length >1){
+      // map searchLIst such that it only has the repeated items
+
+      const countMap = new Map();
+  
+      searchList.forEach(item => {
+        countMap.set(item, (countMap.get(item) || 0) + 1);
+      });
+  
+      searchList= Array.from(countMap)
+        .filter(([item, count]) => count > 1)
+        .map(([item]) => item);
+    }
+
     return res.status(200).json(searchList)
 
   }
