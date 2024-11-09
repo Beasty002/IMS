@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import bgImage from "../../assets/bg.jpg";
 import "./Login.css";
 import { useAuth } from "../../customHooks/useAuth";
@@ -40,6 +40,7 @@ function Login() {
         return;
       }
       console.log(data);
+      authenticateUser();
     } catch (error) {
       console.error(error);
     }
