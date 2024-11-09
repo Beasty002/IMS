@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Routes, Route, useLocation, useParams } from "react-router-dom";
 import SideBar from "./components/SideBar/SideBar";
@@ -19,6 +19,7 @@ import BrandReport from "./pages/BrandReport/BrandReport";
 import FinalReport from "./pages/FinalReport/FinalReport";
 import Preview from "./pages/Preview/Preview";
 import Login from "./components/Login/Login";
+import { useAuth } from "./customHooks/useAuth";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,6 +40,12 @@ export default function App() {
         return "/";
     }
   };
+
+  const { authenticateUser } = useAuth();
+
+  useEffect(() => {
+    authenticateUser();
+  }, []);
 
   const CatBrandPage = () => {
     const { categoryName, brandName, multi } = useParams();

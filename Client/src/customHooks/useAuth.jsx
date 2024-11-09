@@ -55,6 +55,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+ 
+
+  const authenticateUser = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -64,8 +86,9 @@ export const AuthProvider = ({ children }) => {
         setCategories,
         fetchBrandData,
         categoryLength,
+        authenticateUser,
         stockData,
-        catStock
+        catStock,
       }}
     >
       {children}

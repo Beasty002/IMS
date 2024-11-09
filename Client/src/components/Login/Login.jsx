@@ -1,12 +1,15 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState } from "react";
 import bgImage from "../../assets/bg.jpg";
 import "./Login.css";
+import { useAuth } from "../../customHooks/useAuth";
 
 function Login() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+
+  const { authenticateUser } = useAuth();
 
   const handleFormFill = (event) => {
     setFormData((prevState) => ({
@@ -41,6 +44,10 @@ function Login() {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    authenticateUser();
+  }, []);
 
   return (
     <>
