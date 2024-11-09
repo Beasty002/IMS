@@ -17,7 +17,7 @@ function BrandReport() {
     if (categoryName) {
       fetchBrandData(categoryName);
     }
-  }, []);
+  }, [categoryName]);
 
   useEffect(() => {
     console.log("Yo fetchBrand ho hai", fetchBrand);

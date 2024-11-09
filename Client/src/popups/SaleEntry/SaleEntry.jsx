@@ -8,7 +8,7 @@ function SaleEntry() {
   const { fetchBrand, fetchCategory, fetchBrandData, categories } = useAuth();
   const navigate = useNavigate();
   const [colArray, setColArray] = useState([]);
-  const [brandId, setBrandId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [typeStatus, setTypeStatus] = useState(false);
   const [fetchStatus, setFetchStatus] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -288,6 +288,8 @@ function SaleEntry() {
 
   const searchInputValue = async (currentValue) => {
     console.log(JSON.stringify({ searchedItem: currentValue }));
+
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/searchItem", {
         method: "POST",
@@ -305,6 +307,8 @@ function SaleEntry() {
       setResData(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -358,13 +362,17 @@ function SaleEntry() {
             />
           </div>
           <div className="search-list">
-            <ul>
-              {resData?.map((item, index) => (
-                <li onClick={() => getTheData(item)} key={index}>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            {isLoading ? (
+              <p>Data is loading...</p>
+            ) : (
+              <ul>
+                {resData?.map((item, index) => (
+                  <li onClick={() => getTheData(item)} key={index}>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
         <div onClick={addNewList} className="btn-container">

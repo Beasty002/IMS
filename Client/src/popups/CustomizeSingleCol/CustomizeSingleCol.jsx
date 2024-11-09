@@ -22,17 +22,10 @@ export default function CustomizeSingleCol({
     },
   ]);
 
-  useEffect(() => {
-    console.log("CodeDropDown yo ho hai", codeDropDown);
-  }, [codeDropDown]);
+  
 
-  useEffect(() => {
-    if (fetchSingleVarData) {
-      console.log("SIngle data yo ho", fetchSingleVarData);
-    }
-  }, [fetchSingleVarData]);
+ 
 
-  const [brandLabelData, setBrandLabelData] = useState();
 
   useEffect(() => {
     if (specificId && selectedKey) {

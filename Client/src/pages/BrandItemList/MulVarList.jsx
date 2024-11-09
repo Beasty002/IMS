@@ -28,11 +28,11 @@ export default function MulVarList() {
     setCatPortal(!catPortal);
   };
 
-  useEffect(() => {
-    if (categoryName) {
-      fetchBrandData(categoryName);
-    }
-  }, [categoryName]);
+  // useEffect(() => {
+  //   if (categoryName) {
+  //     fetchBrandData(categoryName);
+  //   }
+  // }, [categoryName]);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {

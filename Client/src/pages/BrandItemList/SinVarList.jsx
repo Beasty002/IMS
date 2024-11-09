@@ -46,11 +46,11 @@ export default function SinVarList() {
     }
   }, [specificId]);
 
-  useEffect(() => {
-    if (categoryName) {
-      fetchBrandData(categoryName);
-    }
-  }, [categoryName]);
+  // useEffect(() => {
+  //   if (categoryName) {
+  //     fetchBrandData(categoryName);
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
