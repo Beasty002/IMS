@@ -8,6 +8,8 @@ router.get("/", (req, res) => {
   res.send("Welcome to plywood IMSs auth!");
 });
 
-router.route("/login").post(authc.login)
+router.route("/login")
+    .post(authc.login)
+    .patch(authc.checkToken)
 
 module.exports = router
