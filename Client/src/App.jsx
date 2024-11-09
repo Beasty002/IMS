@@ -21,6 +21,7 @@ import Preview from "./pages/Preview/Preview";
 import Login from "./components/Login/Login";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const getCurrentPageTitle = () => {
     switch (location.pathname) {
@@ -55,46 +56,52 @@ export default function App() {
   };
   return (
     <>
-      <Login />
-      <div className="navigation-elem">
-        <SideBar
-          currentPage={getCurrentPageTitle()}
-          sideClass={isSidebarOpen ? "sidebar-active" : ""}
-        />
-        <div className="left-component">
-          <NavBar
+      {isLoggedIn ? (
+        <div className="navigation-elem">
+          <SideBar
             currentPage={getCurrentPageTitle()}
-            onMenuClick={toggleSidebar}
+            sideClass={isSidebarOpen ? "sidebar-active" : ""}
           />
-          <main className="page-changer">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/purchases" element={<Purchase />} />
-              <Route path="/cateogry" element={<Category />} />
-              <Route path="/report" element={<Report />} />
-              <Route path="/sales" element={<SalesPage />} />
-              <Route path="/salesEntry" element={<SaleEntry />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/purchasesEntry" element={<PurchaseEntry />} />
-              <Route path="/previewReport" element={<Preview />} />
-              <Route
-                path="/catband/:categoryName/:brandName/:multi"
-                element={<CatBrandPage />}
-              />
-              <Route path="/catband/:categoryName" element={<CatBrandList />} />
-              <Route
-                path="/catReport/:categoryName"
-                element={<BrandReport />}
-              />
-              <Route
-                path="/finalReport/:parentCategory/:brandId/:multiVar"
-                element={<FinalReport />}
-              />
-            </Routes>
-            <ToastContainer />
-          </main>
+          <div className="left-component">
+            <NavBar
+              currentPage={getCurrentPageTitle()}
+              onMenuClick={toggleSidebar}
+            />
+            <main className="page-changer">
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/purchases" element={<Purchase />} />
+                <Route path="/cateogry" element={<Category />} />
+                <Route path="/report" element={<Report />} />
+                <Route path="/sales" element={<SalesPage />} />
+                <Route path="/salesEntry" element={<SaleEntry />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/purchasesEntry" element={<PurchaseEntry />} />
+                <Route path="/previewReport" element={<Preview />} />
+                <Route
+                  path="/catband/:categoryName/:brandName/:multi"
+                  element={<CatBrandPage />}
+                />
+                <Route
+                  path="/catband/:categoryName"
+                  element={<CatBrandList />}
+                />
+                <Route
+                  path="/catReport/:categoryName"
+                  element={<BrandReport />}
+                />
+                <Route
+                  path="/finalReport/:parentCategory/:brandId/:multiVar"
+                  element={<FinalReport />}
+                />
+              </Routes>
+              <ToastContainer />
+            </main>
+          </div>
         </div>
-      </div>
+      ) : (
+        <Login />
+      )}
     </>
   );
 }
