@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import bgImage from "../../assets/bg.jpg";
 import "./Login.css";
 import { useAuth } from "../../customHooks/useAuth";
+import { ToastContainer, toast } from "react-toastify";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -32,18 +33,20 @@ function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials:'include'
+        credentials: "include",
       });
 
-      const data = await response.json();
       if (!response.ok) {
-        console.log(response.statusText);
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Unauthorized.");
       }
+
+      const data = await response.json();
       console.log(data);
       authenticateUser();
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error.message);
+      toast.error(error.message);
     }
   };
 
@@ -84,6 +87,7 @@ function Login() {
           </form>
         </section>
       </main>
+      <ToastContainer />
     </>
   );
 }
