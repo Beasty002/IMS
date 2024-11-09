@@ -55,8 +55,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
- 
-
   const authenticateUser = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/auth/login", {
