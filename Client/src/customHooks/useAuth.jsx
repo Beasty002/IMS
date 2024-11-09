@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [categoryLength, setCategoryLength] = useState([]);
   const [stockData, setStockData] = useState({});
   const [catStock, setCatStock] = useState({});
+  const [loginStatus, setLoginStatus] = useState("");
   const fetchBrandData = async (catName) => {
     const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
     // console.log(categoryName);
@@ -70,6 +71,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       console.log(data);
+      setLoginStatus(data.status);
     } catch (error) {
       console.error(error);
     }
@@ -86,6 +88,7 @@ export const AuthProvider = ({ children }) => {
         categoryLength,
         authenticateUser,
         stockData,
+        loginStatus,
         catStock,
       }}
     >

@@ -22,7 +22,6 @@ import Login from "./components/Login/Login";
 import { useAuth } from "./customHooks/useAuth";
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const getCurrentPageTitle = () => {
     switch (location.pathname) {
@@ -41,7 +40,7 @@ export default function App() {
     }
   };
 
-  const { authenticateUser } = useAuth();
+  const { authenticateUser, loginStatus } = useAuth();
 
   useEffect(() => {
     authenticateUser();
@@ -63,7 +62,7 @@ export default function App() {
   };
   return (
     <>
-      {isLoggedIn ? (
+      {loginStatus ? (
         <div className="navigation-elem">
           <SideBar
             currentPage={getCurrentPageTitle()}
