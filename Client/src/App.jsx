@@ -18,6 +18,7 @@ import { ToastContainer, toast } from "react-toastify";
 import BrandReport from "./pages/BrandReport/BrandReport";
 import FinalReport from "./pages/FinalReport/FinalReport";
 import Preview from "./pages/Preview/Preview";
+import Login from "./components/Login/Login";
 
 export default function App() {
   const location = useLocation();
@@ -54,6 +55,7 @@ export default function App() {
   };
   return (
     <>
+      <Login />
       <div className="navigation-elem">
         <SideBar
           currentPage={getCurrentPageTitle()}
@@ -72,6 +74,7 @@ export default function App() {
               <Route path="/report" element={<Report />} />
               <Route path="/sales" element={<SalesPage />} />
               <Route path="/salesEntry" element={<SaleEntry />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/purchasesEntry" element={<PurchaseEntry />} />
               <Route path="/previewReport" element={<Preview />} />
               <Route
