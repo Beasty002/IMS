@@ -1885,6 +1885,7 @@ const saveReports = async (req, res) => {
       
       for (var forBrandId of brandsOfCat){
         var brandId = forBrandId._id
+        var multiVar = forBrandId.multiVar
 
         const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
         if (existingReport) {
@@ -1924,7 +1925,8 @@ const saveReports = async (req, res) => {
           brandCol,       // Column label from overallData
           brandRow,       // Row label from overallData
           matrix: matrixObject, // Converted matrix object
-          allColumns      // Array of column data from overallData
+          allColumns,      // Array of column data from overallData
+          multiVar
         });
     
         // Save the report
