@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./FinalReport.css";
 
 function FinalReport() {
@@ -12,6 +13,16 @@ function FinalReport() {
   const [overallData, setOverallData] = useState({});
   const [singleVarFetch, setSingleVarFetch] = useState([]);
   const [matrixKeys, setMatrisKeys] = useState([]);
+
+  const location = useLocation();
+
+  const { extraValue: brandName } = location.state || {};
+
+  useEffect(() => {
+    if (brandName) {
+      console.log("Pathako brand Name yo ho hai", brandName);
+    }
+  }, [brandName]);
 
   useEffect(() => {
     console.log("YO muli var ho hai", multiVar);
@@ -110,35 +121,36 @@ function FinalReport() {
     console.log("Matrix fata yo hai", matrixKey);
   }, [matrixKey]);
 
-  const fetchReportData = async () => {
-    console.log(JSON.stringify({ overallData, brandId }));
-    try {
-      const response = await fetch("http://localhost:3000/api/saveReport", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ overallData, brandId }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
-      }
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const fetchReportData = async () => {
+  //   console.log(JSON.stringify({ overallData, brandId }));
+  //   try {
+  //     const response = await fetch("http://localhost:3000/api/saveReport", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ overallData, brandId }),
+  //     });
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       console.log(response.statusText);
+  //       return;
+  //     }
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <>
-      <div className="save-report">
+      {/* <div className="save-report">
         <button onClick={fetchReportData} className="primary-btn">
           Save Report
         </button>
-      </div>
+      </div> */}
       <div class="report-table-container">
+        <h1>{brandName}</h1>
         {multiVar === "false" ? (
           <>
             {singleVarFetch?.map((item, index) => (
