@@ -1866,7 +1866,6 @@ const saveAllBrandReports = async (req,res) => {
 
 const saveReports = async (req, res) => {
   try {
-    var newerReport
     const categories = await Category.find({}) 
 
     if (!categories || categories.length ===0){
@@ -1888,14 +1887,8 @@ const saveReports = async (req, res) => {
         for (var forBrandId of brandsOfCat){
           var brandId = forBrandId._id
           var multiVar = forBrandId.multiVar
-          
-          const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
-          if (existingReport) {
-            const brandN = forBrandId.brandName
-            const brandC = forBrandId.parentCategory
-            console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
-            // continue;
-          }
+
+          var combinedMatrix = []
           
           if (multiVar){
             const req = {
@@ -1911,61 +1904,90 @@ const saveReports = async (req, res) => {
             const reportData = await getReport(req, res);
             
             var { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
-        }else{
-          let matrix = []
-          const allTypes = await Type.find({brandId})
-          for (var typeName of allTypes){
-            const matrixKey = typeName.type
-            
-            const req = {
-              body: {brandId: brandId, matrixKey: matrixKey} 
-            };
-            const res = {
-              json: (data) => data,
-              status: (code) => ({
-                json: (data) => ({ code, ...data })
-              })
-            };
-            
-            const reportData = await getReport(req, res);
-            
-            var { today, matrix: singleMatrix, allColumns, brandRow, brandCol, multiVar } = reportData;
-            
-            matrix.push(singleMatrix);
+          }else{
+            const allTypes = await Type.find({brandId})
+            for (var typeName of allTypes){
+              const matrixKey = typeName.type
+              
+              const req = {
+                body: {brandId: brandId, matrixKey: matrixKey} 
+              };
+              const res = {
+                json: (data) => data,
+                status: (code) => ({
+                  json: (data) => ({ code, ...data })
+                })
+              };
+              
+              const reportData = await getReport(req, res);
+              
+              var { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
+              // console.log("SINGGLEEEEEEEE",matrix)
+              combinedMatrix.push(matrix);
               
             }
-            console.log(matrix);
-        }
+          }
+          
+          // Convert matrix data to a MongoDB-compatible format
+          var matrixObject = new Map();
+          
+          // Create new report document
+          console.log(combinedMatrix)
+          if (Array.isArray(combinedMatrix) && combinedMatrix.length > 0) {
+            combinedMatrix.forEach((rowValue) => {
+              Object.entries(rowValue).forEach(([rowKey, columns]) => {
+                if (!matrixObject.has(rowKey)) {
+                  matrixObject.set(rowKey, new Map()); // Initialize each row as a Map
+                }
+                Object.entries(columns).forEach(([colKey, colValue]) => {
+                  matrixObject.get(rowKey).set(colKey, colValue);
+                });
+              });
+            });
+          }
+          else{
+            Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+              let rowMap = new Map();
+              Object.entries(rowValue).forEach(([colKey, colValue]) => {
+                rowMap.set(colKey, colValue);
+              });
+              matrixObject.set(rowKey, rowMap);
+            });
+          }
+          
+          const existingReports = await ReportModel.find({ today: todayDate, brandId });
+          if (existingReports.length >0) {
+            for (const existingReport of existingReports){
+              const brandN = forBrandId.brandName
+              const brandC = forBrandId.parentCategory
+              console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}.`);
 
-    
-        // Convert matrix data to a MongoDB-compatible format
-        const matrixObject = {};
-        Object.entries(matrix).forEach(([rowKey, rowValue]) => {
-          matrixObject[rowKey] = {};
-          Object.entries(rowValue).forEach(([colKey, colValue]) => {
-            matrixObject[rowKey][colKey] = colValue;
+              const delReportId = existingReport._id
+              
+              await ReportModel.findByIdAndDelete(delReportId);
+            }
+          }
+          // console.log(matrixObject)
+          const newReport = new ReportModel({
+            today,          // The date from overallData
+            brandId,        // Brand ID from req.body
+            brandCol,       // Column label from overallData
+            brandRow,       // Row label from overallData
+            matrix: matrixObject, // Converted matrix object
+            allColumns,      // Array of column data from overallData
+            multiVar
           });
-        });
-    
-        // Create new report document
-        const newReport = new ReportModel({
-          today,          // The date from overallData
-          brandId,        // Brand ID from req.body
-          brandCol,       // Column label from overallData
-          brandRow,       // Row label from overallData
-          matrix: matrixObject, // Converted matrix object
-          allColumns,      // Array of column data from overallData
-          multiVar
-        });
     
         // Save the report
-        newerReport = await newReport.save();
+        // const newerReport = 
+        await newReport.save();
+        // console.log("😊😊😊😊😊😊😊", newerReport)
         // res.json(savedReport); // Send the saved report as the response
 
       }
     }
 
-    // return res.status(200).json({ msg: "Reports saved successfully!", newerReport : newerReport})
+    return res.status(200).json({ msg: "Reports saved successfully!"})
 
     // Destructure the fields from overallData
   } catch (err) {
