@@ -19,6 +19,7 @@ const ReportModel = require("../models/report-model")
 // const { isString, getSystemErrorMap } = require("util");
 const SaleRecordModel = require("../models/sale-record-model");
 const { title } = require("process");
+const { type } = require("os");
 
 ///////////////////////////// CATEGORIES //////////////////////////////
 const getAllCategories = async (req, res) => {
@@ -1865,6 +1866,7 @@ const saveAllBrandReports = async (req,res) => {
 
 const saveReports = async (req, res) => {
   try {
+    var newerReport
     const categories = await Category.find({}) 
 
     if (!categories || categories.length ===0){
@@ -1878,35 +1880,63 @@ const saveReports = async (req, res) => {
       var catTitle = oneCat.title
       
       const brandsOfCat = await Brand.find({ parentCategory: catTitle})
-
-      // if (!brandsOfCat || brandsOfCat.length ===0){
-      //   res.status(404).json({err: `No brands found for ${catTitle} available!`});
-      // }
       
-      for (var forBrandId of brandsOfCat){
-        var brandId = forBrandId._id
+      // if (!brandsOfCat || brandsOfCat.length ===0){
+        //   res.status(404).json({err: `No brands found for ${catTitle} available!`});
+        // }
         
-        const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
-        if (existingReport) {
-          const brandN = forBrandId.brandName
-          const brandC = forBrandId.parentCategory
-          console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
-          continue;
+        for (var forBrandId of brandsOfCat){
+          var brandId = forBrandId._id
+          var multiVar = forBrandId.multiVar
+          
+          const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
+          if (existingReport) {
+            const brandN = forBrandId.brandName
+            const brandC = forBrandId.parentCategory
+            console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
+            // continue;
+          }
+          
+          if (multiVar){
+            const req = {
+              body: {brandId: brandId} 
+            };
+            const res = {
+              json: (data) => data,
+              status: (code) => ({
+                json: (data) => ({ code, ...data })
+              })
+            };
+            
+            const reportData = await getReport(req, res);
+            
+            var { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
+        }else{
+          let matrix = []
+          const allTypes = await Type.find({brandId})
+          for (var typeName of allTypes){
+            const matrixKey = typeName.type
+            
+            const req = {
+              body: {brandId: brandId, matrixKey: matrixKey} 
+            };
+            const res = {
+              json: (data) => data,
+              status: (code) => ({
+                json: (data) => ({ code, ...data })
+              })
+            };
+            
+            const reportData = await getReport(req, res);
+            
+            var { today, matrix: singleMatrix, allColumns, brandRow, brandCol, multiVar } = reportData;
+            
+            matrix.push(singleMatrix);
+              
+            }
+            console.log(matrix);
         }
 
-        const req = {
-          body: {brandId: brandId} 
-        };
-        const res = {
-          json: (data) => data,
-          status: (code) => ({
-            json: (data) => ({ code, ...data })
-          })
-        };
-
-        const reportData = await getReport(req, res);
-
-        const { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
     
         // Convert matrix data to a MongoDB-compatible format
         const matrixObject = {};
@@ -1929,18 +1959,18 @@ const saveReports = async (req, res) => {
         });
     
         // Save the report
-        await newReport.save();
+        newerReport = await newReport.save();
         // res.json(savedReport); // Send the saved report as the response
 
       }
     }
 
-    return res.status(200).json({ msg: "Reports saved successfully!"})
+    // return res.status(200).json({ msg: "Reports saved successfully!", newerReport : newerReport})
 
     // Destructure the fields from overallData
   } catch (err) {
-    console.error("Error saving brand report:", err);
-    res.status(500).json({ error: "Failed to save brand report" });
+    console.error("Error saving report:", err);
+    res.status(500).json({ error: "Failed to save report" });
   }
 };
 
