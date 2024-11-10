@@ -98,7 +98,7 @@ function Preview() {
           {totalFetchData.map((item, index) => {
             return (
               <div key={index} className="report-table-container">
-                <h1>{item.title}</h1>
+                <h1 className="table-title">{item.title}</h1>
 
                 {item.data && item.data.multiVar ? (
                   <table>
@@ -172,7 +172,7 @@ function Preview() {
                     </tbody>
                   </table>
                 ) : (
-                  <>
+                  <div>
                     {singleVarFetch &&
                       singleVarFetch.map((item, itemIndex) => (
                         <div
@@ -225,7 +225,7 @@ function Preview() {
                           )}
                         </div>
                       ))}
-                  </>
+                  </div>
                 )}
               </div>
             );

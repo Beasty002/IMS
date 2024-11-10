@@ -128,7 +128,7 @@ function SingleVarTable({
   return (
     <div className="brand-item-table single-var">
       <div className="setting-info">
-        <h1>{selectedKey}</h1>
+        <h1 className="table-title">{selectedKey}</h1>
         <div className="portal-setting">
           {protalOn ? (
             <i onClick={togglePortal} className="fa-solid fa-gear fa-spin"></i>

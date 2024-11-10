@@ -36,32 +36,39 @@ function BrandReport() {
     }
   }, [searchTerm, fetchBrand]);
 
-  const handleFinalRedirect = (brandId, parentCategory, multiVar) => {
+  const handleFinalRedirect = (
+    brandId,
+    parentCategory,
+    multiVar,
+    brandName
+  ) => {
     console.log(" brandname yo ho hai", brandId, parentCategory);
-    navigate(`/finalReport/${parentCategory}/${brandId}/${multiVar}`);
+    navigate(`/finalReport/${parentCategory}/${brandId}/${multiVar}`, {
+      state: { extraValue: brandName },
+    });
   };
 
-  const fetchBrandReport = async () => {
-    console.log(JSON.stringify({ fetchBrand }));
-    try {
-      const response = await fetch("http://localhost:3000/api/brandsReports", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fetchBrand }),
-      });
-      const data = await response.json();
+  // const fetchBrandReport = async () => {
+  //   console.log(JSON.stringify({ fetchBrand }));
+  //   try {
+  //     const response = await fetch("http://localhost:3000/api/brandsReports", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ fetchBrand }),
+  //     });
+  //     const data = await response.json();
 
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
-      }
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     if (!response.ok) {
+  //       console.log(response.statusText);
+  //       return;
+  //     }
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <>
@@ -84,12 +91,12 @@ function BrandReport() {
               gap: "20px",
             }}
           >
-            <div className="left-sale">
-              <input type="date" />
-            </div>
-            <button onClick={fetchBrandReport} className="primary-btn">
+            {/* <div className="left-sale">
+                <input type="date" />
+              </div> */}
+            {/* <button onClick={fetchBrandReport} className="primary-btn">
               Save
-            </button>
+            </button> */}
             <div
               onClick={() => setEnablePortal(!enablePortal)}
               className="btn-container"
@@ -117,7 +124,8 @@ function BrandReport() {
                   handleFinalRedirect(
                     item._id,
                     item.parentCategory,
-                    item.multiVar
+                    item.multiVar,
+                    item.brandName
                   )
                 }
                 key={item._id}

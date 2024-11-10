@@ -20,6 +20,7 @@ import FinalReport from "./pages/FinalReport/FinalReport";
 import Preview from "./pages/Preview/Preview";
 import Login from "./components/Login/Login";
 import { useAuth } from "./customHooks/useAuth";
+import DateReportPrint from "./pages/DateReportPrint/DateReportPrint";
 
 export default function App() {
   const location = useLocation();
@@ -84,6 +85,7 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/purchasesEntry" element={<PurchaseEntry />} />
                 <Route path="/previewReport" element={<Preview />} />
+                <Route path="/datePrint" element={<DateReportPrint />} />
                 <Route
                   path="/catband/:categoryName/:brandName/:multi"
                   element={<CatBrandPage />}
