@@ -17,7 +17,8 @@ const reportSchema = new Schema({
       of: Map, // Each key in `matrix` can be a map for flexibility
     },
     today: String, // Or Date type if you want to store it as a Date object
-    brandId: mongoose.Schema.Types.ObjectId
+    brandId: mongoose.Schema.Types.ObjectId,
+    multiVar: Boolean
   });
   
 const ReportModel = mongoose.model("Report", reportSchema);

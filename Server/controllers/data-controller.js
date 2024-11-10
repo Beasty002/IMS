@@ -1885,8 +1885,7 @@ const saveReports = async (req, res) => {
       
       for (var forBrandId of brandsOfCat){
         var brandId = forBrandId._id
-        var multiVar = forBrandId.multiVar
-
+        
         const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
         if (existingReport) {
           const brandN = forBrandId.brandName
@@ -1907,7 +1906,7 @@ const saveReports = async (req, res) => {
 
         const reportData = await getReport(req, res);
 
-        const { today, matrix, allColumns, brandRow, brandCol } = reportData;
+        const { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
     
         // Convert matrix data to a MongoDB-compatible format
         const matrixObject = {};
