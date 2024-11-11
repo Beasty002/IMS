@@ -2003,9 +2003,30 @@ const getSpecificDayReports = async(req,res) => {
 
     const allReports = await ReportModel.find({ today: date})
 
-    if (allReports || allReports.length > 0){
+    // if (allReports || allReports.length > 0){
+    //   for (var oneReport of allReports){
+    //     const brandId = oneReport._id
+    //     // console.log(brandId)
+    //     const brandData = await Brand.findById(brandId)
 
-      return res.status(200).json({allReports})
+    //     if (brandData) {
+    //       oneReport.brandName = brandData.brandName;  // Add `brandName` directly to the report object
+    //       oneReport.category = brandData.parentCategory; // Add `category` to the report object
+    //     }
+    //   }
+      if (allReports.length > 0) {
+        const enrichedReports = await Promise.all(allReports.map(async (oneReport) => {
+          const brandData = await Brand.findById(oneReport.brandId);
+          return {
+            ...oneReport.toObject(),  // Convert Mongoose doc to plain object for safe mutation
+            brandName: brandData?.brandName,
+            category: brandData?.parentCategory,
+          };
+        }));
+    
+      return res.status(200).json({ allReports: enrichedReports });
+    
+
     }
     return res.status(404).json({ err: `No report found for ${date} date.`})
 
