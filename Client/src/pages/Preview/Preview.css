@@ -4,7 +4,6 @@
   gap: 50px;
 }
 
-/* General Styles */
 .total-out {
   padding: 20px;
 }
@@ -14,8 +13,45 @@
 }
 
 @media print {
-  body * {
+  table {
+    width: 100%;
+    table-layout: fixed; 
+    page-break-inside: avoid; 
+    max-width: 100%;
+    transform: scale(0.9);
+    transform-origin: 0 0;
+  }
+  tr {
+    page-break-inside: avoid;
+  }
+  th,
+  td {
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: 100px;
+    padding: 5px;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  table {
+    margin: 0;
+    padding: 0;
+  }
+  .print-button {
+    display: none; 
+  }
+}
+
+@media print {
+  nav * {
     visibility: hidden;
+  }
+  @media print {
+    .print-button {
+      display: none;
+    }
   }
 
   #report-content,
