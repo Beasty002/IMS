@@ -88,8 +88,8 @@ function Preview() {
   };
 
   useEffect(() => {
-    console.log("Yo ho hai te key", singleVarFetch);
-  }, [singleVarFetch]);
+    console.log("Yo ho hai te key", totalFetchData);
+  }, [totalFetchData]);
 
   return (
     <>
@@ -98,7 +98,14 @@ function Preview() {
           {totalFetchData.map((item, index) => {
             return (
               <div key={index} className="report-table-container">
-                <h1 className="table-title">{item.title}</h1>
+                <h1
+                  style={{
+                    fontSize: "20px",
+                  }}
+                  className="table-title"
+                >
+                  {item.title} {item.data.category}
+                </h1>
 
                 {item.data && item.data.multiVar ? (
                   <table>

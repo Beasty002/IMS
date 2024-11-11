@@ -117,9 +117,20 @@ function DateReportPrint() {
           {allValue?.map((item, itemIndex) => (
             <div key={itemIndex}>
               {item.multiVar === true ? (
-                <>
+                <div
+                  className={`${
+                    item.allColumns.length > 4 ? "vertical-table" : ""
+                  }`}
+                >
+                  <h1
+                    style={{
+                      fontSize: "20px",
+                    }}
+                  >
+                    {item.category} / {item.brandName}
+                  </h1>
                   <table
-                    className="date-report"
+                    className={`date-report`}
                     style={{
                       marginBottom: "10px",
                       marginTop: "10px",
@@ -185,7 +196,7 @@ function DateReportPrint() {
                       Print this
                     </button>
                   )}
-                </>
+                </div>
               ) : (
                 item.matrix &&
                 Object.entries(item.matrix)?.map(
