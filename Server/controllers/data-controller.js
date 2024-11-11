@@ -1663,6 +1663,7 @@ const getReport = async (req, res) => {
     const brandData = await Brand.findById(brandId);
 
     const brandName = brandData.brandName
+    const category = brandData.parentCategory
     const brandRow = brandData.rowLabel
     const brandCol = brandData.colLabel
     const multiVar = brandData.multiVar
@@ -1792,7 +1793,7 @@ const getReport = async (req, res) => {
       }
     }
 
-    return res.json({today:today, matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol, multiVar: multiVar});
+    return res.json({today:today, matrix: matrix , allColumns: allCols,brandName:brandName ,category:category , brandRow: brandRow, brandCol: brandCol, multiVar: multiVar});
   } catch (err) {
     console.error("Error get report", err);
     res.status(500).json({ message:`Error getReport : ${err.message}`});
@@ -1903,7 +1904,7 @@ const saveReports = async (req, res) => {
             
             const reportData = await getReport(req, res);
             
-            var { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
+            var { today, matrix, allColumns,brandName,category, brandRow, brandCol, multiVar } = reportData;
           }else{
             const allTypes = await Type.find({brandId})
             for (var typeName of allTypes){
@@ -1921,7 +1922,7 @@ const saveReports = async (req, res) => {
               
               const reportData = await getReport(req, res);
               
-              var { today, matrix, allColumns, brandRow, brandCol, multiVar } = reportData;
+              var { today, matrix, allColumns, brandRow,brandName,category, brandCol, multiVar } = reportData;
               // console.log("SINGGLEEEEEEEE",matrix)
               combinedMatrix.push(matrix);
               
