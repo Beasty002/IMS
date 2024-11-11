@@ -202,6 +202,13 @@ function DateReportPrint() {
                 Object.entries(item.matrix)?.map(
                   ([key, innerValue], innerIndex) => (
                     <>
+                      <h1
+                        style={{
+                          fontSize: "20px",
+                        }}
+                      >
+                        {item.category} / {item.brandName}
+                      </h1>
                       <table
                         className="date-report"
                         style={{
