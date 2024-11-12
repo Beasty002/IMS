@@ -11,6 +11,7 @@ export default function MulVarList() {
   const [specificId, setSpecificId] = useState();
   const [fetchedBdata, setFetchedBdata] = useState({});
   const [tableData, setTableData] = useState({});
+  const [allData, setAllData] = useState({});
   const [filteredData, setFilteredData] = useState({});
   const [editRowIndex, setEditRowIndex] = useState(null);
   const [editableData, setEditableData] = useState({});
@@ -27,12 +28,6 @@ export default function MulVarList() {
   const enableCatPortal = () => {
     setCatPortal(!catPortal);
   };
-
-  // useEffect(() => {
-  //   if (categoryName) {
-  //     fetchBrandData(categoryName);
-  //   }
-  // }, [categoryName]);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
@@ -88,6 +83,7 @@ export default function MulVarList() {
 
       const data = await response.json();
       console.log(data);
+      setAllData(data);
       setTableData(data.matrix);
       setColLabel(data.allColumns);
     } catch (error) {
@@ -96,10 +92,14 @@ export default function MulVarList() {
   };
 
   useEffect(() => {
+    console.log(fetchedBdata);
+  }, [fetchedBdata]);
+
+  useEffect(() => {
     if (specificId) {
       fetchRespectiveBrandData();
     }
-  }, [specificId]);
+  }, []);
 
   useEffect(() => {
     if (fetchedBdata && categoryName && brandName) {
@@ -244,7 +244,7 @@ export default function MulVarList() {
               <tr>
                 <th>S.N</th>
                 <th>
-                  {fetchedBdata.rowLabel}/{fetchedBdata.colLabel}
+                  {allData.brandRow}/{allData.brandCol}
                 </th>
                 {colLabel?.map((item) => (
                   <th key={item._id}>{item.column}</th>
