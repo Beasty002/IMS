@@ -8,6 +8,7 @@ import ProductTable from "../../components/DashboardComponents/ProductTable";
 import StockData from "../../components/DashboardComponents/StockData";
 import GraphSection from "../../components/DashboardComponents/GraphSection";
 import { useAuth } from "../../customHooks/useAuth";
+import CustomPieChart from "../../components/CustomPieChart/CustomPieChart";
 
 const Dashboard = () => {
   const { categoryLength, fetchCategory } = useAuth();
@@ -36,7 +37,7 @@ const Dashboard = () => {
       const response = await fetch("http://localhost:3000/api/saveReports", {
         method: "GET",
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
       });
       const data = await response.json();
@@ -160,8 +161,7 @@ const Dashboard = () => {
       </div>
       <div className="cat-pie-chart">
         <h2 className="dash-title">Categories</h2>
-        <img id="pieChart" src={PieChart} alt="chart" />
-        <img src={Legends} alt="legends" />
+        <CustomPieChart />
       </div>
       <ProductTable title="Low Stock Products" data={lowStock} />
       <ProductTable title="Top Selling Products" data={topSelling} />
