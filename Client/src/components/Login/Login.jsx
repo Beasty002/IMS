@@ -61,7 +61,7 @@ function Login() {
         <section id="loginContainer">
           <h1>Welcome Back</h1>
           <form onSubmit={handleLogin}>
-            <div class="form-container">
+            <div class="form-container-login">
               <i class="fa-solid fa-user"></i>
               <input
                 type="text"
@@ -71,7 +71,7 @@ function Login() {
                 placeholder="Username"
               />
             </div>
-            <div class="form-container">
+            <div class="form-container-login">
               <i class="fa-solid fa-lock"></i>
               <input
                 type="password"
