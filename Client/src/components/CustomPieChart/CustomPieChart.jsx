@@ -32,7 +32,7 @@ const CustomPieChart = () => (
         nameKey="name"
         cx="50%"
         cy="50%"
-        outerRadius={200}
+        outerRadius={150}
         labelLine={false}
         label={renderCustomizedLabel}
       >

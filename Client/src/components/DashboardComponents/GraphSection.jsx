@@ -6,6 +6,7 @@ const GraphSection = () => {
   const [fetchData, setFetchData] = useState([]);
 
   const getSelectedSales = async (reportType) => {
+    console.log(reportType);
     try {
       const response = await fetch(
         `http://localhost:3000/api/get${reportType}Sales`,
@@ -39,7 +40,7 @@ const GraphSection = () => {
           onChange={(e) => getSelectedSales(e.target.value)}
           name="timeline"
         >
-          <option value="Weekly">Daily</option>
+          <option value="Daily">Daily</option>
           <option value="Monthly">Monthly</option>
         </select>
       </div>
