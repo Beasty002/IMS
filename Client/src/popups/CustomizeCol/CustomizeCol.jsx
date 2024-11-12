@@ -13,6 +13,10 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     },
   ]);
 
+  useEffect(() => {
+    console.log(specificId);
+  }, [specificId]);
+
   const [brandLabelData, setBrandLabelData] = useState();
 
   useEffect(() => {
@@ -49,28 +53,28 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
     ]);
   };
 
-  // const handleDeleteColumn = async (id, brandId) => {
-  //   setFormData((prevState) => prevState.filter((item) => item.id !== id));
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/column", {
-  //       method: "DELETE",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ columnId: id, brandId: brandId }),
-  //     });
-  //     const data = await response.json();
+  const handleDeleteColumn = async (id, brandId) => {
+    setFormData((prevState) => prevState.filter((item) => item.id !== id));
+    try {
+      const response = await fetch("http://localhost:3000/api/column", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ columnId: id, brandId: brandId }),
+      });
+      const data = await response.json();
 
-  //     if (!response.ok) {
-  //       console.log(response.statusText);
-  //       return;
-  //     }
+      if (!response.ok) {
+        console.log(response.statusText);
+        return;
+      }
 
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchColumnData = async (event) => {
     event.preventDefault();
@@ -220,10 +224,10 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
                     </>
                   )}
 
-                  {/* <i
+                  <i
                     className="bx bx-trash del-icon"
                     onClick={() => handleDeleteColumn(item.id, item.specificId)}
-                  ></i> */}
+                  ></i>
                 </div>
               </div>
             </div>
