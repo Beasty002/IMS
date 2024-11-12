@@ -18,9 +18,9 @@
     table-layout: fixed;
     page-break-inside: avoid;
     max-width: 100%;
-    transform: scale(0.9);
-    transform-origin: 0 0;
+
   }
+
   tr {
     page-break-inside: avoid;
   }
@@ -32,21 +32,23 @@
     height: 100vh;
   }
 
-  th,
+  /* th,
   td {
-    word-wrap: break-word;
     white-space: normal;
     max-width: 100px;
     padding: 5px;
-  }
+  } */
+
   body {
     margin: 0;
     padding: 0;
   }
+
   table {
     margin: 0;
     padding: 0;
   }
+
   .print-button {
     display: none;
   }
@@ -56,6 +58,7 @@
   nav * {
     visibility: hidden;
   }
+
   .print-button {
     display: none;
   }
@@ -64,11 +67,11 @@
   #report-content * {
     visibility: visible;
   }
+
   #report-content {
     position: absolute;
     top: 0;
     left: 0;
-
     width: 100%;
   }
 }
@@ -80,4 +83,16 @@
   border: none;
   border-radius: 8px;
   outline: none;
+}
+
+
+@media print {
+  .single-report-css {
+    display: flex;
+    gap: 20px;
+  }
+
+  .single-report-css>* {
+    flex: 1;
+  }
 }

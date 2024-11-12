@@ -179,7 +179,7 @@ function Preview() {
                     </tbody>
                   </table>
                 ) : (
-                  <div>
+                  <div className="single-report-css">
                     {singleVarFetch &&
                       singleVarFetch.map((item, itemIndex) => (
                         <div

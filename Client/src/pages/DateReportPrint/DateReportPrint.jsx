@@ -105,7 +105,7 @@ function DateReportPrint() {
 
   return (
     <div
-      className="report-table-container"
+      className="report-table-container main-report-table"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -113,22 +113,36 @@ function DateReportPrint() {
       }}
     >
       {Object.entries(data)?.map(([key, allValue], index) => (
-        <div key={index}>
+        <div key={index} className="">
           {allValue?.map((item, itemIndex) => (
-            <div key={itemIndex}>
+            <div className="title-table-group" key={itemIndex}>
               {item.multiVar === true ? (
                 <div
-                  className={`${
-                    item.allColumns.length > 4 ? "vertical-table" : ""
-                  }`}
+                  className={`${item.allColumns.length > 4 ? "vertical-table" : ""
+                    }`}
                 >
-                  <h1
+                  <div className="title-print-group"><h1
                     style={{
                       fontSize: "20px",
                     }}
                   >
                     {item.category} / {item.brandName}
                   </h1>
+                    {!isPrintAllClicked && (
+                      <button
+                        className="primary-btn print-button"
+                        style={{
+                          padding: "10px",
+                          width: "max-content",
+                          border: "none",
+                          borderRadius: "9px",
+                        }}
+                        onClick={() => printTable(`table-${itemIndex}`)}
+                      >
+                        Print this
+                      </button>
+                    )}</div>
+
                   <table
                     className={`date-report`}
                     style={{
@@ -182,33 +196,36 @@ function DateReportPrint() {
                       )}
                     </tbody>
                   </table>
-                  {!isPrintAllClicked && (
-                    <button
-                      className="primary-btn print-button"
-                      style={{
-                        padding: "10px",
-                        width: "max-content",
-                        border: "none",
-                        borderRadius: "9px",
-                      }}
-                      onClick={() => printTable(`table-${itemIndex}`)}
-                    >
-                      Print this
-                    </button>
-                  )}
+
                 </div>
               ) : (
                 item.matrix &&
                 Object.entries(item.matrix)?.map(
                   ([key, innerValue], innerIndex) => (
                     <>
-                      <h1
-                        style={{
-                          fontSize: "20px",
-                        }}
-                      >
-                        {item.category} / {item.brandName}
-                      </h1>
+                      <div className="title-print-group">
+                        <h1
+                          style={{
+                            fontSize: "20px",
+                          }}
+                        >
+                          {item.category} / {item.brandName}
+                        </h1>
+                        {!isPrintAllClicked && (
+                          <button
+                            className="primary-btn print-button"
+                            style={{
+                              padding: "10px",
+                              width: "max-content",
+                              border: "none",
+                              borderRadius: "9px",
+                            }}
+                            onClick={() => printTable(`table-${innerIndex}`)}
+                          >
+                            Print this
+                          </button>
+                        )}
+                      </div>
                       <table
                         className="date-report"
                         style={{
@@ -246,20 +263,7 @@ function DateReportPrint() {
                           )}
                         </tbody>
                       </table>
-                      {!isPrintAllClicked && (
-                        <button
-                          className="primary-btn print-button"
-                          style={{
-                            padding: "10px",
-                            width: "max-content",
-                            border: "none",
-                            borderRadius: "9px",
-                          }}
-                          onClick={() => printTable(`table-${innerIndex}`)}
-                        >
-                          Print this
-                        </button>
-                      )}
+
                     </>
                   )
                 )
