@@ -14,6 +14,7 @@ const Dashboard = () => {
   const { categoryLength, fetchCategory } = useAuth();
   const [lowStock, setLowStock] = useState([]);
   const [topSelling, setTopSelling] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
   const [stock, setStock] = useState("");
 
   useEffect(() => {
@@ -30,7 +31,31 @@ const Dashboard = () => {
 
   useEffect(() => {
     saveReports();
-  });
+  }, []);
+
+  useEffect(() => {
+    getPieChartData();
+  }, []);
+
+  const getPieChartData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/getPieData", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return;
+      }
+      console.log(data);
+      setPieChartData(data.pieData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const saveReports = async () => {
     try {
@@ -161,7 +186,7 @@ const Dashboard = () => {
       </div>
       <div className="cat-pie-chart">
         <h2 className="dash-title">Categories</h2>
-        <CustomPieChart />
+        <CustomPieChart pieChartData={pieChartData} />
       </div>
       <ProductTable title="Low Stock Products" data={lowStock} />
       <ProductTable title="Top Selling Products" data={topSelling} />
