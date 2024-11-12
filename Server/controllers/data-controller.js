@@ -750,6 +750,41 @@ const getMonthlySales = async (req,res) => {
   }
 }
 
+const getPieData = async( req,res) => {
+  try{
+    const allStocks = await RecordStock.find({});
+    const categoryTotals = {};
+
+    // Calculate total stock for each category
+    for (const oneStock of allStocks) {
+      const category = oneStock.category;
+      const stock = oneStock.totalStock;
+
+      // If the category already exists in the object, add to its stock count
+      if (categoryTotals[category]) {
+        categoryTotals[category] += stock;
+      } else {
+        // Initialize category with the current stock count if not present
+        categoryTotals[category] = stock;
+      }
+    }
+
+    // Convert categoryTotals object to the desired array format
+    const pieData = Object.entries(categoryTotals).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    return res.status(200).json({pieData})
+
+  }
+  catch(err){
+    console.error("Error get pie data");
+    res.json({ message: "Internal server error!!(getPieData)" });
+  }
+
+}
+
 const getPastYearSales = async (req,res) => {
   try{
     const currDate = new Date();
@@ -2503,9 +2538,13 @@ module.exports = {
   salesEntry,
   getAllSales,
   getSpecificSale,
+
   getDailySales,
-  getPastWeekSales,
   getMonthlySales,
+
+  getPieData,
+
+  getPastWeekSales,
   getPastYearSales,
 
   // getSundaySales,

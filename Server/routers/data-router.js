@@ -40,12 +40,13 @@ router.route("/purchase")
   .patch(datac.editPurchase)
   .delete(datac.delPurchase)
 
-router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
 router.route("/getDailySales").get(datac.getDailySales); 
 router.route("/getMonthlySales").get(datac.getMonthlySales); 
-router.route("/getPastYearSales").get(datac.getPastYearSales); 
-// router.route("/getSundaySales").get(datac.getSundaySales); 
-// router.route("/getSaturdaySales").get(datac.getSaturdaySales); 
+
+router.route('/getPieData').get(datac.getPieData)
+
+router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
+router.route("/getPastYearSales").get(datac.getPastYearSales);
 router.route("/getSalesByWeekday").post(datac.getSalesByWeekday); 
 
 router.route("/item").post(datac.addType); 
