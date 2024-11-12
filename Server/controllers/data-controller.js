@@ -675,7 +675,7 @@ const getDailySales = async (req, res) => {
       startDate.setDate(startDate.getDate() + 1);
     }
 
-    return res.json({ dailyData });
+    return res.json({ graphData: dailyData });
 
   }
   catch(err){
@@ -731,7 +731,7 @@ const getMonthlySales = async (req,res) => {
 
       // Store monthly data with the start and end dates
       monthlyData.push({
-        month: monthName,
+        date: monthName,
         soldQty,
         purchaseQty
       });
@@ -741,7 +741,7 @@ const getMonthlySales = async (req,res) => {
       startDate.setDate(1); // Reset to the 1st of the next month
     }
 
-    return res.json({ monthlyData });
+    return res.json({ graphData: monthlyData });
 
   }
   catch(err){
