@@ -41,7 +41,8 @@ router.route("/purchase")
   .delete(datac.delPurchase)
 
 router.route("/getPastWeekSales").get(datac.getPastWeekSales); 
-router.route("/getPastMonthSales").get(datac.getPastMonthSales); 
+router.route("/getDailySales").get(datac.getDailySales); 
+router.route("/getMonthlySales").get(datac.getMonthlySales); 
 router.route("/getPastYearSales").get(datac.getPastYearSales); 
 // router.route("/getSundaySales").get(datac.getSundaySales); 
 // router.route("/getSaturdaySales").get(datac.getSaturdaySales); 

@@ -566,28 +566,53 @@ const getSpecificSale = async (req,res) => {
 
 const getPastWeekSales = async (req,res) => {
   try{
-    var soldQty = 0;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 365); // Example: past 4 weeks
     const currDate = new Date();
-
-    const aWeekAgo = new Date();
-    aWeekAgo.setDate(currDate.getDate() - 7);
-      
-    const pastWeekSales = await SalesRecord.find({
-      dos: { $gte: aWeekAgo}
-    });
-
-    // console.log(pastWeekSales)
-    const saleIds = pastWeekSales.map(sale => sale.saleIds).flat();
-    // return res.json({saleIds: saleIds})
-
-    for (var saleId of saleIds){
-      const sale = await Sales.findById({_id: saleId});
-
-      ////////////////////// TOOO BEEE CONTTINUUUEEEDDD //////////////////////////////
-
+    
+    const weeklyData = [];
+    let soldQty, purchaseQty;
+    
+    // Loop through each week
+    while (startDate < currDate) {
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 30); 
+    
+      const pastWeekSales = await SalesRecord.find({
+        dos: { $gte: startDate, $lt: endDate }
+      });
+      const pastWeekPurchases = await Purchase.find({
+        dop: { $gte: startDate, $lt: endDate }
+      });
+    
+      const saleIds = pastWeekSales.map(sale => sale.saleIds).flat();
+      const purchaseIds = pastWeekPurchases.map(purch => purch.purchaseIds).flat();
+    
+      soldQty = 0;
+      purchaseQty = 0;
+    
+      for (const saleId of saleIds) {
+        const sale = await Sales.findById({ _id: saleId });
+        soldQty += sale.sQty;
+      }
+      for (const purchaseId of purchaseIds) {
+        const purchase = await Stock.findById({ _id: purchaseId });
+        purchaseQty += purchase.stock;
+      }
+    
+      weeklyData.push({
+        weekStart: startDate.toISOString().split('T')[0],
+        weekEnd: endDate.toISOString().split('T')[0],
+        soldQty,
+        purchaseQty
+      });
+    
+      // Move to the next week
+      startDate.setDate(startDate.getDate() + 30);
     }
-
-    return res.json({pastWeekSales: pastWeekSales})
+    
+    return res.json({ weeklyData });
+    
   }
   catch(err){
     console.error("Error past week sales");
@@ -595,18 +620,129 @@ const getPastWeekSales = async (req,res) => {
   }
 }
 
-const getPastMonthSales = async (req,res) => {
+const getDailySales = async (req, res) => {
   try{
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 7); // Start 7 days ago
     const currDate = new Date();
 
-    const aMonthAgo = new Date();
-    aMonthAgo.setDate(currDate.getDate() - 30);
-      
-    const pastMonthSales = await SalesRecord.find({
-      dos: { $gte: aMonthAgo}
-    });
+    const dailyData = [];
+    let soldQty, purchaseQty;
 
-    return res.json({pastMonthSales: pastMonthSales})
+    // Loop through each day
+    while (startDate < currDate) {
+      // Set endDate to the next day
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 1);
+
+      // Get sales and purchase records for the current day
+      const dailySales = await SalesRecord.find({
+        dos: { $gte: startDate, $lt: endDate }
+      });
+      const dailyPurchases = await Purchase.find({
+        dop: { $gte: startDate, $lt: endDate }
+      });
+
+      // Extract sale and purchase IDs
+      const saleIds = dailySales.map(sale => sale.saleIds).flat();
+      const purchaseIds = dailyPurchases.map(purch => purch.purchaseIds).flat();
+
+      soldQty = 0;
+      purchaseQty = 0;
+
+      // Calculate total sold quantity for the day
+      for (const saleId of saleIds) {
+        const sale = await Sales.findById({ _id: saleId });
+        if (sale) soldQty += sale.sQty;
+      }
+
+      // Calculate total purchase quantity for the day
+      for (const purchaseId of purchaseIds) {
+        const purchase = await Stock.findById({ _id: purchaseId });
+        if (purchase) purchaseQty += purchase.stock;
+      }
+
+      const dayName = startDate.toLocaleString('en-US', { weekday: 'short' });
+
+      // Store daily data with the start and end dates
+      dailyData.push({
+        date: dayName,
+        soldQty,
+        purchaseQty
+      });
+
+      // Move to the next day
+      startDate.setDate(startDate.getDate() + 1);
+    }
+
+    return res.json({ dailyData });
+
+  }
+  catch(err){
+    console.error("Error past month sales");
+    res.json({ message: "Internal server error!!(getPastMonthSales)" });
+  }
+}
+
+const getMonthlySales = async (req,res) => {
+  try{
+    const startDate = new Date();
+    startDate.setDate(1); // Set to the first day of the month
+
+    startDate.setMonth(startDate.getMonth() - 6); // Go back 6 months from the current month
+    const currDate = new Date();
+
+    const monthlyData = [];
+    let soldQty, purchaseQty;
+
+    // Loop through each month
+    while (startDate < currDate) {
+      // Calculate end of the month
+      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0); // Last day of the current month
+
+      // Get sales and purchase records for the current month
+      const pastMonthSales = await SalesRecord.find({
+        dos: { $gte: startDate, $lt: endDate }
+      });
+      const pastMonthPurchases = await Purchase.find({
+        dop: { $gte: startDate, $lt: endDate }
+      });
+
+      // Extract sale and purchase IDs
+      const saleIds = pastMonthSales.map(sale => sale.saleIds).flat();
+      const purchaseIds = pastMonthPurchases.map(purch => purch.purchaseIds).flat();
+
+      soldQty = 0;
+      purchaseQty = 0;
+
+      // Calculate total sold quantity for the month
+      for (const saleId of saleIds) {
+        const sale = await Sales.findById({ _id: saleId });
+        if (sale) soldQty += sale.sQty;
+      }
+
+      // Calculate total purchase quantity for the month
+      for (const purchaseId of purchaseIds) {
+        const purchase = await Stock.findById({ _id: purchaseId });
+        if (purchase) purchaseQty += purchase.stock;
+      }
+
+      const monthName = startDate.toLocaleString('en-US', { month: 'short' });
+
+      // Store monthly data with the start and end dates
+      monthlyData.push({
+        month: monthName,
+        soldQty,
+        purchaseQty
+      });
+
+      // Move to the first day of the next month
+      startDate.setMonth(startDate.getMonth() + 1);
+      startDate.setDate(1); // Reset to the 1st of the next month
+    }
+
+    return res.json({ monthlyData });
+
   }
   catch(err){
     console.error("Error past month sales");
@@ -2367,8 +2503,9 @@ module.exports = {
   salesEntry,
   getAllSales,
   getSpecificSale,
+  getDailySales,
   getPastWeekSales,
-  getPastMonthSales,
+  getMonthlySales,
   getPastYearSales,
 
   // getSundaySales,
