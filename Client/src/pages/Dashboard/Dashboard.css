@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 20px;
+  flex: -1;
 }
 
 .upper-section {
@@ -30,12 +31,23 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 10px;
+
+  h1 {
+    height: 100px !important;
+  }
 }
 
 #pieChart {
-  height: 300px;
+  flex: 1;
+  display: flex;
+  z-index: -1;
 }
+
+
+
+
+
 
 .sub-stock,
 .sub-category {

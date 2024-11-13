@@ -37,12 +37,12 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
 const CustomPieChart = ({ pieChartData }) => {
 
-    // kati ota data xa check hanne 
+  // kati ota data xa check hanne 
   const COLORS = generateColors(pieChartData.length);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <ResponsiveContainer width="100%" height={400}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }} id="pieChart">
+      <ResponsiveContainer width="100%" >
         <RechartsPieChart>
           <Pie
             data={pieChartData}
@@ -50,7 +50,7 @@ const CustomPieChart = ({ pieChartData }) => {
             nameKey="name"
             cx="50%"
             cy="50%"
-            outerRadius={150}
+            outerRadius={190}
             labelLine={false}
             label={renderCustomizedLabel}
           >
@@ -60,7 +60,7 @@ const CustomPieChart = ({ pieChartData }) => {
           </Pie>
         </RechartsPieChart>
       </ResponsiveContainer>
-      
+
       {/* Custom Legend */}
       <div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
         {pieChartData.map((entry, index) => (
