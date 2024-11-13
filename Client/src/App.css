@@ -42,6 +42,12 @@ body {
 }
 
 @media print {
+
+  table,
+  h1 {
+    z-index: 100000000 !important;
+  }
+
   #report-content {
     height: 100%;
     width: 100%;
@@ -66,7 +72,9 @@ body {
     padding: 5px !important;
   }
 
-  .main-report-table {}
+  *:not(.main-report-table) {
+    display: hidden !important;
+  }
 
 
 

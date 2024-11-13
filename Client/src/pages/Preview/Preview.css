@@ -28,9 +28,21 @@
   .vertical-table {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    width: 100%;
-    height: 100vh;
+    width: auto;
+    height: 100dvh;
+    margin-left: auto;
+
+    table {
+      height: 95dvh !important;
+    }
   }
+
+  tr th:nth-child(2),
+  tr td:nth-child(2) {
+    min-width: 80px !important;
+
+  }
+
 
   /* th,
   td {
