@@ -2,6 +2,25 @@
   display: flex;
   flex-direction: column;
   gap: 50px;
+  padding-bottom: 100px !important;
+}
+
+.report-all-container-print {
+  padding-bottom: 150px !important;
+}
+
+.print-btn-container {
+  position: fixed;
+  bottom: 0px;
+  background-color: rgb(245 248 250);
+  width: 100%;
+  padding: 20px 0px;
+
+  button {
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.6em 2em !important;
+  }
 }
 
 .total-out {
@@ -11,6 +30,8 @@
 .report-table-container {
   margin-bottom: 20px;
 }
+
+
 
 @media print {
   table {
@@ -102,9 +123,18 @@
   .single-report-css {
     display: flex;
     gap: 20px;
+    /* page-break-before: always;
+    page-break-after: always; */
+
   }
 
   .single-report-css>* {
     flex: 1;
   }
+
+  tr>th:nth-child(2),
+  tr>td:nth-child(2) {
+    min-width: 150px !important;
+  }
+
 }

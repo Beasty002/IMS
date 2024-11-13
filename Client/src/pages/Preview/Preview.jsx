@@ -93,7 +93,7 @@ function Preview() {
 
   return (
     <>
-      <div className="total-out">
+      <div className="total-out report-all-container-print">
         <div id="report-content">
           {totalFetchData.map((item, index) => {
             return (
@@ -238,13 +238,16 @@ function Preview() {
             );
           })}
         </div>
-        <button
-          onClick={() => window.print()}
-          className="primary-btn"
-          id="print-btn"
-        >
-          Print Report
-        </button>
+        <div className="print-btn-container">
+          <button
+            onClick={() => window.print()}
+            className="primary-btn print-btn-main"
+            id="print-btn"
+          >
+            Print
+          </button>
+        </div>
+
       </div>
       {isLoading && (
         <div className="center-hanne">

@@ -149,7 +149,7 @@ function FinalReport() {
           Save Report
         </button>
       </div> */}
-      <div class="report-table-container">
+      <div className="report-table-container lookup-report">
         <h1>{brandName}</h1>
         {multiVar === "false" ? (
           <>

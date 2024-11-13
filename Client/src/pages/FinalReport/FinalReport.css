@@ -5,7 +5,14 @@
 
 #finalReport {
   border-collapse: collapse;
-  display: block;
+}
+
+.lookup-report {
+  .lookup-report {
+    table {
+      table-layout: auto !important;
+    }
+  }
 }
 
 table {
@@ -18,7 +25,7 @@ table {
   td {
     border: 1px solid gray;
     text-align: center;
-    padding: 4px 2px !important;
+    padding: 0.3em 0.5em !important;
   }
 
   /* table > td {
@@ -35,13 +42,4 @@ table {
 
 .save-report {
   width: 100%;
-}
-
-.save-report button {
-  float: right;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 15px;
-  border: none;
-  outline: none;
 }

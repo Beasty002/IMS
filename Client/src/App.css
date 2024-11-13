@@ -45,7 +45,7 @@ body {
 
   table,
   h1 {
-    z-index: 100000000 !important;
+    z-index: 9999 !important;
   }
 
   #report-content {
