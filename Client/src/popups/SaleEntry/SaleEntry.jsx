@@ -319,7 +319,6 @@ function SaleEntry() {
     const rowLabel = parts.length > 2 ? parts[2] : "";
     const str = parts.at(-1).replace(/[()]/g, "");
     console.log(str);
-    // const thickness = match ? match[1] : "";
 
     const newInput = {
       id: Date.now(),
