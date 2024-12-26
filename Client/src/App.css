@@ -97,3 +97,7 @@ body {
     font-size: .9rem;
   }
 }
+
+.del-popup {
+  z-index: 91 !important;
+}

@@ -70,6 +70,7 @@ function Sales({ title, TableComponent, products, setSalesData }) {
         body: JSON.stringify({ resData }),
       });
       const data = await response.json();
+
       if (!response.ok) {
         console.log(response.statusText);
         return;
