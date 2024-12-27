@@ -22,8 +22,12 @@ export default function CatBrandList() {
   const [searchData, setSearchData] = useState("");
 
   const handleBrandNavigation = (item) => {
+    console.log("Yo ho hai ta id chain clear xa ni kta ho", item._id);
     navigate(
-      `/catband/${item.parentCategory}/${item.brandName}/${item.multiVar}`
+      `/catband/${item.parentCategory}/${item.brandName}/${item.multiVar}`,
+      {
+        state: { specificId: item._id },
+      }
     );
   };
 
@@ -134,7 +138,7 @@ export default function CatBrandList() {
         onClose={() => setDelPopupOpen(false)}
         specificId={selDeleteId}
         delBrandName={delBrandName}
-        type={'brand'}
+        type={"brand"}
       />
     </section>
   );

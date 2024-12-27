@@ -10,9 +10,9 @@ export const AuthProvider = ({ children }) => {
   const [catStock, setCatStock] = useState({});
   const [loginStatus, setLoginStatus] = useState("");
 
-
   const fetchBrandData = async (catName) => {
     const categoryName = catName.charAt(0).toUpperCase() + catName.slice(1);
+    console.log("Yo ho hai categorty name", categoryName);
     try {
       const response = await fetch(`http://localhost:3000/api/brandList`, {
         method: "POST",
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       // console.log(data);
       setFetchBrand(data.brands);
       setStockData(data.stockByBrand);
-      return data.brands;
+      // return data.brands;
     } catch (error) {
       console.error(error);
     }

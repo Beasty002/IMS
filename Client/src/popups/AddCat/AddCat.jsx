@@ -44,6 +44,7 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
 
     try {
       console.log(JSON.stringify(body));
+      console.log("Yo call vako ho hai ta");
       const response = await fetch(`http://localhost:3000/api/${type}`, {
         method: method,
         headers: {

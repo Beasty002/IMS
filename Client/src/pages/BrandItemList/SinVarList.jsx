@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./SinVarList.css";
 import AddCat from "../../popups/AddCat/AddCat";
 import { useAuth } from "../../customHooks/useAuth";
@@ -7,6 +8,14 @@ import SingleVarTable from "../../components/SingleVarTable/SingleVarTable";
 import CustomizeSingleCol from "../../popups/CustomizeSingleCol/CustomizeSingleCol";
 
 export default function SinVarList() {
+  const location = useLocation();
+
+  const speId = location.state?.specificId || [];
+
+  useEffect(() => {
+    console.log("Yo ho hai spe Id ", speId);
+  }, []);
+
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
   const { fetchBrandData, fetchBrand } = useAuth();
@@ -27,7 +36,7 @@ export default function SinVarList() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ brandId: specificId }),
+        body: JSON.stringify({ brandId: speId }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -41,16 +50,10 @@ export default function SinVarList() {
   };
 
   useEffect(() => {
-    if (specificId) {
+    if (speId) {
       getLabelData();
     }
-  }, [specificId]);
-
-  // useEffect(() => {
-  //   if (categoryName) {
-  //     fetchBrandData(categoryName);
-  //   }
-  // }, []);
+  }, [speId]);
 
   useEffect(() => {
     if (fetchBrand && fetchBrand.length > 0) {
@@ -60,6 +63,11 @@ export default function SinVarList() {
       setSpecificId(requiredId ? requiredId._id : null);
     }
   }, [fetchBrand, brandName]);
+
+  useEffect(() => {
+    console.log("yo chai specific id ho", specificId);
+    console.log("Yo chain selected data ho", selectedKey);
+  }, [selectedKey, specificId]);
 
   const fetchSelectedData = async (event) => {
     const selectedData = event.target.value;
@@ -71,7 +79,7 @@ export default function SinVarList() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ rowValue: selectedData, brandId: specificId }),
+        body: JSON.stringify({ rowValue: selectedData, brandId: speId }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -88,9 +96,7 @@ export default function SinVarList() {
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
 
-  // useEffect(() => {
-  //   console.log("YO aauna prne ho", fetchSingleVarData);
-  // }, [fetchSingleVarData]);
+;
 
   return (
     <>

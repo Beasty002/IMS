@@ -27,6 +27,10 @@ function SingleVarTable({
   }, [fetchSingleVarData]);
 
   useEffect(() => {
+    console.log("Yo ho hai specifc id", specificId);
+  });
+
+  useEffect(() => {
     console.log(selectedKey, specificId, codeDropDown);
   }, [selectedKey, specificId, codeDropDown]);
 

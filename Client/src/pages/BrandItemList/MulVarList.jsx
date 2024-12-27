@@ -4,8 +4,12 @@ import CustomizeCol from "../../popups/CustomizeCol/CustomizeCol";
 import AddCat from "../../popups/AddCat/AddCat";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../customHooks/useAuth";
+import { useLocation } from "react-router-dom";
 
 export default function MulVarList() {
+  const location = useLocation();
+
+  const speId = location.state?.specificId || [];
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
   const [specificId, setSpecificId] = useState();
@@ -41,14 +45,14 @@ export default function MulVarList() {
   }, [fetchBrand, brandName]);
 
   const fetchRespectiveBrandData = async () => {
-    if (specificId) {
+    if (speId) {
       try {
         const response = await fetch("http://localhost:3000/api/getLabels", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ brandId: specificId }),
+          body: JSON.stringify({ brandId: speId }),
         });
 
         const data = await response.json();
@@ -96,7 +100,7 @@ export default function MulVarList() {
   }, [fetchedBdata]);
 
   useEffect(() => {
-    if (specificId) {
+    if (speId) {
       fetchRespectiveBrandData();
     }
   }, []);
@@ -143,6 +147,10 @@ export default function MulVarList() {
     setEditableData({ ...tableData });
   };
 
+  useEffect(() => {
+    console.log("Dai yo hai spe Id", speId);
+  }, [speId]);
+
   const handleDeleteClick = async (rowKey) => {
     try {
       const response = await fetch("http://localhost:3000/api/type", {
@@ -150,7 +158,7 @@ export default function MulVarList() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ rowKey: rowKey, brandId: specificId }),
+        body: JSON.stringify({ rowKey: rowKey, brandId: speId }),
       });
 
       const data = await response.json();
@@ -180,7 +188,7 @@ export default function MulVarList() {
       updatedData: updatedRowData,
       categoryName: categoryName,
       brandName: brandName,
-      brandId: specificId,
+      brandId: speId,
     };
 
     try {
@@ -310,12 +318,12 @@ export default function MulVarList() {
         <CustomizeCol
           isOpen={custPortal}
           onClose={enableCustPortal}
-          specificId={specificId}
+          specificId={speId}
         />
         <AddCat
           isOpen={catPortal}
           onClose={enableCatPortal}
-          specificId={specificId}
+          specificId={speId}
           type="item"
           multiVar="true"
         />
