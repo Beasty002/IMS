@@ -272,18 +272,20 @@ function DateReportPrint() {
           ))}
         </div>
       ))}
-      <button
-        style={{
-          padding: "10px",
-          border: "none",
-          width: "max-content",
-          borderRadius: "9px",
-        }}
-        className="primary-btn print-button"
-        onClick={printAll}
-      >
-        Print all
-      </button>
+      <div className="print-btn-container">
+        <button
+          style={{
+            padding: "10px",
+            border: "none",
+            width: "max-content",
+            borderRadius: "9px",
+          }}
+          className="primary-btn print-button"
+          onClick={printAll}
+        >
+          Print all
+        </button>
+      </div>
     </div>
   );
 }
