@@ -96,8 +96,6 @@ export default function SinVarList() {
   const enableCustPortal = () => setCustPortal(!custPortal);
   const enableCatPortal = () => setCatPortal(!catPortal);
 
-;
-
   return (
     <>
       <section className="brand-list-page">
@@ -165,7 +163,7 @@ export default function SinVarList() {
         <CustomizeSingleCol
           isOpen={custPortal}
           onClose={enableCustPortal}
-          specificId={specificId}
+          specificId={speId}
           selectedKey={selectedKey}
           fetchSingleVarData={fetchSingleVarData}
           codeDropDown={codeDropDown}
@@ -175,7 +173,7 @@ export default function SinVarList() {
           onClose={enableCatPortal}
           type="item"
           specialCase="column"
-          specificId={specificId}
+          specificId={speId}
         />
       </section>
     </>
