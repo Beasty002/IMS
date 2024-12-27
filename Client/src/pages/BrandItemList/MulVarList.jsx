@@ -103,7 +103,7 @@ export default function MulVarList() {
     if (speId) {
       fetchRespectiveBrandData();
     }
-  }, []);
+  }, [speId]);
 
   useEffect(() => {
     if (fetchedBdata && categoryName && brandName) {

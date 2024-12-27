@@ -153,7 +153,7 @@ export default function SinVarList() {
       <section>
         {selectedKey && (
           <SingleVarTable
-            specificId={specificId}
+            specificId={speId}
             fetchSingleVarData={fetchSingleVarData}
             selectedKey={selectedKey}
             searchTerm={searchTerm}
