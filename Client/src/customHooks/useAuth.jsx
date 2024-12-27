@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       // console.log(data);
       setFetchBrand(data.brands);
       setStockData(data.stockByBrand);
-      // return data.brands;
+      return data.brands;
     } catch (error) {
       console.error(error);
     }
