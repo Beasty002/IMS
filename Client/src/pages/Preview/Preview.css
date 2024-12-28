@@ -58,11 +58,7 @@
     }
   }
 
-  tr th:nth-child(2),
-  tr td:nth-child(2) {
-    min-width: 80px !important;
 
-  }
 
 
   /* th,
@@ -132,9 +128,6 @@
     flex: 1;
   }
 
-  tr>th:nth-child(2),
-  tr>td:nth-child(2) {
-    min-width: 150px !important;
-  }
+
 
 }
