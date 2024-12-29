@@ -21,6 +21,8 @@ function AddCat({ isOpen, onClose, addCategory, type, specificId }) {
   const handleAddCategory = async (event) => {
     event.preventDefault();
 
+    console.log("Call yo vako ho hai ---------------------------------------------------------------------");
+
     if (!createCate.trim()) {
       console.log(
         `${type.charAt(0).toUpperCase() + type.slice(1)} title cannot be empty`

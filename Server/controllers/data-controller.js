@@ -1,19 +1,19 @@
 const path = require("path");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const Category = require("../models/category-model");
 const Brand = require("../models/brand-model");
 const Sales = require("../models/sales-model");
-const SalesRecord = require("../models/sale-record-model")
-const Type = require("../models/type-model")
-const Column = require("../models/column-model")
-const Stock = require("../models/stock-model")
-const Purchase = require("../models/purchase-model")
-const RecordStock = require("../models/record-stock")
-const RecordSale = require("../models/record-sale")
-const ReportStock = require("../models/report-stock")
+const SalesRecord = require("../models/sale-record-model");
+const Type = require("../models/type-model");
+const Column = require("../models/column-model");
+const Stock = require("../models/stock-model");
+const Purchase = require("../models/purchase-model");
+const RecordStock = require("../models/record-stock");
+const RecordSale = require("../models/record-sale");
+const ReportStock = require("../models/report-stock");
 
-const ReportModel = require("../models/report-model")
+const ReportModel = require("../models/report-model");
 
 // const { Collection } = require("mongoose");
 // const { isString, getSystemErrorMap } = require("util");
@@ -25,32 +25,31 @@ const { type } = require("os");
 const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
-    
+
     if (!categories || categories.length == 0) {
       return res.status(404).json({ err: "No categories found!" });
     }
 
-    var catStocks = {}
-    for (var category of categories){
-      var catTitle = category.title
-      
+    var catStocks = {};
+    for (var category of categories) {
+      var catTitle = category.title;
+
       catStocks[catTitle] = 0;
     }
-    
-    for (var category of categories){
-      var catTitle = category.title
-      
-      const forCatStocks = await RecordStock.find({category: catTitle})
-      
-      for(var forCatStock of forCatStocks){
-        
-        const catStock = forCatStock.totalStock
-        
-        catStocks[catTitle] += catStock
+
+    for (var category of categories) {
+      var catTitle = category.title;
+
+      const forCatStocks = await RecordStock.find({ category: catTitle });
+
+      for (var forCatStock of forCatStocks) {
+        const catStock = forCatStock.totalStock;
+
+        catStocks[catTitle] += catStock;
       }
     }
 
-    return res.json({ cats: categories , catStocks: catStocks});
+    return res.json({ cats: categories, catStocks: catStocks });
   } catch (err) {
     console.log("error in fetching categories!");
   }
@@ -77,7 +76,7 @@ const createCategory = async (req, res) => {
 
 const delCategory = async (req, res) => {
   try {
-    const {delCat} = req.body;
+    const { delCat } = req.body;
 
     if (!delCat) {
       console.log("No such category found!");
@@ -85,7 +84,7 @@ const delCategory = async (req, res) => {
     }
 
     const delBrands = await Brand.find({ parentCategory: delCat });
-    
+
     if (delBrands.length > 0) {
       for (const brand of delBrands) {
         const brandId = brand._id;
@@ -93,11 +92,11 @@ const delCategory = async (req, res) => {
         await Type.deleteMany({ brandId });
         // await Stock.deleteMany({ parentBrandId: brandId });
         // await Sales.deleteMany({ sBrandId: brandId });
-        
+
         await Brand.deleteOne({ _id: brandId });
       }
     }
-    
+
     await Category.deleteOne({ title: delCat });
 
     return res.json({ msg: delCat + " category deleted!" });
@@ -147,7 +146,7 @@ const getAllBrands = async (req, res) => {
 
 const getSpecificBrand = async (req, res) => {
   try {
-    const { categoryName } = req.body;  
+    const { categoryName } = req.body;
     const requiredBrand = await Brand.find({ parentCategory: categoryName });
 
     if (requiredBrand.length === 0) {
@@ -156,28 +155,30 @@ const getSpecificBrand = async (req, res) => {
         .json({ msg: "No data related to given brand found" });
     }
 
-    const allStockData = await RecordStock.find({category: categoryName})
+    const allStockData = await RecordStock.find({ category: categoryName });
     var stockByBrand = {};
 
     for (var brand of requiredBrand) {
-      stockByBrand[brand.brandName] = 0
+      stockByBrand[brand.brandName] = 0;
     }
 
     for (var stock of allStockData) {
       const brand = stock.brand;
-      
+
       // Initialize the object for the brand if it doesn't exist
       if (!stockByBrand[brand]) {
         stockByBrand[brand] = 0;
       }
-      
+
       // Accumulate the stock for each brand
       stockByBrand[brand] += stock.totalStock;
     }
 
-    console.log(stockByBrand)
+    console.log(stockByBrand);
 
-    return res.status(202).json({ brands: requiredBrand , stockByBrand: stockByBrand});
+    return res
+      .status(202)
+      .json({ brands: requiredBrand, stockByBrand: stockByBrand });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Server error" });
@@ -198,13 +199,17 @@ const createBrand = async (req, res) => {
 
     var parentCat = req.body.parentCat;
 
-    parentCat = parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
+    parentCat =
+      parentCat.charAt(0).toUpperCase() + parentCat.slice(1).toLowerCase();
 
-    const checkBrand = await Brand.findOne({ brandName: brandName, parentCategory: parentCat})
-    if (checkBrand){
-      return res.json({err:  `${brandName} already exists`})
+    const checkBrand = await Brand.findOne({
+      brandName: brandName,
+      parentCategory: parentCat,
+    });
+    if (checkBrand) {
+      return res.json({ err: `${brandName} already exists` });
     }
-    
+
     let newBrand;
 
     if (multiVar === "yes") {
@@ -248,11 +253,11 @@ const delBrand = async (req, res) => {
     const delBrandName = delBrand.brandName;
 
     await Brand.deleteOne({ _id: delBrandId });
-    await Column.deleteMany({ brandId: delBrandId})
-    await Type.deleteMany({ brandId: delBrandId})
+    await Column.deleteMany({ brandId: delBrandId });
+    await Type.deleteMany({ brandId: delBrandId });
     // await Stock.deleteMany({ parentBrandId: delBrandId})
-    await RecordStock.deleteMany({ brandId: delBrandId})
-    await RecordSale.deleteMany({ brandId: delBrandId})
+    await RecordStock.deleteMany({ brandId: delBrandId });
+    await RecordSale.deleteMany({ brandId: delBrandId });
     // await Sales.deleteMany({ sBrandId: delBrandId})
 
     return res.json({ msg: delBrandName + " brand deleted!" });
@@ -295,134 +300,143 @@ const editBrand = async (req, res) => {
 };
 
 const renameBrand = async (req, res) => {
-  try{
-    const newBrandName = req.body.rename
-    const renameBrandId = req.body._id
+  try {
+    const newBrandName = req.body.rename;
+    const renameBrandId = req.body._id;
 
-    const renameBrand = await Brand.findById({_id: renameBrandId})
+    const renameBrand = await Brand.findById({ _id: renameBrandId });
 
-    renameBrand.brandName = newBrandName
+    renameBrand.brandName = newBrandName;
 
-    await renameBrand.save()
+    await renameBrand.save();
 
-    return res.status(200).json({msg: `${newBrandName} renamed!`})
-  } 
-  catch(err){
+    return res.status(200).json({ msg: `${newBrandName} renamed!` });
+  } catch (err) {
     console.error("Error renaming Brand:");
     res.status(500).json({ message: "Internal server error!!(renameBrand)" });
   }
-}
+};
 
-const getBrand = async (req,res) => {
-  try{
-
-  }
-  catch(err){
-
-  }
-}
-
+const getBrand = async (req, res) => {
+  try {
+  } catch (err) {}
+};
 
 // ////////////////////////////////////// SALES /////////////////////////////////////////////////// //
-const salesEntry = async (req,res) => {
-  try{
-      var saleIds = [];
-      var count =0;
+const salesEntry = async (req, res) => {
+  try {
+    var saleIds = [];
+    var count = 0;
 
-      const sales = req.body
+    const sales = req.body;
 
-      for(var sale of sales.addInput){
-        count++;
+    for (var sale of sales.addInput) {
+      count++;
 
-        const sCat = sale.category;
-        const sBrand = sale.brand;
+      const sCat = sale.category;
+      const sBrand = sale.brand;
 
-        const forBrandId = await Brand.findOne({ parentCategory: sCat, brandName: sBrand})
-        const brandId = forBrandId._id
+      const forBrandId = await Brand.findOne({
+        parentCategory: sCat,
+        brandName: sBrand,
+      });
+      const brandId = forBrandId._id;
 
-        const sRow = sale.rowLabel;
-        const sCol = sale.colLabel;
-        const sQty = sale.counter;
+      const sRow = sale.rowLabel;
+      const sCol = sale.colLabel;
+      const sQty = sale.counter;
 
-        if (isNaN(sQty)){
-          return res.json({err: `Quantity of sale no.${count} is not a number`})
-        }
-
-        if (sQty == 0){
-          return res.json({ err: "Selling quantity can not be zero"})
-        }
-        
-        var newSaleEntry = new Sales({
-          sCategory: sCat,
-          sBrand:sBrand,
-          sBrandId: brandId,
-          sRowLabel:sRow,
-          sColLabel:sCol,
-          sQty:sQty
+      if (isNaN(sQty)) {
+        return res.json({
+          err: `Quantity of sale no.${count} is not a number`,
         });
-
-
-        // return res.json(sQty)
-
-        var newSale = await newSaleEntry.save();
-
-        saleIds.push(newSale._id)
-
-        const forRecordStock = await RecordStock.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
-        if (!forRecordStock || forRecordStock.length ===0 ){
-          return res.status(404).json({
-            err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
-          });
-        }
-        else{
-          if (forRecordStock.totalStock < sQty){
-            return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
-          }
-          forRecordStock.totalStock -= sQty
-
-          await forRecordStock.save()
-        }
-
-        const forRecordSale = await RecordSale.findOne({ brandId:brandId, brand:sBrand,category:sCat,rowLabel:sRow, colLabel:sCol })
-        if (forRecordSale){
-          forRecordSale.soldQty += sQty
-          
-          await forRecordSale.save()
-        }
-        else {
-          const newRecordSale = new RecordSale({
-            soldQty: sQty,
-            category:sCat,
-            brand:sBrand,
-            brandId:brandId,
-            rowLabel:sRow, 
-            colLabel:sCol 
-          });
-          await newRecordSale.save()
-        }
-        // else{
-          // return res.status(404).json({
-          //   err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
-          // });
-          // if (forRecordSale.soldQty < sQty){
-          //   return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
-          // }
-        // }
       }
 
-      const newSalesEntry = new SalesRecord({
-        saleIds: saleIds
-      });     
+      if (sQty == 0) {
+        return res.json({ err: "Selling quantity can not be zero" });
+      }
 
-      await newSalesEntry.save()
+      var newSaleEntry = new Sales({
+        sCategory: sCat,
+        sBrand: sBrand,
+        sBrandId: brandId,
+        sRowLabel: sRow,
+        sColLabel: sCol,
+        sQty: sQty,
+      });
 
-      return res.json({msg: "New Sale Added!"})
+      // return res.json(sQty)
+
+      var newSale = await newSaleEntry.save();
+
+      saleIds.push(newSale._id);
+
+      const forRecordStock = await RecordStock.findOne({
+        brandId: brandId,
+        brand: sBrand,
+        category: sCat,
+        rowLabel: sRow,
+        colLabel: sCol,
+      });
+      if (!forRecordStock || forRecordStock.length === 0) {
+        return res.status(404).json({
+          err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`,
+        });
+      } else {
+        if (forRecordStock.totalStock < sQty) {
+          return res.status(400).json({
+            err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`,
+          });
+        }
+        forRecordStock.totalStock -= sQty;
+
+        await forRecordStock.save();
+      }
+
+      const forRecordSale = await RecordSale.findOne({
+        brandId: brandId,
+        brand: sBrand,
+        category: sCat,
+        rowLabel: sRow,
+        colLabel: sCol,
+      });
+      if (forRecordSale) {
+        forRecordSale.soldQty += sQty;
+
+        await forRecordSale.save();
+      } else {
+        const newRecordSale = new RecordSale({
+          soldQty: sQty,
+          category: sCat,
+          brand: sBrand,
+          brandId: brandId,
+          rowLabel: sRow,
+          colLabel: sCol,
+        });
+        await newRecordSale.save();
+      }
+      // else{
+      // return res.status(404).json({
+      //   err: `brandId: ${brandId}, brand: ${sBrand}, category: ${sCat}, rowLabel: ${sRow}, colLabel: ${sCol} not found`
+      // });
+      // if (forRecordSale.soldQty < sQty){
+      //   return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
+      // }
+      // }
+    }
+
+    const newSalesEntry = new SalesRecord({
+      saleIds: saleIds,
+    });
+
+    await newSalesEntry.save();
+
+    return res.json({ msg: "New Sale Added!" });
+  } catch (err) {
+    console.error("Error sales entry:");
+    res.status(500).json({ message: "Internal server error!!(salesEntry)" });
   }
-  catch(err){
-      console.error("Error sales entry:");
-      res.status(500).json({ message: "Internal server error!!(salesEntry)" });
-  }
-}
+};
 
 // const getAllSales = async (req,res) => {
 //     try{
@@ -452,10 +466,10 @@ const getAllSales = async (req, res) => {
 
     for (var i = 0; i < sales.length; i++) {
       const sale = sales[i];
-      
+
       // Construct a unique key based on sCategory, sBrand, sRowLabel, and sColLabel
       const key = `${sale.sCategory}-${sale.sBrand}-${sale.sRowLabel}-${sale.sColLabel}`;
-      
+
       // Initialize the quantity for this combination if not already done
       if (!salesMap[key]) {
         salesMap[key] = {
@@ -466,7 +480,7 @@ const getAllSales = async (req, res) => {
           sQty: 0,
         };
       }
-      
+
       // Add the current sale's quantity to the accumulated total
       salesMap[key].sQty += sale.sQty;
     }
@@ -481,116 +495,115 @@ const getAllSales = async (req, res) => {
   }
 };
 
-const getSpecificSale = async (req,res) => {
-  try{
-    var { day, title } = req.body
-    
-    title = title.toLowerCase()
-    
-    var model,schema,givenId,givenDate,cat,brandN,rowL,colL,qty
+const getSpecificSale = async (req, res) => {
+  try {
+    var { day, title } = req.body;
 
+    title = title.toLowerCase();
 
-    if (title==="sales"){
-      model = SaleRecordModel
-      schema = Sales
-      givenId = "saleIds"
-      givenDate = "dos"
-      cat = "sCategory"
-      brandN= "sBrand"
-      rowL = "sRowLabel"
-      colL = "sColLabel"
-      qty = "sQty"
+    var model, schema, givenId, givenDate, cat, brandN, rowL, colL, qty;
+
+    if (title === "sales") {
+      model = SaleRecordModel;
+      schema = Sales;
+      givenId = "saleIds";
+      givenDate = "dos";
+      cat = "sCategory";
+      brandN = "sBrand";
+      rowL = "sRowLabel";
+      colL = "sColLabel";
+      qty = "sQty";
+    } else if (title === "purchases") {
+      model = Purchase;
+      schema = Stock;
+      givenId = "purchaseIds";
+      givenDate = "dop";
+      cat = "parentCat";
+      brandN = "parentBrand";
+      rowL = "rowLabel";
+      colL = "colLabel";
+      qty = "stock";
+    } else {
+      return res.status(400).json({ err: `No such entry found for ${title}` });
     }
-    else if (title==="purchases"){
-      model = Purchase
-      schema = Stock
-      givenId = "purchaseIds"
-      givenDate = "dop"
-      cat = "parentCat"
-      brandN= "parentBrand"
-      rowL = "rowLabel"
-      colL = "colLabel"
-      qty = "stock"
-    }else{
-      return res.status(400).json({ err: `No such entry found for ${title}`})
-    }
-    
-    var specificSales = []
+
+    var specificSales = [];
 
     const saleRecords = await model.find();
 
-    if (!saleRecords || saleRecords.length ===0){
-      return res.status(404).json({ saleAvailable: false})
+    if (!saleRecords || saleRecords.length === 0) {
+      return res.status(404).json({ saleAvailable: false });
     }
 
-    for (var sale of saleRecords){
-      var dos = sale[givenDate]
+    for (var sale of saleRecords) {
+      var dos = sale[givenDate];
       dos = dos.toISOString();
 
-      dos = dos.split('T')[0]
+      dos = dos.split("T")[0];
 
-      if (dos === day){
-        for (var saleId of sale[givenId]){
+      if (dos === day) {
+        for (var saleId of sale[givenId]) {
           // console.log("SAleid: ", saleId)
-          
-          var specificSale = await schema.findById(saleId)
+
+          var specificSale = await schema.findById(saleId);
           // console.log(specificSale)
           // specificSales.push(specificSale)
-          // const existingIndex = specificSales.findIndex(item => 
+          // const existingIndex = specificSales.findIndex(item =>
           //   item[cat] === specificSale[cat] &&
           //   item[brandN] === specificSale[brandN] &&
           //   item[rowL] === specificSale[rowL] &&
           //   item[colL] === specificSale[colL]
           // );
-      
+
           // if (existingIndex !== -1) {
           //     // If match found, add the quantities
           //     specificSales[existingIndex][qty] += specificSale[qty];
           // } else {
-              // If no match, push as new item
-              specificSales.push(specificSale);
+          // If no match, push as new item
+          specificSales.push(specificSale);
           // }
         }
-
       }
     }
 
-    return res.status(200).json({ msg: specificSales})
-  }
-  catch(err){
+    return res.status(200).json({ msg: specificSales });
+  } catch (err) {
     console.error("Error get specific sale by day:");
-    res.status(500).json({ message: "Internal server error!!(getSpecificSale)" });
+    res
+      .status(500)
+      .json({ message: "Internal server error!!(getSpecificSale)" });
   }
-}
+};
 
-
-const getPastWeekSales = async (req,res) => {
-  try{
+const getPastWeekSales = async (req, res) => {
+  try {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 365); // Example: past 4 weeks
     const currDate = new Date();
-    
+
     const weeklyData = [];
     let soldQty, purchaseQty;
-    
+
     // Loop through each week
     while (startDate < currDate) {
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + 30); 
-    
+      endDate.setDate(endDate.getDate() + 30);
+
       const pastWeekSales = await SalesRecord.find({
-        dos: { $gte: startDate, $lt: endDate }
+        dos: { $gte: startDate, $lt: endDate },
       });
       const pastWeekPurchases = await Purchase.find({
-        dop: { $gte: startDate, $lt: endDate }
+        dop: { $gte: startDate, $lt: endDate },
       });
-    
-      const saleIds = pastWeekSales.map(sale => sale.saleIds).flat();
-      const purchaseIds = pastWeekPurchases.map(purch => purch.purchaseIds).flat();
-    
+
+      const saleIds = pastWeekSales.map((sale) => sale.saleIds).flat();
+      const purchaseIds = pastWeekPurchases
+        .map((purch) => purch.purchaseIds)
+        .flat();
+
       soldQty = 0;
       purchaseQty = 0;
-    
+
       for (const saleId of saleIds) {
         const sale = await Sales.findById({ _id: saleId });
         soldQty += sale.sQty;
@@ -599,29 +612,27 @@ const getPastWeekSales = async (req,res) => {
         const purchase = await Stock.findById({ _id: purchaseId });
         purchaseQty += purchase.stock;
       }
-    
+
       weeklyData.push({
-        weekStart: startDate.toISOString().split('T')[0],
-        weekEnd: endDate.toISOString().split('T')[0],
+        weekStart: startDate.toISOString().split("T")[0],
+        weekEnd: endDate.toISOString().split("T")[0],
         soldQty,
-        purchaseQty
+        purchaseQty,
       });
-    
+
       // Move to the next week
       startDate.setDate(startDate.getDate() + 30);
     }
-    
+
     return res.json({ weeklyData });
-    
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error past week sales");
     res.json({ message: "Internal server error!!(getPastWeekSales)" });
   }
-}
+};
 
 const getDailySales = async (req, res) => {
-  try{
+  try {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // Start 7 days ago
     const currDate = new Date();
@@ -637,15 +648,17 @@ const getDailySales = async (req, res) => {
 
       // Get sales and purchase records for the current day
       const dailySales = await SalesRecord.find({
-        dos: { $gte: startDate, $lt: endDate }
+        dos: { $gte: startDate, $lt: endDate },
       });
       const dailyPurchases = await Purchase.find({
-        dop: { $gte: startDate, $lt: endDate }
+        dop: { $gte: startDate, $lt: endDate },
       });
 
       // Extract sale and purchase IDs
-      const saleIds = dailySales.map(sale => sale.saleIds).flat();
-      const purchaseIds = dailyPurchases.map(purch => purch.purchaseIds).flat();
+      const saleIds = dailySales.map((sale) => sale.saleIds).flat();
+      const purchaseIds = dailyPurchases
+        .map((purch) => purch.purchaseIds)
+        .flat();
 
       soldQty = 0;
       purchaseQty = 0;
@@ -662,13 +675,13 @@ const getDailySales = async (req, res) => {
         if (purchase) purchaseQty += purchase.stock;
       }
 
-      const dayName = startDate.toLocaleString('en-US', { weekday: 'short' });
+      const dayName = startDate.toLocaleString("en-US", { weekday: "short" });
 
       // Store daily data with the start and end dates
       dailyData.push({
         date: dayName,
         soldQty,
-        purchaseQty
+        purchaseQty,
       });
 
       // Move to the next day
@@ -676,16 +689,14 @@ const getDailySales = async (req, res) => {
     }
 
     return res.json({ graphData: dailyData });
-
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error past month sales");
     res.json({ message: "Internal server error!!(getPastMonthSales)" });
   }
-}
+};
 
-const getMonthlySales = async (req,res) => {
-  try{
+const getMonthlySales = async (req, res) => {
+  try {
     const startDate = new Date();
     startDate.setDate(1); // Set to the first day of the month
 
@@ -698,19 +709,25 @@ const getMonthlySales = async (req,res) => {
     // Loop through each month
     while (startDate < currDate) {
       // Calculate end of the month
-      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0); // Last day of the current month
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        0
+      ); // Last day of the current month
 
       // Get sales and purchase records for the current month
       const pastMonthSales = await SalesRecord.find({
-        dos: { $gte: startDate, $lt: endDate }
+        dos: { $gte: startDate, $lt: endDate },
       });
       const pastMonthPurchases = await Purchase.find({
-        dop: { $gte: startDate, $lt: endDate }
+        dop: { $gte: startDate, $lt: endDate },
       });
 
       // Extract sale and purchase IDs
-      const saleIds = pastMonthSales.map(sale => sale.saleIds).flat();
-      const purchaseIds = pastMonthPurchases.map(purch => purch.purchaseIds).flat();
+      const saleIds = pastMonthSales.map((sale) => sale.saleIds).flat();
+      const purchaseIds = pastMonthPurchases
+        .map((purch) => purch.purchaseIds)
+        .flat();
 
       soldQty = 0;
       purchaseQty = 0;
@@ -727,13 +744,13 @@ const getMonthlySales = async (req,res) => {
         if (purchase) purchaseQty += purchase.stock;
       }
 
-      const monthName = startDate.toLocaleString('en-US', { month: 'short' });
+      const monthName = startDate.toLocaleString("en-US", { month: "short" });
 
       // Store monthly data with the start and end dates
       monthlyData.push({
         date: monthName,
         soldQty,
-        purchaseQty
+        purchaseQty,
       });
 
       // Move to the first day of the next month
@@ -742,16 +759,14 @@ const getMonthlySales = async (req,res) => {
     }
 
     return res.json({ graphData: monthlyData });
-
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error past month sales");
     res.json({ message: "Internal server error!!(getPastMonthSales)" });
   }
-}
+};
 
-const getPieData = async( req,res) => {
-  try{
+const getPieData = async (req, res) => {
+  try {
     const allStocks = await RecordStock.find({});
     const categoryTotals = {};
 
@@ -775,54 +790,54 @@ const getPieData = async( req,res) => {
       value,
     }));
 
-    return res.status(200).json({pieData})
-
-  }
-  catch(err){
+    return res.status(200).json({ pieData });
+  } catch (err) {
     console.error("Error get pie data");
     res.json({ message: "Internal server error!!(getPieData)" });
   }
+};
 
-}
-
-const getPastYearSales = async (req,res) => {
-  try{
+const getPastYearSales = async (req, res) => {
+  try {
     const currDate = new Date();
 
     const aYearAgo = new Date();
     aYearAgo.setDate(currDate.getDate() - 365);
-      
+
     const pastYearSales = await SalesRecord.find({
-      dos: { $gte: aYearAgo}
+      dos: { $gte: aYearAgo },
     });
 
-    return res.json({pastYearSales: pastYearSales})
-  }
-  catch(err){
+    return res.json({ pastYearSales: pastYearSales });
+  } catch (err) {
     console.error("Error past year sales");
     res.json({ message: "Internal server error!!(getPastYearSales)" });
   }
-}
+};
 
 const getSalesByWeekday = async (req, res) => {
   try {
     const weekday = req.body.weekday;
 
     if (!weekday || weekday < 1 || weekday > 7) {
-      return res.status(400).json({ message: "Invalid weekday. Please provide a value between 1 (Sunday) and 7 (Saturday)." });
+      return res.status(400).json({
+        message:
+          "Invalid weekday. Please provide a value between 1 (Sunday) and 7 (Saturday).",
+      });
     }
 
     const salesByWeekday = await SalesRecord.find({
-      $expr: { $eq: [{ $dayOfWeek: "$dos" }, parseInt(weekday)] }
+      $expr: { $eq: [{ $dayOfWeek: "$dos" }, parseInt(weekday)] },
     });
 
     return res.json({ salesByWeekday });
   } catch (err) {
     console.error("Error fetching sales by weekday");
-    res.status(500).json({ message: "Internal server error!! (getSalesByWeekday)" });
+    res
+      .status(500)
+      .json({ message: "Internal server error!! (getSalesByWeekday)" });
   }
 };
-
 
 // const getSundaySales = async (req,res) => {
 //   try{
@@ -853,146 +868,146 @@ const getSalesByWeekday = async (req, res) => {
 // };
 
 // ////////////////////////////////// TYPE ////////////////////////////////////////////
-const addType = async (req,res) => {
-  try{  
+const addType = async (req, res) => {
+  try {
+    const type = req.body.item;
+    const id = req.body._id;
 
-    const type = req.body.item
-    const id = req.body._id
+    const checkType = await Type.findOne({ type: type, brandId: id });
 
-    const checkType = await Type.findOne({type: type, brandId: id})
-
-    if (checkType || checkType != null){
-      console.log("not working")
-      return res.status(409).json({err: "Type already exists"})
+    if (checkType || checkType != null) {
+      console.log("not working");
+      return res.status(409).json({ err: "Type already exists" });
     }
-    
+
     const newType = new Type({
       type: type,
-      brandId: id
+      brandId: id,
     });
-    
+
     await newType.save();
 
-    return res.status(202).json({msg: `${type} added`})
-    
-  }
-  catch(err){
+    return res.status(202).json({ msg: `${type} added` });
+  } catch (err) {
     console.error("Error add type");
     res.json({ message: "Internal server error!!(addtype)" });
-  
   }
-}
+};
 
-const delType = async (req,res) => {
-  try{
+const delType = async (req, res) => {
+  try {
     if (req.body.delTypeId) {
+      const { delTypeId } = req.body;
 
-      const { delTypeId } = req.body
+      const forTypeName = await Type.findById(delTypeId);
+      const typeN = forTypeName.type;
 
-      const forTypeName = await Type.findById(delTypeId)
-      const typeN = forTypeName.type
+      await RecordStock.deleteMany({ rowLabel: typeN });
+      await RecordSale.deleteMany({ rowLabel: typeN });
+      await ReportStock.deleteMany({ rowLabel: typeN });
 
-      await RecordStock.deleteMany({ rowLabel: typeN})
-      await RecordSale.deleteMany({ rowLabel: typeN})
-      await ReportStock.deleteMany({ rowLabel: typeN})
+      const forDelType = await Type.findByIdAndDelete(delTypeId);
+      console.log(forDelType);
 
-      const forDelType = await Type.findByIdAndDelete(delTypeId)
-      console.log(forDelType)
-
-      if (forDelType){
-        return res.status(200).json({ msg: "Type deleted"})
+      if (forDelType) {
+        return res.status(200).json({ msg: "Type deleted" });
+      } else {
+        return res.status(404).json({ msg: "Type deletion failed!" });
       }
-      else{
-        return res.status(404).json({ msg: "Type deletion failed!"})
+    } else {
+      const { rowKey, brandId } = req.body;
+
+      const delRow = await Type.findOne({ type: rowKey, brandId: brandId });
+
+      if (!delRow) {
+        return res.status(404).json({ err: `${rowKey} not found!` });
       }
+
+      await delRow.deleteOne({ type: rowKey, brandId: brandId });
+      await RecordStock.deleteMany({ brandId: brandId, rowLabel: rowKey });
+
+      return res.status(200).json({ msg: `${rowKey} deleted successfully!` });
     }
-    else{
-      const { rowKey, brandId } = req.body
-      
-      const delRow = await Type.findOne({ type: rowKey, brandId: brandId})
-      
-      if (!delRow){
-        return res.status(404).json({ err: `${rowKey} not found!`})
-      }
-  
-      await delRow.deleteOne({ type: rowKey, brandId: brandId })
-      await RecordStock.deleteMany({ brandId: brandId, rowLabel: rowKey})
-  
-      return res.status(200).json({ msg: `${rowKey} deleted successfully!`})
-    }
-    
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error del type");
     res.json({ message: "Internal server error!!(deltype)" });
   }
-}
+};
 
 async function updateRelatedDocuments(oldLabel, newLabel) {
   try {
-      // Define models to update and their queries in an array
-      const updates = [
-          { model: Sales, query: { rowLabel: oldLabel } },
-          { model: Stock, query: { rowLabel: oldLabel } },
-          { model: RecordSale, query: { rowLabel: oldLabel } },
-          { model: RecordStock, query: { rowLabel: oldLabel } },
-          { model: ReportStock, query: { rowLabel: oldLabel } },
-      ];
+    // Define models to update and their queries in an array
+    const updates = [
+      { model: Sales, query: { rowLabel: oldLabel } },
+      { model: Stock, query: { rowLabel: oldLabel } },
+      { model: RecordSale, query: { rowLabel: oldLabel } },
+      { model: RecordStock, query: { rowLabel: oldLabel } },
+      { model: ReportStock, query: { rowLabel: oldLabel } },
+    ];
 
-      // Process all updates
-      for (const { model, query } of updates) {
-          const documents = await model.find(query);
-          
-          // Update each document
-          const updatePromises = documents.map(doc => {
-              doc.rowLabel = newLabel;
-              return doc.save();
-          });
+    // Process all updates
+    for (const { model, query } of updates) {
+      const documents = await model.find(query);
 
-          // Wait for all updates to complete for this model
-          await Promise.all(updatePromises);
-      }
+      // Update each document
+      const updatePromises = documents.map((doc) => {
+        doc.rowLabel = newLabel;
+        return doc.save();
+      });
 
-      return { success: true, message: 'All documents updated successfully' };
+      // Wait for all updates to complete for this model
+      await Promise.all(updatePromises);
+    }
+
+    return { success: true, message: "All documents updated successfully" };
   } catch (error) {
-      console.error('Error updating documents:', error);
-      throw error;
+    console.error("Error updating documents:", error);
+    throw error;
   }
 }
 
-const renameType = async (req,res) => {
-  try{
-    const { newName, typeId } = req.body
+const renameType = async (req, res) => {
+  try {
+    const { newName, typeId } = req.body;
 
-    const forTypeName = await Type.findById(typeId)
-    const typeN = forTypeName.type
+    const forTypeName = await Type.findById(typeId);
+    const typeN = forTypeName.type;
 
     await updateRelatedDocuments(typeN, newName);
 
-    const updateType = await Type.findByIdAndUpdate(typeId, {type: newName})
+    const updateType = await Type.findByIdAndUpdate(typeId, { type: newName });
 
-    if (updateType){
-      return res.json({msg : `${typeN} is renamed to ${newName}`})
-    }else{
-      return res.json({err : `${typeN} rename not possible`})
+    if (updateType) {
+      return res.json({ msg: `${typeN} is renamed to ${newName}` });
+    } else {
+      return res.json({ err: `${typeN} rename not possible` });
     }
-  }
-  catch(err){
+  } catch (err) {
     console.error(`Error renaming type :`, err);
-    return res.status(500).json({ message: `Error renaming type: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error renaming type: ${err.message}` });
   }
-}
+};
 
 // ///////////////////////////////////////////// COLUMN/ITEM ////////////////////////////////////////////////////
 const addColumn = async (req, res) => {
   try {
     const bodies = req.body;
+    console.log("Yo ho add hanne khojeko data", req.body);
 
     for (var body of bodies) {
       const col = body.columnName;
       const id = body.specificId;
+      const typeId = body.typeId;
 
-      const checkCol = await Column.findOne({ column: col, brandId: id });
+      const checkCol = await Column.findOne({
+        column: col,
+        brandId: id,
+        typeId: typeId,
+      });
+
+      // console.log("Check column ko dara", checkCol);
 
       const typeName = body.typeName;
       // only create those column which do not exist already
@@ -1000,8 +1015,8 @@ const addColumn = async (req, res) => {
         var newCol;
 
         if (typeName) {
-          const forTypeId = await Type.findOne({type: typeName, brandId: id})
-          const typeId = forTypeId._id
+          const forTypeId = await Type.findOne({ type: typeName, brandId: id });
+          const typeId = forTypeId._id;
 
           newCol = new Column({
             column: col,
@@ -1014,9 +1029,8 @@ const addColumn = async (req, res) => {
             brandId: id,
           });
         }
-        
-        await newCol.save();
 
+        await newCol.save();
       }
     }
 
@@ -1027,393 +1041,448 @@ const addColumn = async (req, res) => {
   }
 };
 
-
 async function updateRelatedColumns(oldLabel, newLabel) {
   try {
-      // Define models to update and their queries in an array
-      const updates = [
-          { model: Sales, query: { colLabel: oldLabel } },
-          { model: Stock, query: { colLabel: oldLabel } },
-          { model: RecordSale, query: { colLabel: oldLabel } },
-          { model: RecordStock, query: { colLabel: oldLabel } },
-          { model: ReportStock, query: { colLabel: oldLabel } },
-      ];
+    // Define models to update and their queries in an array
+    const updates = [
+      { model: Sales, query: { colLabel: oldLabel } },
+      { model: Stock, query: { colLabel: oldLabel } },
+      { model: RecordSale, query: { colLabel: oldLabel } },
+      { model: RecordStock, query: { colLabel: oldLabel } },
+      { model: ReportStock, query: { colLabel: oldLabel } },
+    ];
 
-      // Process all updates
-      for (const { model, query } of updates) {
-          const documents = await model.find(query);
-          
-          // Update each document
-          const updatePromises = documents.map(doc => {
-              doc.colLabel = newLabel;
-              return doc.save();
-          });
+    // Process all updates
+    for (const { model, query } of updates) {
+      const documents = await model.find(query);
 
-          // Wait for all updates to complete for this model
-          await Promise.all(updatePromises);
-      }
+      // Update each document
+      const updatePromises = documents.map((doc) => {
+        doc.colLabel = newLabel;
+        return doc.save();
+      });
 
-      return { success: true, message: 'All columns updated successfully' };
+      // Wait for all updates to complete for this model
+      await Promise.all(updatePromises);
+    }
+
+    return { success: true, message: "All columns updated successfully" };
   } catch (error) {
-      console.error('Error updating documents:', error);
-      throw error;
+    console.error("Error updating documents:", error);
+    throw error;
   }
 }
-const editColumn = async (req,res) => {
-  try{
-    
-    const { id, brandId, columnName } = req.body
+const editColumn = async (req, res) => {
+  try {
+    const { id, brandId, columnName } = req.body;
 
-    const oldCol = await Column.findById(id)
-    const oldColName = oldCol.column
+    const oldCol = await Column.findById(id);
+    const oldColName = oldCol.column;
 
     await updateRelatedColumns(oldColName, columnName);
 
-    await Column.findByIdAndUpdate(id, { column: columnName })
+    await Column.findByIdAndUpdate(id, { column: columnName });
 
-    return res.status(200).json({msg: `${columnName} updated`})
-  }
-  catch(err){
+    return res.status(200).json({ msg: `${columnName} updated` });
+  } catch (err) {
     console.error("Error edit col");
     res.json({ message: "Internal server error!!(editCol)" });
   }
-}
+};
 
-const delColumn = async (req,res) => {
-  try{
+const delColumn = async (req, res) => {
+  try {
     // console.log(req.body)
-    if (req.body.itemName){
-      const { selectedKey, itemName, brandId} = req.body
+    if (req.body.itemName) {
+      const { selectedKey, itemName, brandId } = req.body;
 
-      const delRow = await Type.findOne({ brandId: brandId , type: selectedKey})
-      const delRowId = delRow._id
+      const delRow = await Type.findOne({
+        brandId: brandId,
+        type: selectedKey,
+      });
+      const delRowId = delRow._id;
 
-      await RecordStock.deleteMany({ brandId: brandId, rowLabel: selectedKey, colLabel: itemName})
-      
-      await Column.deleteOne({ brandId: brandId, column:itemName, typeId: delRowId})
+      await RecordStock.deleteMany({
+        brandId: brandId,
+        rowLabel: selectedKey,
+        colLabel: itemName,
+      });
 
-      return res.status(200).json({ msg: `${itemName} deleted successfully!`})
+      await Column.deleteOne({
+        brandId: brandId,
+        column: itemName,
+        typeId: delRowId,
+      });
 
-    }else{
-      const { columnId, brandId } = req.body
+      return res.status(200).json({ msg: `${itemName} deleted successfully!` });
+    } else {
+      const { columnId, brandId } = req.body;
 
-      const forDelColName = await Column.findById(columnId)
-      if (!forDelColName){
+      const forDelColName = await Column.findById(columnId);
+      if (!forDelColName) {
         return res.status(404).json({ message: "Column not found" });
-        
       }
-      const delColName = forDelColName.column
-      
-      const toDelStock = await RecordStock.find({ brandId: brandId, colLabel: delColName})
-      if (toDelStock || toDelStock.length >0){
-        
-        // console.log("delsto: ",delStock)
-        await RecordStock.deleteMany({ brandId: brandId, colLabel: delColName})
-      }
-      
-      await Column.deleteOne({ _id: columnId})
-      return res.status(200).json({ message: "Column and related stock deleted successfully" });
-    }
+      const delColName = forDelColName.column;
 
-  }
-  catch(err){
+      const toDelStock = await RecordStock.find({
+        brandId: brandId,
+        colLabel: delColName,
+      });
+      if (toDelStock || toDelStock.length > 0) {
+        // console.log("delsto: ",delStock)
+        await RecordStock.deleteMany({
+          brandId: brandId,
+          colLabel: delColName,
+        });
+      }
+
+      await Column.deleteOne({ _id: columnId });
+      return res
+        .status(200)
+        .json({ message: "Column and related stock deleted successfully" });
+    }
+  } catch (err) {
     console.error("Error del col");
     res.json({ message: "Internal server error!!(delCol)" });
   }
-}
+};
 
-const getLabels = async (req,res) => {
-  try{
-    const brandId = req.body.brandId
+const getLabels = async (req, res) => {
+  try {
+    const brandId = req.body.brandId;
     // console.log(req.body);
     // return;
 
-    const chosenBrand = await Brand.findById({ _id: brandId })
-    const rowLabel = chosenBrand.rowLabel
-    const colLabel = chosenBrand.colLabel
-    const multiVar = chosenBrand.multiVar
+    const chosenBrand = await Brand.findById({ _id: brandId });
+    const rowLabel = chosenBrand.rowLabel;
+    const colLabel = chosenBrand.colLabel;
+    const multiVar = chosenBrand.multiVar;
 
-    const chosenType = await Type.find({ brandId: brandId })
-    const chosenColumn = await Column.find({ brandId: brandId })
+    const chosenType = await Type.find({ brandId: brandId });
+    const chosenColumn = await Column.find({ brandId: brandId });
 
-    if (!chosenType || !chosenColumn){
-      return res.json({ err: "No such label found!"})
+    if (!chosenType || !chosenColumn) {
+      return res.json({ err: "No such label found!" });
     }
 
-    return res.json({ rowLabel:rowLabel, colLabel:colLabel, type: chosenType, column: chosenColumn , multiVar: multiVar}) // if more than one type chosenType is an ARRAY
-
-
-  }
-  catch(err){
+    return res.json({
+      rowLabel: rowLabel,
+      colLabel: colLabel,
+      type: chosenType,
+      column: chosenColumn,
+      multiVar: multiVar,
+    }); // if more than one type chosenType is an ARRAY
+  } catch (err) {
     console.error("Error get row label");
     res.json({ message: "Internal server error!!(getRowLabel)" });
   }
-}
+};
 
-const getColLabel = async (req,res) => {
-  try{
-    const brandId = req.body.brandId
+const getColLabel = async (req, res) => {
+  try {
+    const brandId = req.body.brandId;
 
-    const chosenColumn = await Column.find({ brandId: brandId })
+    const chosenColumn = await Column.find({ brandId: brandId });
     // console.log(chosenColumn)
 
-    if (!chosenColumn){
-      return res.json({ err: "No such type found!"})
+    if (!chosenColumn) {
+      return res.json({ err: "No such type found!" });
     }
 
-    return res.json({ msg: chosenColumn }) // if more than one type chosenType is an ARRAY
-  }
-  catch(err){
+    return res.json({ msg: chosenColumn }); // if more than one type chosenType is an ARRAY
+  } catch (err) {
     console.error("Error get col label");
     res.status(500).json({ message: "Internal server error!!(getColLabel)" });
   }
-}
+};
 
-const addPurchase = async (req,res) =>  {
-  try{
+const addPurchase = async (req, res) => {
+  try {
     // console.log(req.body);
     var purchaseIds = [];
-    const bodies = req.body.addInput
+    const bodies = req.body.addInput;
     // console.log(bodies)
     // return
 
-    for (var body of bodies){
-  
-      // if 
-      const requiredFields = ['category', 'brand', 'rowLabel', 'colLabel','counter'];
-      const missingFields = requiredFields.filter(field => !body[field]);
+    for (var body of bodies) {
+      // if
+      const requiredFields = [
+        "category",
+        "brand",
+        "rowLabel",
+        "colLabel",
+        "counter",
+      ];
+      const missingFields = requiredFields.filter((field) => !body[field]);
 
       if (missingFields.length) {
-        return res.status(404).json({ err: `${missingFields.join(', ')} not selected!` });
+        return res
+          .status(404)
+          .json({ err: `${missingFields.join(", ")} not selected!` });
       }
 
       const { category: cat, brand, rowLabel, colLabel } = body;
 
-      const forBrandId = await Brand.findOne({ parentCategory: cat, brandName: brand });
+      const forBrandId = await Brand.findOne({
+        parentCategory: cat,
+        brandName: brand,
+      });
       if (!forBrandId) {
-        return res.status(405).json({ err: 'Brand not found!' });
+        return res.status(405).json({ err: "Brand not found!" });
       }
 
       const brandId = forBrandId._id;
-  
-      const stock = body.counter
-  
+
+      const stock = body.counter;
+
       const newStock = new Stock({
         stock: stock,
         parentCat: cat,
         parentBrand: brand,
         parentBrandId: brandId,
         rowLabel: rowLabel,
-        colLabel: colLabel
+        colLabel: colLabel,
       });
-      
 
       var aStock = await newStock.save();
-      
+
       purchaseIds.push(aStock._id);
 
-      const checkStock = await RecordStock.findOne({ brandId:brandId, brand:brand,category:cat,rowLabel:rowLabel, colLabel:colLabel})
-      if (checkStock){
-        checkStock.totalStock += stock
+      const checkStock = await RecordStock.findOne({
+        brandId: brandId,
+        brand: brand,
+        category: cat,
+        rowLabel: rowLabel,
+        colLabel: colLabel,
+      });
+      if (checkStock) {
+        checkStock.totalStock += stock;
 
-        await checkStock.save()
-      }else{
+        await checkStock.save();
+      } else {
         const recordStock = new RecordStock({
-          totalStock:stock,
-          brandId:brandId, 
-          brand:brand,
-          category:cat,
-          rowLabel:rowLabel, 
-          colLabel:colLabel
+          totalStock: stock,
+          brandId: brandId,
+          brand: brand,
+          category: cat,
+          rowLabel: rowLabel,
+          colLabel: colLabel,
         });
 
-        await recordStock.save()
+        await recordStock.save();
       }
     }
 
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate = new Date().toISOString().split("T")[0];
 
-    const checkCurrPurchase = await Purchase.findOne({ dop: todayDate})
+    const checkCurrPurchase = await Purchase.findOne({ dop: todayDate });
 
-    if (!checkCurrPurchase){
+    if (!checkCurrPurchase) {
       const newPurchase = new Purchase({
         purchaseIds: purchaseIds,
       });
 
-      await newPurchase.save()
-    }else{
-      checkCurrPurchase.purchaseIds.push(...purchaseIds)
+      await newPurchase.save();
+    } else {
+      checkCurrPurchase.purchaseIds.push(...purchaseIds);
 
-      await checkCurrPurchase.save()
+      await checkCurrPurchase.save();
     }
-    return res.json({msg: "New Stocks Added!"})
-
-  }
-  catch(err){
+    return res.json({ msg: "New Stocks Added!" });
+  } catch (err) {
     console.error("Error add purchase");
     res.status(500).json({ message: "Internal server error!!(addPurchase)" });
   }
-}
+};
 
-const getAllStocks = async (req,res) =>{
-  try{
+const getAllStocks = async (req, res) => {
+  try {
     const stocks = await Stock.find();
 
-    return res.json({stocks: stocks})
-  }
-  catch(err){
+    return res.json({ stocks: stocks });
+  } catch (err) {
     console.error("Error get all stock");
     res.status(500).json({ message: "Internal server error!!(getAllStocks)" });
   }
-}
+};
 
 const getTable = async (req, res) => {
   try {
-    
     const cat = req.body.cat;
     const brand = req.body.brand;
-    
-    const brandName = await Brand.findOne({ brandName: brand, parentCategory: cat });
-    
+
+    const brandName = await Brand.findOne({
+      brandName: brand,
+      parentCategory: cat,
+    });
+
     const brandId = brandName._id;
-    const brandRow = brandName.rowLabel
-    const brandCol = brandName.colLabel
-    
+    const brandRow = brandName.rowLabel;
+    const brandCol = brandName.colLabel;
+
     // Find all types for the brand
     const allTypes = await Type.find({ brandId: brandId });
-    
+
     const allCols = await Column.find({ brandId: brandId });
-    
-    const allEntries = await RecordStock.find( {brandId: brandId});
+
+    const allEntries = await RecordStock.find({ brandId: brandId });
     // return res.json({allEntries: allEntries, alltypes: allTypes, allCols: allCols})
-    
+
     var matrix = {};
-    
+
     for (let i = 0; i < allTypes.length; i++) {
       const type = allTypes[i];
       matrix[type.type] = {}; // create a row for each type
-      
-      
+
       for (let j = 0; j < allCols.length; j++) {
         const col = allCols[j];
         matrix[type.type][col.column] = 0; // init each cell to 0
       }
-      
     }
     // return res.json(allEntries)
-    
+
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
-      const rowLabel = entry.rowLabel
-      const colLabel = entry.colLabel
-      const stock = entry.totalStock
-      console.log("row: ",rowLabel,"  column: ",colLabel, "matrix: ",matrix)
-      
+      const rowLabel = entry.rowLabel;
+      const colLabel = entry.colLabel;
+      const stock = entry.totalStock;
+      console.log(
+        "row: ",
+        rowLabel,
+        "  column: ",
+        colLabel,
+        "matrix: ",
+        matrix
+      );
+
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] !== null) {
         matrix[rowLabel][colLabel] += stock;
-        
       } else {
         matrix[rowLabel][colLabel] = stock;
       }
     }
 
-    return res.json({ matrix: matrix , allColumns: allCols, brandRow: brandRow, brandCol: brandCol});
+    return res.json({
+      matrix: matrix,
+      allColumns: allCols,
+      brandRow: brandRow,
+      brandCol: brandCol,
+    });
   } catch (err) {
     console.error("Error get table");
     res.status(500).json({ message: "Internal server error!!(getTable)" });
   }
 };
 
-const editStock = async (req,res) =>{
-  try{
-    if(req.body.typeName){
-      
-      const { rowKey, updatedData,brandId,categoryName,brandName,typeName} = req.body
-      
-      var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:typeName,colLabel:rowKey })
+const editStock = async (req, res) => {
+  try {
+    if (req.body.typeName) {
+      const {
+        rowKey,
+        updatedData,
+        brandId,
+        categoryName,
+        brandName,
+        typeName,
+      } = req.body;
+
+      var specificRecordStock = await RecordStock.findOne({
+        brandId: brandId,
+        rowLabel: typeName,
+        colLabel: rowKey,
+      });
 
       // if (parseInt(updatedData) ===0 && specificRecordStock){
       //   await specificRecordStock.deleteOne({brandId: brandId,rowLabel:typeName,colLabel:rowKey })
       // }
-      // else 
-      if (specificRecordStock){
-        specificRecordStock.totalStock = parseInt(updatedData)
-        
-        await specificRecordStock.save()
-      }
-      else if (!specificRecordStock && updatedData!=0){
+      // else
+      if (specificRecordStock) {
+        specificRecordStock.totalStock = parseInt(updatedData);
+
+        await specificRecordStock.save();
+      } else if (!specificRecordStock && updatedData != 0) {
         const newRecordStock = new RecordStock({
-          totalStock:parseInt(updatedData),
-          brandId:brandId, 
-          brand:brandName,
-          category:categoryName,
-          rowLabel:typeName, 
-          colLabel:rowKey
+          totalStock: parseInt(updatedData),
+          brandId: brandId,
+          brand: brandName,
+          category: categoryName,
+          rowLabel: typeName,
+          colLabel: rowKey,
         });
 
-        await newRecordStock.save()
+        await newRecordStock.save();
       }
 
-      return res.status(200).json({msg: "Stock updated successfully!"})
-
-    }else{
-      const { rowKey, updatedData,categoryName,brandName,brandId} = req.body
-      for (var col in updatedData){
-
-        var specificRecordStock = await RecordStock.findOne({brandId: brandId,rowLabel:rowKey,colLabel:col })
+      return res.status(200).json({ msg: "Stock updated successfully!" });
+    } else {
+      const { rowKey, updatedData, categoryName, brandName, brandId } =
+        req.body;
+      for (var col in updatedData) {
+        var specificRecordStock = await RecordStock.findOne({
+          brandId: brandId,
+          rowLabel: rowKey,
+          colLabel: col,
+        });
         // console.log("😊🤣😊🤣",updatedData[col])
         // return
         // if (updatedData[col] == 0 && specificRecordStock){
         //   await specificRecordStock.deleteOne({brandId: brandId,rowLabel:rowKey,colLabel:col })
         // }
-        // else 
-        if (specificRecordStock){
-          specificRecordStock.totalStock = parseInt(updatedData[col])
-          
-          await specificRecordStock.save()
-        }
-        else if (!specificRecordStock && updatedData[col]!=0){
+        // else
+        if (specificRecordStock) {
+          specificRecordStock.totalStock = parseInt(updatedData[col]);
+
+          await specificRecordStock.save();
+        } else if (!specificRecordStock && updatedData[col] != 0) {
           const newRecordStock = new RecordStock({
-              totalStock:parseInt(updatedData[col]),
-              brandId:brandId, 
-              brand:brandName,
-              category:categoryName,
-              rowLabel:rowKey, 
-              colLabel:col
-            });
-  
-            await newRecordStock.save()
+            totalStock: parseInt(updatedData[col]),
+            brandId: brandId,
+            brand: brandName,
+            category: categoryName,
+            rowLabel: rowKey,
+            colLabel: col,
+          });
+
+          await newRecordStock.save();
         }
-   
       }
-      return res.status(200).json({msg: "Stock/s updated successfully!"})
+      return res.status(200).json({ msg: "Stock/s updated successfully!" });
     }
-    
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error edit stock");
     res.status(500).json({ message: "Internal server error!!(editStock)" });
   }
-}
+};
 
-const getCodes = async(req,res) => {
-  try{
-    // console.log(req.body)
-    const {rowValue, brandId} = req.body;
+const getCodes = async (req, res) => {
+  try {
+    console.log("This is the data", req.body);
+    const { rowValue, brandId } = req.body;
 
-    const stockArr = await RecordStock.find({ brandId: brandId, rowLabel: rowValue });
-    console.log('stock', stockArr);
+    const stockArr = await RecordStock.find({
+      brandId: brandId,
+      rowLabel: rowValue,
+    });
+
+    // console.log("STock ko array yo ho hai ta", stockArr);
+
+    // if (stockArr.length < 1) {
+    //   console.log("Yo bhitra aayeko xa hai ta step");
+    //   return res.status(209).json({ msg: "No data found for the given brand" });
+    // }
 
     const forTypeId = await Type.findOne({ type: rowValue, brandId: brandId });
-    if (!forTypeId){
+    if (!forTypeId) {
       return res.status(404).json({ err: `${rowValue} does not exist!` });
     }
+
+    console.log(forTypeId);
 
     const typeId = forTypeId._id;
 
     const codes = await Column.find({ brandId: brandId, typeId: typeId });
-    if (!codes || codes.length === 0){
-      return res.status(404).json({ err: `${forTypeId.type} has no codes!` });
+    if (!codes || codes.length === 0) {
+      return res.status(209).json({ msg: [], typeId: [], codeStocks: [] });
     }
 
     var codeArr = [];
@@ -1426,247 +1495,270 @@ const getCodes = async(req,res) => {
     }
 
     // Update stock based on rowLabel and colLabel
-    for (var stock of stockArr){
+    for (var stock of stockArr) {
       var checkCol = stock.colLabel;
-      if (!codeArr.includes(checkCol)){
+      if (!codeArr.includes(checkCol)) {
         codeArr.push(checkCol);
       }
       if (codeStocks[checkCol]) {
-        codeStocks[checkCol] = (parseInt(codeStocks[checkCol]) + stock.totalStock).toString();
+        codeStocks[checkCol] = (
+          parseInt(codeStocks[checkCol]) + stock.totalStock
+        ).toString();
       } else {
         codeStocks[checkCol] = stock.totalStock.toString();
       }
     }
 
-    return res.status(200).json({ msg: codes, typeId: typeId, codeStocks: codeStocks });
-  }
-  catch(err){
+    return res
+      .status(200)
+      .json({ msg: codes, typeId: typeId, codeStocks: codeStocks });
+  } catch (err) {
     console.error("Error get codes");
     res.status(500).json({ message: "Internal server error!!(getCodes)" });
   }
-}
+};
 
-
-const getSpecCol = async (req,res) => {
-  try{
-    const {rowLabel, brandId} = req.body
-    console.log(req.body);
+const getSpecCol = async (req, res) => {
+  try {
+    const { rowLabel, brandId } = req.body;
+    console.log("yo hai ta guys cal vayo", req.body);
     // return;
-    
-    const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId})
-    if (!forTypeId){
-      return res.status(404).json({err: "No such type found!"})
+
+    const forTypeId = await Type.findOne({ type: rowLabel, brandId: brandId });
+    if (!forTypeId) {
+      return res.status(404).json({ err: "No such type found!" });
     }
-    const typeId = forTypeId._id
-    
-    const forColArr = await Column.find({ brandId: brandId, typeId: typeId})
-    if (!forColArr){
-      return res.status(404).json({ err: "No such column found!"})
+    const typeId = forTypeId._id;
+
+    const forColArr = await Column.find({ brandId: brandId, typeId: typeId });
+    if (!forColArr) {
+      return res.status(404).json({ err: "No such column found!" });
     }
-    
+
     var colArr = [];
-    for (var col of forColArr){
-      colArr.push(col.column)
+    for (var col of forColArr) {
+      colArr.push(col.column);
     }
 
-    return res.status(200).json({msg: colArr})
-
-  }
-  catch(err){
+    return res.status(200).json({ msg: colArr });
+  } catch (err) {
     console.error("Error get specific columns");
     res.status(500).json({ message: "Internal server error!!(getSpecCol)" });
   }
-}
+};
 
-const getTotalStock = async(req,res) => {
-  try{
+const getTotalStock = async (req, res) => {
+  try {
     var totalStock = 0;
-    const allStocks = await RecordStock.find()
-    if (!allStocks || allStocks.length ===0){
-      return res.status(404).json({ err: "No stock available!"})
+    const allStocks = await RecordStock.find();
+    if (!allStocks || allStocks.length === 0) {
+      return res.status(404).json({ err: "No stock available!" });
     }
-    for (var stock of allStocks )
-    {
-      totalStock += stock.totalStock
+    for (var stock of allStocks) {
+      totalStock += stock.totalStock;
     }
-    return res.status(200).json({msg: totalStock})
-  }
-  catch(err){
+    return res.status(200).json({ msg: totalStock });
+  } catch (err) {
     console.error("Error get total stock");
     res.status(500).json({ message: "Internal server error!!(getTotalStock)" });
   }
-}
+};
 
-const checkStock = async (req,res) => {
-  try{
-    const allStocks = await RecordStock.find()
-    if (!allStocks || allStocks.length ===0){
-      return res.status(404).json({ err: "No stock available!"})
+const checkStock = async (req, res) => {
+  try {
+    const allStocks = await RecordStock.find();
+    if (!allStocks || allStocks.length === 0) {
+      return res.status(404).json({ err: "No stock available!" });
     }
 
-    var allCategories = []
-    const forAllCategories = await Category.find()
-    for (var cat of forAllCategories){
-      allCategories.push(cat.title)
+    var allCategories = [];
+    const forAllCategories = await Category.find();
+    for (var cat of forAllCategories) {
+      allCategories.push(cat.title);
     }
     // console.log(allCategories)
-    
+
     var stockByBrand = {};
 
-    for (var categoryName of allCategories){
-      const allStockData = await RecordStock.find({category: categoryName})
+    for (var categoryName of allCategories) {
+      const allStockData = await RecordStock.find({ category: categoryName });
 
       for (var stock of allStockData) {
         const brand = stock.brand;
         const rowLabel = stock.rowLabel;
         const colLabel = stock.colLabel;
-        
-        const brandCategoryKey = `${brand} ${categoryName} ${rowLabel} (${colLabel})`;        
+
+        const brandCategoryKey = `${brand} ${categoryName} ${rowLabel} (${colLabel})`;
         if (!stockByBrand[brandCategoryKey]) {
           stockByBrand[brandCategoryKey] = 0;
         }
-        
+
         stockByBrand[brandCategoryKey] += stock.totalStock;
-        
       }
     }
     // console.log("🤣🤣🤣🤣",stockByBrand)
-    
-    var lowStock = []
+
+    var lowStock = [];
     for (var key in stockByBrand) {
       if (stockByBrand[key] < 11) {
         lowStock.push({
           brandCategory: key,
-          stock: stockByBrand[key]
+          stock: stockByBrand[key],
         });
       }
     }
 
     lowStock.sort((a, b) => a.stock - b.stock);
-    return res.json({lowStock})
-  }
-  catch(err){
+    return res.json({ lowStock });
+  } catch (err) {
     console.error("Error check stock");
     res.status(500).json({ message: "Internal server error!!(checkStock)" });
   }
-}
+};
 
-const getTopSelling = async (req,res) => {
-  try{
+const getTopSelling = async (req, res) => {
+  try {
     const allSelling = await RecordSale.find().sort({ soldQty: -1 });
 
-    const topSelling = allSelling.map(item => ({
-      brandCategory: `${item.brand} ${item.category} ${item.rowLabel} (${item.colLabel})` ,
-      stock : `${item.soldQty}` // stock means sold quantity here
-  }));
+    const topSelling = allSelling.map((item) => ({
+      brandCategory: `${item.brand} ${item.category} ${item.rowLabel} (${item.colLabel})`,
+      stock: `${item.soldQty}`, // stock means sold quantity here
+    }));
 
-    return res.status(200).json({topSelling})
-  }
-  catch(err){
+    return res.status(200).json({ topSelling });
+  } catch (err) {
     console.error(`Error get top selling:`, err);
-    return res.status(500).json({ message: `Error get top selling : ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error get top selling : ${err.message}` });
   }
-}
+};
 
 /////////WORKS/////////////////////////
-const editSales = async (req,res) => {
-  try{
-    const {resData} = req.body
-    
-    
-    for (var stock of resData){
-      var { _id ,sBrandId, sBrand, sCategory, sRowLabel,sColLabel,sQty } = stock
-      
-      const currData = await Sales.findById(_id)
-      const currSale = await RecordSale.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
-      const currStock = await RecordStock.findOne({brandId:sBrandId, rowLabel:sRowLabel, colLabel:sColLabel})
+const editSales = async (req, res) => {
+  try {
+    const { resData } = req.body;
+
+    for (var stock of resData) {
+      var { _id, sBrandId, sBrand, sCategory, sRowLabel, sColLabel, sQty } =
+        stock;
+
+      const currData = await Sales.findById(_id);
+      const currSale = await RecordSale.findOne({
+        brandId: sBrandId,
+        rowLabel: sRowLabel,
+        colLabel: sColLabel,
+      });
+      const currStock = await RecordStock.findOne({
+        brandId: sBrandId,
+        rowLabel: sRowLabel,
+        colLabel: sColLabel,
+      });
       // console.log(req.body)
       // return
 
-      const currQty = currData.sQty
+      const currQty = currData.sQty;
 
-      if (currQty != sQty){
-        var currSQty = currData.sQty
+      if (currQty != sQty) {
+        var currSQty = currData.sQty;
 
-        currData.sQty = sQty
-        if (currSale){
-
-          currSale.soldQty += sQty - currSQty
-          await currSale.save()
+        currData.sQty = sQty;
+        if (currSale) {
+          currSale.soldQty += sQty - currSQty;
+          await currSale.save();
         }
 
-        await currData.save()
+        await currData.save();
 
+        if (currStock) {
+          const currStockQty = currStock.totalStock;
+          currStock.totalStock += currSQty - sQty;
 
-        if (currStock){
-          const currStockQty = currStock.totalStock
-          currStock.totalStock += currSQty - sQty
-
-          if (currStock.totalStock <0){
-            return res.status(408).json({ err: `${sBrand} ${sCategory} has only ${currStockQty} stock`})
+          if (currStock.totalStock < 0) {
+            return res.status(408).json({
+              err: `${sBrand} ${sCategory} has only ${currStockQty} stock`,
+            });
           }
 
-          await currStock.save()
+          await currStock.save();
         }
       }
-
     }
 
-    return res.status(200).json({msg: "Sales updated successfully"})
-  }
-  catch(err){
+    return res.status(200).json({ msg: "Sales updated successfully" });
+  } catch (err) {
     console.error(`Error edit transaction:`, err);
-    return res.status(500).json({ message: `Error edit transaction : ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error edit transaction : ${err.message}` });
   }
-}
+};
 
-const editPurchase = async (req,res) => {
-  try{
-    const {resData} = req.body
-    
-    for (var oneStock of resData){
-      var { _id ,parentBrandId, rowLabel,colLabel,stock:editedStock } = oneStock
-      
-      const currData = await Stock.findById(_id)
-      const currStock = await RecordStock.findOne({brandId:parentBrandId, rowLabel:rowLabel, colLabel:colLabel})
+const editPurchase = async (req, res) => {
+  try {
+    const { resData } = req.body;
 
-      const currQty = currData.stock
+    for (var oneStock of resData) {
+      var {
+        _id,
+        parentBrandId,
+        rowLabel,
+        colLabel,
+        stock: editedStock,
+      } = oneStock;
 
-      if (currQty != editedStock){
-        var currStockQty = currData.stock
-        
-        currData.stock = editedStock
-        await currData.save()
+      const currData = await Stock.findById(_id);
+      const currStock = await RecordStock.findOne({
+        brandId: parentBrandId,
+        rowLabel: rowLabel,
+        colLabel: colLabel,
+      });
 
-        currStock.totalStock += editedStock - currStockQty
-        await currStock.save()
+      const currQty = currData.stock;
+
+      if (currQty != editedStock) {
+        var currStockQty = currData.stock;
+
+        currData.stock = editedStock;
+        await currData.save();
+
+        currStock.totalStock += editedStock - currStockQty;
+        await currStock.save();
       }
-
     }
-    return res.status(200).json({msg: "Purchase history updated!"})
-  }
-
-  catch(err){
+    return res.status(200).json({ msg: "Purchase history updated!" });
+  } catch (err) {
     console.error(`Error edit transaction:`, err);
-    return res.status(500).json({ message: `Error edit transaction : ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error edit transaction : ${err.message}` });
   }
-}
+};
 
-const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockName, type = 'item') => {
+const deleteDocument = async (
+  req,
+  res,
+  Model,
+  ParentModel,
+  idName,
+  Record,
+  stockName,
+  type = "item"
+) => {
   try {
     // console.log(req.body);
-    const mongoose = require('mongoose');
+    const mongoose = require("mongoose");
     const { _id } = req.body;
 
     // Convert to ObjectId for precise matching
     const idToRemove = new mongoose.Types.ObjectId(_id);
 
     await ParentModel.updateMany(
-      { [idName]: idToRemove },    // Filter documents where `purchaseIds` contains ObjectId `_id`
-      { $pull: { [idName]: idToRemove } },  // Pull ObjectId `_id` from `purchaseIds` array
+      { [idName]: idToRemove }, // Filter documents where `purchaseIds` contains ObjectId `_id`
+      { $pull: { [idName]: idToRemove } }, // Pull ObjectId `_id` from `purchaseIds` array
       { new: true }
     );
-    
+
     // const allParents = await ParentModel.find();
     // for (var parent of allParents) {
     //   const allIds = parent[idName];
@@ -1682,29 +1774,29 @@ const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockNa
     //       break; // Exit loop once found and removed
     //     }
     //   }
-    // } 
-    const toDelProduct = await Model.findById(_id)
+    // }
+    const toDelProduct = await Model.findById(_id);
 
-    if (!toDelProduct){
-      return res.status(404).json({ err: `No such ${type} found`})
+    if (!toDelProduct) {
+      return res.status(404).json({ err: `No such ${type} found` });
     }
 
-    const {sBrandId, parentBrandId, rowLabel, colLabel,stock,sQty} = toDelProduct
-    const brandId = sBrandId || parentBrandId
-    const qty = stock || sQty
-    
-    const forRecord = await Record.findOne({ brandId,rowLabel,colLabel})
-    
-    if (forRecord){
-      forRecord[stockName] -= qty
+    const { sBrandId, parentBrandId, rowLabel, colLabel, stock, sQty } =
+      toDelProduct;
+    const brandId = sBrandId || parentBrandId;
+    const qty = stock || sQty;
 
-      if (forRecord[stockName] < 0){
-        return res.json({ err: "the record has less stock than history"})
+    const forRecord = await Record.findOne({ brandId, rowLabel, colLabel });
+
+    if (forRecord) {
+      forRecord[stockName] -= qty;
+
+      if (forRecord[stockName] < 0) {
+        return res.json({ err: "the record has less stock than history" });
       }
 
-      await forRecord.save()
+      await forRecord.save();
     }
-    
 
     const deletedDoc = await Model.findByIdAndDelete(_id);
 
@@ -1715,35 +1807,56 @@ const deleteDocument = async (req, res, Model,ParentModel,idName, Record,stockNa
     }
   } catch (err) {
     console.error(`Error deleting ${type}:`, err);
-    return res.status(500).json({ message: `Error deleting ${type}: ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error deleting ${type}: ${err.message}` });
   }
 };
 
 // Usage
-const delSale = (req, res) => deleteDocument(req, res, Sales,SaleRecordModel,'saleIds', RecordSale,'soldQty', 'sale');
-const delPurchase = (req, res) => deleteDocument(req, res, Stock,Purchase,'purchaseIds', RecordStock,'totalStock', 'purchase');
+const delSale = (req, res) =>
+  deleteDocument(
+    req,
+    res,
+    Sales,
+    SaleRecordModel,
+    "saleIds",
+    RecordSale,
+    "soldQty",
+    "sale"
+  );
+const delPurchase = (req, res) =>
+  deleteDocument(
+    req,
+    res,
+    Stock,
+    Purchase,
+    "purchaseIds",
+    RecordStock,
+    "totalStock",
+    "purchase"
+  );
 
+const editReportStock = async (req, res) => {
+  try {
+    const todayDate = new Date().toISOString().split("T")[0];
 
+    const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate });
 
-
-const editReportStock = async(req,res) => {
-  try{
-    const todayDate = new Date().toISOString().split('T')[0];
-    
-    const checkDate = await ReportStock.find({ stockUntilThisDate: todayDate})
-    
-    if (!checkDate || checkDate.length ===0){
+    if (!checkDate || checkDate.length === 0) {
       // await ReportStock.deleteMany({});
-      const allRecordStocks = await RecordStock.find()
-      
-      const newReportStocks = allRecordStocks.map(stock => ({
+      const allRecordStocks = await RecordStock.find();
+
+      const newReportStocks = allRecordStocks.map((stock) => ({
         // Include all the fields from the RecordStock
         ...stock.toObject(), // Convert Mongoose document to plain object
-        stockUntilThisDate: todayDate // Add today's date
+        stockUntilThisDate: todayDate, // Add today's date
       }));
-      console.log("newReportStocksssss🙌🙌🙌🙌")
+      console.log("newReportStocksssss🙌🙌🙌🙌");
       for (const reportStock of newReportStocks) {
-        const existingReportStock = await ReportStock.findOne({ _id: reportStock._id });
+        const existingReportStock = await ReportStock.findOne({
+          _id: reportStock._id,
+        });
         if (existingReportStock) {
           // Update the existing document
           await ReportStock.updateOne({ _id: reportStock._id }, reportStock);
@@ -1752,138 +1865,159 @@ const editReportStock = async(req,res) => {
           await ReportStock.create(reportStock);
         }
       }
-    }
-    else{
-      for (var eachReport of checkDate){
-        const reportDate = eachReport.stockUntilThisDate.toISOString().split('T')[0];
-        if (reportDate != todayDate){
-          await eachReport.deleteOne()
+    } else {
+      for (var eachReport of checkDate) {
+        const reportDate = eachReport.stockUntilThisDate
+          .toISOString()
+          .split("T")[0];
+        if (reportDate != todayDate) {
+          await eachReport.deleteOne();
         }
       }
     }
-    return res.status(200).json({ msg: "OKKKKK👌👌👌👌"})
-
-  }
-  catch(err){
+    return res.status(200).json({ msg: "OKKKKK👌👌👌👌" });
+  } catch (err) {
     console.error(`Error edit report stock:`, err);
-    return res.status(500).json({ message: `Error edit report stock : ${err.message}` });
+    return res
+      .status(500)
+      .json({ message: `Error edit report stock : ${err.message}` });
   }
-} 
+};
 
-const validateStock = async (req,res) => {
-  try{
-    console.log(req.body)
-    const { sBrandId,sBrand,sCategory,sRowLabel,sColLabel ,sQty } = req.body.newQuantity
-    const initQty = req.body.initialQuantity
+const validateStock = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { sBrandId, sBrand, sCategory, sRowLabel, sColLabel, sQty } =
+      req.body.newQuantity;
+    const initQty = req.body.initialQuantity;
 
-    const stock = await RecordStock.findOne({ brandId: sBrandId, rowLabel: sRowLabel, colLabel: sColLabel})
+    const stock = await RecordStock.findOne({
+      brandId: sBrandId,
+      rowLabel: sRowLabel,
+      colLabel: sColLabel,
+    });
 
-    if (!stock){
-      return res.json({ err: `${sBrand} ${sCategory} does not have any stock`})
+    if (!stock) {
+      return res.json({
+        err: `${sBrand} ${sCategory} does not have any stock`,
+      });
     }
-    console.log(sQty)
-    if ( stock.totalStock < sQty - initQty ){
-      return res.json({ updateStatus : false, totalStock: stock.totalStock})
+    console.log(sQty);
+    if (stock.totalStock < sQty - initQty) {
+      return res.json({ updateStatus: false, totalStock: stock.totalStock });
     }
 
-    return res.json({ updateStatus: true})
-  }
-  catch(err){
+    return res.json({ updateStatus: true });
+  } catch (err) {
     console.error(`Error validate stock:`, err);
-    return res.status(500).json({ message: `Error validate stock : ${err.message}` });
-    
+    return res
+      .status(500)
+      .json({ message: `Error validate stock : ${err.message}` });
   }
-}
+};
 
-const validatePurchStock = async (req,res) => {
-  try{
-    console.log(req.body)
+const validatePurchStock = async (req, res) => {
+  try {
+    console.log(req.body);
 
-    const {newQuantity , initialQuantity} = req.body
+    const { newQuantity, initialQuantity } = req.body;
 
-    const { parentBrandId: brandId, rowLabel, colLabel, stock} = newQuantity
+    const { parentBrandId: brandId, rowLabel, colLabel, stock } = newQuantity;
 
-    const forTotalStock = await RecordStock.findOne({ brandId, rowLabel, colLabel })
-    const currStock = forTotalStock.totalStock
+    const forTotalStock = await RecordStock.findOne({
+      brandId,
+      rowLabel,
+      colLabel,
+    });
+    const currStock = forTotalStock.totalStock;
 
-    const editedStock = initialQuantity - stock
+    const editedStock = initialQuantity - stock;
 
-    if (editedStock > currStock){
-      return res.json({ updateStatus : false, totalStock: currStock})
+    if (editedStock > currStock) {
+      return res.json({ updateStatus: false, totalStock: currStock });
     }
 
-    return res.json({ updateStatus: true})
-
-  } 
-  catch(err){
+    return res.json({ updateStatus: true });
+  } catch (err) {
     console.error(`Error validate purchase stock:`, err);
-    return res.status(500).json({ message: `Error validate purchase stock : ${err.message}` });
-    
+    return res
+      .status(500)
+      .json({ message: `Error validate purchase stock : ${err.message}` });
   }
-}
-
-
+};
 
 const getReport = async (req, res) => {
   try {
     // console.log(req.body)
     // return res.json(req.body)
-    const {brandId} = req.body
-    
-    const typeN = req.body.matrixKey
+    const { brandId } = req.body;
+
+    const typeN = req.body.matrixKey;
     const brandData = await Brand.findById(brandId);
 
-    const brandName = brandData.brandName
-    const category = brandData.parentCategory
-    const brandRow = brandData.rowLabel
-    const brandCol = brandData.colLabel
-    const multiVar = brandData.multiVar
+    const brandName = brandData.brandName;
+    const category = brandData.parentCategory;
+    const brandRow = brandData.rowLabel;
+    const brandCol = brandData.colLabel;
+    const multiVar = brandData.multiVar;
 
     var allTypes, allCols, allEntries;
 
-    if (!typeN){
+    if (!typeN) {
       allTypes = await Type.find({ brandId: brandId });
-      if (!allTypes){
-        return res.status(404).json({err: `${brandName} has no types` })
+      if (!allTypes) {
+        return res.status(404).json({ err: `${brandName} has no types` });
       }
-      
+
       allCols = await Column.find({ brandId: brandId });
-      if (!allCols){
-        return res.status(405).json({err: `${brandName} has no column/items` })
+      if (!allCols) {
+        return res
+          .status(405)
+          .json({ err: `${brandName} has no column/items` });
       }
-      allEntries = await RecordStock.find( {brandId: brandId});
-      if (!allEntries){
-        return res.status(406).json({ err: `${brandName} has no recorded stock`})
+      allEntries = await RecordStock.find({ brandId: brandId });
+      if (!allEntries) {
+        return res
+          .status(406)
+          .json({ err: `${brandName} has no recorded stock` });
       }
-    }
-    else{
-      allTypes = await Type.find({ brandId: brandId, type: typeN})
-      if (!allTypes){
-        return res.status(404).json({err: `${brandName} has no types` })
+    } else {
+      allTypes = await Type.find({ brandId: brandId, type: typeN });
+      if (!allTypes) {
+        return res.status(404).json({ err: `${brandName} has no types` });
       }
-      
-      allCols = await Column.find({ brandId: brandId , typeId: allTypes[0]._id});
-      if (!allCols){
-        return res.status(405).json({err: `${brandName} has no column/items` })
+
+      allCols = await Column.find({
+        brandId: brandId,
+        typeId: allTypes[0]._id,
+      });
+      if (!allCols) {
+        return res
+          .status(405)
+          .json({ err: `${brandName} has no column/items` });
       }
       // return res.json(allTypes)
 
-      allEntries = await RecordStock.find( {brandId: brandId, rowLabel: allTypes[0].type});
-      if (!allEntries){
-        return res.status(406).json({ err: `${brandName} has no recorded stock`})
+      allEntries = await RecordStock.find({
+        brandId: brandId,
+        rowLabel: allTypes[0].type,
+      });
+      if (!allEntries) {
+        return res
+          .status(406)
+          .json({ err: `${brandName} has no recorded stock` });
       }
-
     }
-    
+
     //////////////////////////// WORKING //////////////////////////////////////////////
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split("T")[0];
 
     const todaysPurchases = await Purchase.find({
-      dop: today
+      dop: today,
     });
 
     const todaysSales = await SalesRecord.find({
-      dos: today
+      dos: today,
     });
 
     const purchaseQuantities = {};
@@ -1892,11 +2026,11 @@ const getReport = async (req, res) => {
     // process purchase (IN)
     for (const purchase of todaysPurchases) {
       const stockIds = purchase.purchaseIds;
-      
+
       // Get all stocks referenced in this purchase
       const purchasedStocks = await Stock.find({
         _id: { $in: stockIds },
-        parentBrandId: brandId
+        parentBrandId: brandId,
       });
 
       // Sum up stocks by row and column
@@ -1909,10 +2043,10 @@ const getReport = async (req, res) => {
     // Process sales (OUT)
     for (const sale of todaysSales) {
       const saleIds = sale.saleIds;
-      
+
       const soldItems = await Sales.find({
         _id: { $in: saleIds },
-        sBrandId: brandId
+        sBrandId: brandId,
       });
 
       for (const item of soldItems) {
@@ -1922,59 +2056,70 @@ const getReport = async (req, res) => {
     }
 
     var matrix = {};
-    
+
     for (let i = 0; i < allTypes.length; i++) {
       const type = allTypes[i];
       matrix[type.type] = {}; // create a row for each type
-      
-      
+
       for (let j = 0; j < allCols.length; j++) {
         const col = allCols[j];
-        matrix[type.type][col.column] = { op: 0, in: 0, out: 0, bal: 0 } // init each cell to 0
+        matrix[type.type][col.column] = { op: 0, in: 0, out: 0, bal: 0 }; // init each cell to 0
       }
       // return res.json(matrix)
-
     }
 
     for (let i = 0; i < allEntries.length; i++) {
       const entry = allEntries[i];
-      const currBrandId = entry.brandId
-      const rowLabel = entry.rowLabel
-      const colLabel = entry.colLabel
-      const stock = entry.totalStock
+      const currBrandId = entry.brandId;
+      const rowLabel = entry.rowLabel;
+      const colLabel = entry.colLabel;
+      const stock = entry.totalStock;
 
-      const forOp = await ReportStock.findOne({brandId:currBrandId, rowLabel:rowLabel, colLabel:colLabel})
-      
+      const forOp = await ReportStock.findOne({
+        brandId: currBrandId,
+        rowLabel: rowLabel,
+        colLabel: colLabel,
+      });
+
       var opVal = forOp ? forOp.totalStock : 0;
-      
+
       if (matrix[rowLabel] && matrix[rowLabel][colLabel] != undefined) {
         matrix[rowLabel][colLabel].op += opVal || 0;
-        matrix[rowLabel][colLabel].in += purchaseQuantities[`${rowLabel}-${colLabel}`] || 0;
-        matrix[rowLabel][colLabel].out += saleQuantities[`${rowLabel}-${colLabel}`] || 0;
+        matrix[rowLabel][colLabel].in +=
+          purchaseQuantities[`${rowLabel}-${colLabel}`] || 0;
+        matrix[rowLabel][colLabel].out +=
+          saleQuantities[`${rowLabel}-${colLabel}`] || 0;
         matrix[rowLabel][colLabel].bal += stock;
-        
-      } 
-      else {
+      } else {
         matrix[rowLabel][colLabel] = {
           op: opVal || 0,
-          in:purchaseQuantities[`${rowLabel}-${colLabel}`] || 0,
-          out:saleQuantities[`${rowLabel}-${colLabel}`] || 0,
-          bal:stock
+          in: purchaseQuantities[`${rowLabel}-${colLabel}`] || 0,
+          out: saleQuantities[`${rowLabel}-${colLabel}`] || 0,
+          bal: stock,
         };
       }
     }
 
-    return res.json({today:today, matrix: matrix , allColumns: allCols,brandName:brandName ,category:category , brandRow: brandRow, brandCol: brandCol, multiVar: multiVar});
+    return res.json({
+      today: today,
+      matrix: matrix,
+      allColumns: allCols,
+      brandName: brandName,
+      category: category,
+      brandRow: brandRow,
+      brandCol: brandCol,
+      multiVar: multiVar,
+    });
   } catch (err) {
     console.error("Error get report", err);
-    res.status(500).json({ message:`Error getReport : ${err.message}`});
+    res.status(500).json({ message: `Error getReport : ${err.message}` });
   }
 };
 
-const saveAllBrandReports = async (req,res) => {
+const saveAllBrandReports = async (req, res) => {
   try {
-    console.log(req.body.overallData.matrix)
-    return
+    console.log(req.body.overallData.matrix);
+    return;
     const allBrands = await Brand.find({});
     const today = new Date().toISOString().split("T")[0]; // Format as "YYYY-MM-DD"
 
@@ -1983,15 +2128,15 @@ const saveAllBrandReports = async (req,res) => {
     for (const brand of allBrands) {
       // Simulate the request object for getReport
       const req = {
-        body: { brandId: brand._id }
+        body: { brandId: brand._id },
       };
 
       // Create a response object to capture the response
       const res = {
         json: (data) => data,
         status: (code) => ({
-          json: (data) => ({ code, ...data })
-        })
+          json: (data) => ({ code, ...data }),
+        }),
       };
 
       // Get report data for this brand
@@ -2014,11 +2159,11 @@ const saveAllBrandReports = async (req,res) => {
 
       // Create new report document
       const newReport = new ReportModel({
-        today,                          // The current date as a string
-        brandId: brand._id,             // Brand ID
-        brandCol: reportData.brandCol,  // Column label
-        brandRow: reportData.brandRow,  // Row label
-        matrix: matrixObject,           // Converted matrix object
+        today, // The current date as a string
+        brandId: brand._id, // Brand ID
+        brandCol: reportData.brandCol, // Column label
+        brandRow: reportData.brandRow, // Row label
+        matrix: matrixObject, // Converted matrix object
         allColumns: reportData.allColumns, // Array of column data
       });
 
@@ -2034,132 +2179,150 @@ const saveAllBrandReports = async (req,res) => {
   }
 };
 
-
-
 const saveReports = async (req, res) => {
   try {
-    const categories = await Category.find({}) 
+    const categories = await Category.find({});
 
-    if (!categories || categories.length ===0){
-      return res.status(404).json({err: "No categories available!"})
+    if (!categories || categories.length === 0) {
+      return res.status(404).json({ err: "No categories available!" });
     }
     // return res.json(categories)
     const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as "YYYY-MM-DD"
-    
-    // for (var category )
-    for (var oneCat of categories){
-      var catTitle = oneCat.title
-      
-      const brandsOfCat = await Brand.find({ parentCategory: catTitle})
-      
-      // if (!brandsOfCat || brandsOfCat.length ===0){
-        //   res.status(404).json({err: `No brands found for ${catTitle} available!`});
-        // }
-        
-        for (var forBrandId of brandsOfCat){
-          var brandId = forBrandId._id
-          var multiVar = forBrandId.multiVar
 
-          var combinedMatrix = []
-          
-          if (multiVar){
+    // for (var category )
+    for (var oneCat of categories) {
+      var catTitle = oneCat.title;
+
+      const brandsOfCat = await Brand.find({ parentCategory: catTitle });
+
+      // if (!brandsOfCat || brandsOfCat.length ===0){
+      //   res.status(404).json({err: `No brands found for ${catTitle} available!`});
+      // }
+
+      for (var forBrandId of brandsOfCat) {
+        var brandId = forBrandId._id;
+        var multiVar = forBrandId.multiVar;
+
+        var combinedMatrix = [];
+
+        if (multiVar) {
+          const req = {
+            body: { brandId: brandId },
+          };
+          const res = {
+            json: (data) => data,
+            status: (code) => ({
+              json: (data) => ({ code, ...data }),
+            }),
+          };
+
+          const reportData = await getReport(req, res);
+
+          var {
+            today,
+            matrix,
+            allColumns,
+            brandName,
+            category,
+            brandRow,
+            brandCol,
+            multiVar,
+          } = reportData;
+        } else {
+          const allTypes = await Type.find({ brandId });
+          for (var typeName of allTypes) {
+            const matrixKey = typeName.type;
+
             const req = {
-              body: {brandId: brandId} 
+              body: { brandId: brandId, matrixKey: matrixKey },
             };
             const res = {
               json: (data) => data,
               status: (code) => ({
-                json: (data) => ({ code, ...data })
-              })
+                json: (data) => ({ code, ...data }),
+              }),
             };
-            
-            const reportData = await getReport(req, res);
-            
-            var { today, matrix, allColumns,brandName,category, brandRow, brandCol, multiVar } = reportData;
-          }else{
-            const allTypes = await Type.find({brandId})
-            for (var typeName of allTypes){
-              const matrixKey = typeName.type
-              
-              const req = {
-                body: {brandId: brandId, matrixKey: matrixKey} 
-              };
-              const res = {
-                json: (data) => data,
-                status: (code) => ({
-                  json: (data) => ({ code, ...data })
-                })
-              };
-              
-              const reportData = await getReport(req, res);
-              
-              var { today, matrix, allColumns, brandRow,brandName,category, brandCol, multiVar } = reportData;
-              // console.log("SINGGLEEEEEEEE",matrix)
-              combinedMatrix.push(matrix);
-              
-            }
-          }
-          
-          // Convert matrix data to a MongoDB-compatible format
-          var matrixObject = new Map();
-          
-          // Create new report document
-          console.log(combinedMatrix)
-          if (Array.isArray(combinedMatrix) && combinedMatrix.length > 0) {
-            combinedMatrix.forEach((rowValue) => {
-              Object.entries(rowValue).forEach(([rowKey, columns]) => {
-                if (!matrixObject.has(rowKey)) {
-                  matrixObject.set(rowKey, new Map()); // Initialize each row as a Map
-                }
-                Object.entries(columns).forEach(([colKey, colValue]) => {
-                  matrixObject.get(rowKey).set(colKey, colValue);
-                });
-              });
-            });
-          }
-          else{
-            Object.entries(matrix).forEach(([rowKey, rowValue]) => {
-              let rowMap = new Map();
-              Object.entries(rowValue).forEach(([colKey, colValue]) => {
-                rowMap.set(colKey, colValue);
-              });
-              matrixObject.set(rowKey, rowMap);
-            });
-          }
-          
-          const existingReports = await ReportModel.find({ today: todayDate, brandId });
-          if (existingReports.length >0) {
-            for (const existingReport of existingReports){
-              const brandN = forBrandId.brandName
-              const brandC = forBrandId.parentCategory
-              console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}.`);
 
-              const delReportId = existingReport._id
-              
-              await ReportModel.findByIdAndDelete(delReportId);
-            }
+            const reportData = await getReport(req, res);
+
+            var {
+              today,
+              matrix,
+              allColumns,
+              brandRow,
+              brandName,
+              category,
+              brandCol,
+              multiVar,
+            } = reportData;
+            // console.log("SINGGLEEEEEEEE",matrix)
+            combinedMatrix.push(matrix);
           }
-          // console.log(matrixObject)
-          const newReport = new ReportModel({
-            today,          // The date from overallData
-            brandId,        // Brand ID from req.body
-            brandCol,       // Column label from overallData
-            brandRow,       // Row label from overallData
-            matrix: matrixObject, // Converted matrix object
-            allColumns,      // Array of column data from overallData
-            multiVar
+        }
+
+        // Convert matrix data to a MongoDB-compatible format
+        var matrixObject = new Map();
+
+        // Create new report document
+        console.log(combinedMatrix);
+        if (Array.isArray(combinedMatrix) && combinedMatrix.length > 0) {
+          combinedMatrix.forEach((rowValue) => {
+            Object.entries(rowValue).forEach(([rowKey, columns]) => {
+              if (!matrixObject.has(rowKey)) {
+                matrixObject.set(rowKey, new Map()); // Initialize each row as a Map
+              }
+              Object.entries(columns).forEach(([colKey, colValue]) => {
+                matrixObject.get(rowKey).set(colKey, colValue);
+              });
+            });
           });
-    
+        } else {
+          Object.entries(matrix).forEach(([rowKey, rowValue]) => {
+            let rowMap = new Map();
+            Object.entries(rowValue).forEach(([colKey, colValue]) => {
+              rowMap.set(colKey, colValue);
+            });
+            matrixObject.set(rowKey, rowMap);
+          });
+        }
+
+        const existingReports = await ReportModel.find({
+          today: todayDate,
+          brandId,
+        });
+        if (existingReports.length > 0) {
+          for (const existingReport of existingReports) {
+            const brandN = forBrandId.brandName;
+            const brandC = forBrandId.parentCategory;
+            console.log(
+              `Report already exists for brand ${brandN} ${brandC} on ${todayDate}.`
+            );
+
+            const delReportId = existingReport._id;
+
+            await ReportModel.findByIdAndDelete(delReportId);
+          }
+        }
+        // console.log(matrixObject)
+        const newReport = new ReportModel({
+          today, // The date from overallData
+          brandId, // Brand ID from req.body
+          brandCol, // Column label from overallData
+          brandRow, // Row label from overallData
+          matrix: matrixObject, // Converted matrix object
+          allColumns, // Array of column data from overallData
+          multiVar,
+        });
+
         // Save the report
-        // const newerReport = 
+        // const newerReport =
         await newReport.save();
         // console.log("😊😊😊😊😊😊😊", newerReport)
         // res.json(savedReport); // Send the saved report as the response
-
       }
     }
 
-    return res.status(200).json({ msg: "Reports saved successfully!"})
+    return res.status(200).json({ msg: "Reports saved successfully!" });
 
     // Destructure the fields from overallData
   } catch (err) {
@@ -2168,13 +2331,13 @@ const saveReports = async (req, res) => {
   }
 };
 
-const getSpecificDayReports = async(req,res) => {
-  try{
-    const { date } = req.body
+const getSpecificDayReports = async (req, res) => {
+  try {
+    const { date } = req.body;
 
-    const allReports = await ReportModel.find({ today: date}).lean();
-      // return
-    if (allReports.length>0){
+    const allReports = await ReportModel.find({ today: date }).lean();
+    // return
+    if (allReports.length > 0) {
       const updatedReports = await Promise.all(
         allReports.map(async (report) => {
           const brandData = await Brand.findById(report.brandId);
@@ -2185,62 +2348,63 @@ const getSpecificDayReports = async(req,res) => {
           };
         })
       );
-      return res.status(200).json({ allReports : updatedReports});
-
+      return res.status(200).json({ allReports: updatedReports });
     }
-    return res.status(404).json({ err: `No report found for ${date} date.`})
-
-  }
-  catch(err){
+    return res.status(404).json({ err: `No report found for ${date} date.` });
+  } catch (err) {
     console.error("Error getting specific day reports:", err);
     throw err;
   }
-}
-const getSpecificDayReportsStock = async (req,res) => {
-  try{
+};
+const getSpecificDayReportsStock = async (req, res) => {
+  try {
     ////////////////////// to be continude ///////////////////////////////
-  }
-  catch(err){
+  } catch (err) {
     console.error("Error getting specific day reports stock:", err);
     throw err;
   }
-}
+};
 
 const saveCatReports = async (req, res) => {
   try {
     const { categories } = req.body;
     const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as "YYYY-MM-DD"
 
-    for (var oneCat of categories){
-      var catTitle = oneCat.title
+    for (var oneCat of categories) {
+      var catTitle = oneCat.title;
 
-      const brandsOfCat = await Brand.find({ parentCategory: catTitle})
-      
-      for (var forBrandId of brandsOfCat){
-        var brandId = forBrandId._id
+      const brandsOfCat = await Brand.find({ parentCategory: catTitle });
 
-        const existingReport = await ReportModel.findOne({ today: todayDate, brandId });
+      for (var forBrandId of brandsOfCat) {
+        var brandId = forBrandId._id;
+
+        const existingReport = await ReportModel.findOne({
+          today: todayDate,
+          brandId,
+        });
         if (existingReport) {
-          const brandN = forBrandId.brandName
-          const brandC = forBrandId.parentCategory
-          console.log(`Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`);
+          const brandN = forBrandId.brandName;
+          const brandC = forBrandId.parentCategory;
+          console.log(
+            `Report already exists for brand ${brandN} ${brandC} on ${todayDate}. Skipping.`
+          );
           continue;
         }
 
         const req = {
-          body: {brandId: brandId} 
+          body: { brandId: brandId },
         };
         const res = {
           json: (data) => data,
           status: (code) => ({
-            json: (data) => ({ code, ...data })
-          })
+            json: (data) => ({ code, ...data }),
+          }),
         };
 
         const reportData = await getReport(req, res);
 
         const { today, matrix, allColumns, brandRow, brandCol } = reportData;
-    
+
         // Convert matrix data to a MongoDB-compatible format
         const matrixObject = {};
         Object.entries(matrix).forEach(([rowKey, rowValue]) => {
@@ -2249,17 +2413,17 @@ const saveCatReports = async (req, res) => {
             matrixObject[rowKey][colKey] = colValue;
           });
         });
-    
+
         // Create new report document
         const newReport = new ReportModel({
-          today,          // The date from overallData
-          brandId,        // Brand ID from req.body
-          brandCol,       // Column label from overallData
-          brandRow,       // Row label from overallData
+          today, // The date from overallData
+          brandId, // Brand ID from req.body
+          brandCol, // Column label from overallData
+          brandRow, // Row label from overallData
           matrix: matrixObject, // Converted matrix object
-          allColumns      // Array of column data from overallData
+          allColumns, // Array of column data from overallData
         });
-    
+
         // Save the report
         await newReport.save();
         // res.json(savedReport); // Send the saved report as the response
@@ -2276,26 +2440,26 @@ const saveCatReports = async (req, res) => {
 const saveBrandsReports = async (req, res) => {
   try {
     const { fetchBrand } = req.body;
-    
+
     // console.log(fetchBrand)
     // return
-    for (var forBrandId of fetchBrand){
-      var brandId = forBrandId._id
+    for (var forBrandId of fetchBrand) {
+      var brandId = forBrandId._id;
 
       const req = {
-        body: {brandId: brandId} 
+        body: { brandId: brandId },
       };
       const res = {
         json: (data) => data,
         status: (code) => ({
-          json: (data) => ({ code, ...data })
-        })
+          json: (data) => ({ code, ...data }),
+        }),
       };
 
       const reportData = await getReport(req, res);
 
       const { today, matrix, allColumns, brandRow, brandCol } = reportData;
-  
+
       // Convert matrix data to a MongoDB-compatible format
       const matrixObject = {};
       Object.entries(matrix).forEach(([rowKey, rowValue]) => {
@@ -2304,17 +2468,17 @@ const saveBrandsReports = async (req, res) => {
           matrixObject[rowKey][colKey] = colValue;
         });
       });
-  
+
       // Create new report document
       const newReport = new ReportModel({
-        today,          // The date from overallData
-        brandId,        // Brand ID from req.body
-        brandCol,       // Column label from overallData
-        brandRow,       // Row label from overallData
+        today, // The date from overallData
+        brandId, // Brand ID from req.body
+        brandCol, // Column label from overallData
+        brandRow, // Row label from overallData
         matrix: matrixObject, // Converted matrix object
-        allColumns      // Array of column data from overallData
+        allColumns, // Array of column data from overallData
       });
-  
+
       // Save the report
       await newReport.save();
       // res.json(savedReport); // Send the saved report as the response
@@ -2346,12 +2510,12 @@ const saveOneBrandReport = async (req, res) => {
 
     // Create new report document
     const newReport = new ReportModel({
-      today,          // The date from overallData
-      brandId,        // Brand ID from req.body
-      brandCol,       // Column label from overallData
-      brandRow,       // Row label from overallData
+      today, // The date from overallData
+      brandId, // Brand ID from req.body
+      brandCol, // Column label from overallData
+      brandRow, // Row label from overallData
       matrix: matrixObject, // Converted matrix object
-      allColumns      // Array of column data from overallData
+      allColumns, // Array of column data from overallData
     });
 
     // Save the report
@@ -2363,33 +2527,35 @@ const saveOneBrandReport = async (req, res) => {
   }
 };
 
-const searchItem = async (req,res) => {
-  try{
+const searchItem = async (req, res) => {
+  try {
     // console.log(req.body)
-    // return 
+    // return
 
-    const { searchedItem } = req.body
+    const { searchedItem } = req.body;
 
     const splitItems = searchedItem ? searchedItem.split(" ") : [];
-    
-    var searchList = []
+
+    var searchList = [];
 
     // const searchedBrand = splitItem[0];
-    for (var splitItem of splitItems){
-
+    for (var splitItem of splitItems) {
       const zeroSearch = splitItem;
-      const zeroSearchRegex = new RegExp(`${zeroSearch}`, 'i');
-  
-      var allZeroSearchBrand = [], allZeroSearchCat = [], allBrandByType = [], allBrandByCol = [];
-  
+      const zeroSearchRegex = new RegExp(`${zeroSearch}`, "i");
+
+      var allZeroSearchBrand = [],
+        allZeroSearchCat = [],
+        allBrandByType = [],
+        allBrandByCol = [];
+
       // Find brands by brand name and category
       allZeroSearchBrand = await Brand.find({ brandName: zeroSearchRegex });
       allZeroSearchCat = await Brand.find({ parentCategory: zeroSearchRegex });
-  
+
       var ifType = false;
       const allZeroSearchTypes = await Type.find({ type: zeroSearchRegex });
       if (allZeroSearchTypes && allZeroSearchTypes.length > 0) {
-        ifType = true
+        ifType = true;
         for (const allZeroSearchType of allZeroSearchTypes) {
           const typesBrandId = allZeroSearchType.brandId;
           const brandByType = await Brand.findById(typesBrandId);
@@ -2398,12 +2564,12 @@ const searchItem = async (req,res) => {
           }
         }
       }
-  
+
       // Find columns and add corresponding brands to `allBrandByCol`
       var ifCol = false;
       const allZeroSearchCols = await Column.find({ column: zeroSearchRegex });
       if (allZeroSearchCols && allZeroSearchCols.length > 0) {
-        ifCol = true
+        ifCol = true;
         for (const allZeroSearchCol of allZeroSearchCols) {
           const colsBrandId = allZeroSearchCol.brandId;
           const brandByCol = await Brand.findById(colsBrandId);
@@ -2412,7 +2578,7 @@ const searchItem = async (req,res) => {
           }
         }
       }
-  
+
       // Combine results
       const allZeroSearch = [
         ...allZeroSearchBrand,
@@ -2420,107 +2586,102 @@ const searchItem = async (req,res) => {
         ...allBrandByType,
         ...allBrandByCol,
       ];
-  
+
       // Remove duplicates based on `_id`
       const uniqueResultsMap = new Map();
-      allZeroSearch.forEach(item => {
+      allZeroSearch.forEach((item) => {
         uniqueResultsMap.set(item._id.toString(), item);
       });
-  
+
       // Convert the Map values back to an array
       const uniqueResults = Array.from(uniqueResultsMap.values());
-  
+
       // return res.json(uniqueResults);
-  
-  
+
       // const searchedCat = splitItem[1];
       var rowLabel;
       // rowLabel= splitItem.slice(2).join(" ").split(" (")[0];
-      if(ifType){
-        rowLabel = zeroSearch
+      if (ifType) {
+        rowLabel = zeroSearch;
       }
       var colLabel;
-      if (ifCol){
-        colLabel = zeroSearch
+      if (ifCol) {
+        colLabel = zeroSearch;
       }
       // if (searchedItem.includes("(")) {
       //   colLabel = splitItem.at(-1).replace(/[()]/g, "");
       // }
-      const searchedColRegex = new RegExp(`${colLabel}`, 'i');
-  
+      const searchedColRegex = new RegExp(`${colLabel}`, "i");
+
       // const searchedBrandRegex = new RegExp(`${searchedBrand}`, 'i');
       // const searchedCatRegex = new RegExp(`${searchedCat}`, 'i');
-      const searchedRowRegex = new RegExp(`${rowLabel}`, 'i');
-  
+      const searchedRowRegex = new RegExp(`${rowLabel}`, "i");
+
       // var allBrands;
       // allBrands = await Brand.find({ brandName : searchedBrandRegex })
-      
+
       // if (searchedCat){
       //   allBrands = await Brand.find({ brandName : searchedBrandRegex , parentCategory: searchedCatRegex})
       // }
-  
-      for (var brand of uniqueResults){
-        const brandId = brand._id
-        const cat = brand.parentCategory
-        const brandN = brand.brandName
-        const multivar = brand.multiVar
-  
+
+      for (var brand of uniqueResults) {
+        const brandId = brand._id;
+        const cat = brand.parentCategory;
+        const brandN = brand.brandName;
+        const multivar = brand.multiVar;
+
         var types;
         types = await Type.find({ brandId });
-        if (rowLabel){
+        if (rowLabel) {
           types = await Type.find({ brandId, type: searchedRowRegex });
         }
-  
-        if (multivar){
+
+        if (multivar) {
           const cols = colLabel
             ? await Column.find({ brandId, column: searchedColRegex })
             : await Column.find({ brandId });
-  
-          for (var type of types){
-            for (var col of cols){
+
+          for (var type of types) {
+            for (var col of cols) {
               searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
             }
           }
-        }else{
-          for (var type of types){
-            
-            const typeId = type._id
+        } else {
+          for (var type of types) {
+            const typeId = type._id;
             const cols = colLabel
               ? await Column.find({ brandId, typeId, column: searchedColRegex })
-              : await Column.find({ brandId, typeId });          
-            
-            for (var col of cols){
+              : await Column.find({ brandId, typeId });
+
+            for (var col of cols) {
               searchList.push(`${brandN} ${cat} ${type.type} (${col.column})`);
             }
           }
         }
       }
     }
-    
+
     // if the searched item is more than one word
-    if (splitItems.length >1){
+    if (splitItems.length > 1) {
       // map searchLIst such that it only has the repeated items
 
       const countMap = new Map();
-  
-      searchList.forEach(item => {
+
+      searchList.forEach((item) => {
         countMap.set(item, (countMap.get(item) || 0) + 1);
       });
-  
-      searchList= Array.from(countMap)
+
+      searchList = Array.from(countMap)
         .filter(([item, count]) => count > 1)
         .map(([item]) => item);
     }
 
-    return res.status(200).json(searchList)
-
-  }
-  catch(err){
+    return res.status(200).json(searchList);
+  } catch (err) {
     console.error("Error in search item:", err);
     res.status(500).json({ error: "Failed to search item" });
   }
-}
-
+};
 
 module.exports = {
   getAllCategories,

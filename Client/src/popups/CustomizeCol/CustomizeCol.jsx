@@ -102,6 +102,7 @@ export default function CustomizeCol({ isOpen, onClose, specificId }) {
   };
 
   const fetchLabelData = async () => {
+    console.log("yo call vako xxa hai ta kta ho customized column");
     if (specificId) {
       console.log(JSON.stringify({ brandId: specificId }));
       try {

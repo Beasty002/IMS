@@ -11,6 +11,11 @@ export default function CustomizeSingleCol({
   codeDropDown,
 }) {
   const [enableEdit, setEnableEdit] = useState(false);
+  const [chaiyekoType, setChaiyekoType] = useState(null);
+
+  useEffect(() => {
+    console.log("Yo ho hai ta fetchedSingleVarData", fetchSingleVarData);
+  }, [fetchSingleVarData]);
   const [formData, setFormData] = useState([
     {
       id: Date.now(),
@@ -21,11 +26,6 @@ export default function CustomizeSingleCol({
       isNew: true,
     },
   ]);
-
-  
-
- 
-
 
   useEffect(() => {
     if (specificId && selectedKey) {
@@ -59,6 +59,7 @@ export default function CustomizeSingleCol({
         isEditing: true,
         isNew: true,
         typeName: selectedKey,
+        typeId: chaiyekoType,
       },
     ]);
   };
@@ -88,7 +89,7 @@ export default function CustomizeSingleCol({
 
   const fetchColumnData = async (event) => {
     event.preventDefault();
-    console.log(formData);
+    console.log("Call hanne yesle ho hai ta guys", formData);
 
     try {
       const response = await fetch("http://localhost:3000/api/column", {
@@ -109,9 +110,9 @@ export default function CustomizeSingleCol({
       toast.success(`New column created successfully`, {
         autoClose: 1000,
       });
-      setTimeout(() => {
-        window.location.reload();
-      }, 1300);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1300);
     } catch (error) {
       console.error(error);
     }
@@ -197,6 +198,8 @@ export default function CustomizeSingleCol({
 
   useEffect(() => {
     if (fetchSingleVarData && fetchSingleVarData.msg) {
+      const newId = fetchSingleVarData.typeId;
+      setChaiyekoType(newId);
       const updatedFormData = fetchSingleVarData.msg.map((item) => ({
         id: item._id,
         columnName: item.column,
@@ -205,6 +208,7 @@ export default function CustomizeSingleCol({
         isEditing: false,
         isNew: false,
       }));
+
       setFormData(updatedFormData);
     }
   }, [fetchSingleVarData]);
@@ -248,9 +252,8 @@ export default function CustomizeSingleCol({
                               specificId,
                               item.columnName
                             );
-                            toggleEditMode(item.id)
+                            toggleEditMode(item.id);
                             setEnableEdit(!enableEdit);
-
                           }}
                         >
                           Save

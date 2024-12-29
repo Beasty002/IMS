@@ -12,9 +12,9 @@ export default function SinVarList() {
 
   const speId = location.state?.specificId || [];
 
-  useEffect(() => {
-    console.log("Yo ho hai spe Id ", speId);
-  }, []);
+  // useEffect(() => {
+  //   console.log("Yo ho hai spe Id ", speId);
+  // }, []);
 
   const [custPortal, setCustPortal] = useState(false);
   const [catPortal, setCatPortal] = useState(false);
@@ -43,6 +43,7 @@ export default function SinVarList() {
         console.log(response.statusText);
         return;
       }
+      console.log("yo ho hai cust ko data");
       setCodeDropDown(data.type);
     } catch (error) {
       console.log(error);
@@ -73,6 +74,7 @@ export default function SinVarList() {
     const selectedData = event.target.value;
     setSelectedKey(selectedData);
 
+    console.log( JSON.stringify({ rowValue: selectedData, brandId: speId }))
     try {
       const response = await fetch("http://localhost:3000/api/code", {
         method: "POST",
@@ -86,8 +88,12 @@ export default function SinVarList() {
         setFetchSingleVarData();
         return;
       }
-      console.log("Code ko data yo hai", data);
-      setFetchSingleVarData(data);
+      console.log("Pathaune code yei ho hai ta guys remember", data);
+      if (data) {
+        setFetchSingleVarData(data);
+      } else {
+        setFetchSingleVarData();
+      }
     } catch (error) {
       console.error(error);
     }
