@@ -61,16 +61,17 @@ body {
     font-size: 0.9rem !important;
   }
 
+  /* 
   table tr td,
   tr th {
     white-space: nowrap;
-  }
+  } */
 
-  table>td {
+  /* table>td {
     width: fit-content !important;
     min-width: none;
     padding: 5px !important;
-  }
+  } */
 
   *:not(.main-report-table) {
     display: hidden !important;
