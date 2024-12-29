@@ -110,9 +110,9 @@ export default function CustomizeSingleCol({
       toast.success(`New column created successfully`, {
         autoClose: 1000,
       });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 1300);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1300);
     } catch (error) {
       console.error(error);
     }
