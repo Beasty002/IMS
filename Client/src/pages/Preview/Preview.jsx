@@ -3,240 +3,197 @@ import { useLocation } from "react-router-dom";
 import "./Preview.css";
 
 function Preview() {
-  const [totalFetchData, setTotalFetchData] = useState([]);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const { selectedItems = [], selectedTitles = [] } = location.state || {};
-  const [matrixKey, setMatrixKey] = useState({});
-  const [brandId, setBrandId] = useState("");
-  const [title, setTitle] = useState("");
-  const [singleVarFetch, setSingleVarFetch] = useState([]);
+  const [reportData, setReportData] = useState([]);
 
   useEffect(() => {
-    if (selectedItems.length > 0) {
-      selectedItems.forEach((item, index) => {
-        fetchTotalData(item, index);
-      });
-    }
-  }, [selectedItems]);
+    const fetchAllData = async () => {
+      if (selectedItems.length === 0) return;
 
-  useEffect(() => {
-    console.log("YO ho hai fetch data", totalFetchData);
-  }, [totalFetchData]);
+      setIsLoading(true);
+      try {
+        const reports = await Promise.all(
+          selectedItems.map(async (brandId, index) => {
+            const response = await fetch("http://localhost:3000/api/report", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ brandId }),
+            });
 
-  const fetchTotalData = async (brandId, index) => {
-    console.log("Fetching data for brandId:", brandId);
-    setBrandId(brandId);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-    setIsLoading(true);
-    try {
-      const response = await fetch("http://localhost:3000/api/report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ brandId }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
+            const data = await response.json();
+            const title = selectedTitles[index] || "Unnamed Report";
+
+            if (data.multiVar) {
+              return { data, title, type: "multiVar" };
+            }
+
+            const matrixKeys = Object.keys(data.matrix);
+            const detailedData = await Promise.all(
+              matrixKeys.map(async (matrixKey) => {
+                const detailResponse = await fetch(
+                  "http://localhost:3000/api/report",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ matrixKey, brandId }),
+                  }
+                );
+
+                if (!detailResponse.ok) {
+                  throw new Error(
+                    `HTTP error! status: ${detailResponse.status}`
+                  );
+                }
+
+                return detailResponse.json();
+              })
+            );
+
+            return {
+              data: detailedData,
+              title,
+              type: "singleVar",
+            };
+          })
+        );
+
+        setReportData(reports);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
-      console.log(data);
-      setMatrixKey(Object.keys(data.matrix));
-      setTotalFetchData((prevState) => [
-        ...prevState,
-        { data, title: selectedTitles[index] || "Unnamed Report" },
-      ]);
-      setTitle(totalFetchData.title);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (matrixKey && brandId) {
-      for (let i = 0; i <= matrixKey.length - 1; i++) {
-        fetchSpecificSingleData(matrixKey[i], brandId);
-      }
-    }
-  }, [matrixKey]);
+    fetchAllData();
+  }, [selectedItems, selectedTitles]);
 
-  const fetchSpecificSingleData = async (matrixKey, brandId) => {
-    console.log(JSON.stringify({ matrixKey, brandId }));
-    try {
-      const response = await fetch("http://localhost:3000/api/report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ matrixKey, brandId }),
-      });
-      const data = await response.json();
+  const renderMultiVarTable = (item) => (
+    <table>
+      <thead className="report-table-head">
+        <tr>
+          <th rowSpan={2}>S.N</th>
+          <th rowSpan={2}>
+            {item.data.brandCol
+              ? `${item.data.brandRow}/${item.data.brandCol}`
+              : item.data.brandRow}
+          </th>
+          {item.data.allColumns?.map((col, colIndex) => (
+            <th key={colIndex} colSpan={4}>
+              {col.column}
+            </th>
+          ))}
+        </tr>
+        <tr>
+          {item.data.allColumns?.map((_, colIndex) => (
+            <React.Fragment key={colIndex}>
+              <th>OP</th>
+              <th>IN</th>
+              <th>OUT</th>
+              <th>BAL</th>
+            </React.Fragment>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {Object.entries(item.data.matrix || {}).map(
+          ([rowLabel, rowData], rowIndex) => {
+            if (!rowData || Object.keys(rowData).length === 0) return null;
 
-      if (!response.ok) {
-        console.log(response.statusText);
-        return;
-      }
-      console.log(data);
-      setSingleVarFetch((prevState) => [...prevState, { data }]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+            return (
+              <tr key={rowIndex}>
+                <td>{rowIndex + 1}</td>
+                <td>{rowLabel}</td>
+                {item.data.allColumns.map((col, colIndex) => {
+                  const colData = rowData[col.column];
+                  return (
+                    <React.Fragment key={colIndex}>
+                      <td>{colData?.op !== undefined ? colData.op : ""}</td>
+                      <td>{colData?.in !== undefined ? colData.in : ""}</td>
+                      <td>{colData?.out !== undefined ? colData.out : ""}</td>
+                      <td>{colData?.bal !== undefined ? colData.bal : ""}</td>
+                    </React.Fragment>
+                  );
+                })}
+              </tr>
+            );
+          }
+        )}
+      </tbody>
+    </table>
+  );
 
-  useEffect(() => {
-    console.log("Yo ho hai te key", totalFetchData);
-  }, [totalFetchData]);
+  const renderSingleVarTables = (item) => (
+    <div className="single-report-css">
+      {item.data.map((report, reportIndex) => (
+        <div key={`report-${reportIndex}`} style={{ marginBottom: "30px" }}>
+          {Object.entries(report.matrix || {}).map(([key, value], index) => (
+            <table
+              key={`table-${key}-${index}`}
+              style={{ marginBottom: "30px" }}
+              className="table1"
+            >
+              <thead className="report-table-head">
+                <tr>
+                  <th rowSpan="2">S.N</th>
+                  <th rowSpan="2">Code</th>
+                  <th colSpan="4">{key}</th>
+                </tr>
+                <tr>
+                  <th>OP</th>
+                  <th>IN</th>
+                  <th>OUT</th>
+                  <th>BAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(value || {}).map(
+                  ([innerKey, innerValue], innerIndex) => (
+                    <tr key={`row-${key}-${innerKey}-${innerIndex}`}>
+                      <td>{innerIndex + 1}</td>
+                      <td>{innerKey}</td>
+                      {Object.entries(innerValue || {}).map(
+                        ([_, cellValue], colIndex) => (
+                          <td key={`cell-${key}-${innerKey}-${colIndex}`}>
+                            {cellValue}
+                          </td>
+                        )
+                      )}
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <>
       <div className="total-out report-all-container-print">
         <div id="report-content">
-          {totalFetchData.map((item, index) => {
-            return (
-              <div key={index} className="report-table-container">
-                <h1
-                  style={{
-                    fontSize: "20px",
-                  }}
-                  className="table-title"
-                >
-                  {item.title} {item.data.category}
-                </h1>
-
-                {item.data && item.data.multiVar ? (
-                  <table>
-                    <thead className="report-table-head">
-                      <tr>
-                        <th rowSpan={2}>S.N</th>
-                        <th rowSpan={2}>
-                          {item.data.brandCol
-                            ? `${item.data.brandRow}/${item.data.brandCol}`
-                            : item.data.brandRow}
-                        </th>
-                        {item.data.allColumns?.map((col, colIndex) => (
-                          <th key={colIndex} colSpan={4}>
-                            {col.column}
-                          </th>
-                        ))}
-                      </tr>
-                      <tr>
-                        {item.data.allColumns?.map((_, colIndex) => (
-                          <React.Fragment key={colIndex}>
-                            <th>OP</th>
-                            <th>IN</th>
-                            <th>OUT</th>
-                            <th>BAL</th>
-                          </React.Fragment>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(item.data.matrix || {}).map(
-                        ([rowLabel, rowData], rowIndex) => {
-                          if (!rowData || Object.keys(rowData).length === 0)
-                            return null;
-
-                          return (
-                            <tr key={rowIndex}>
-                              <td>{rowIndex + 1}</td>
-                              <td>{rowLabel}</td>
-                              {item.data.allColumns.map((col, colIndex) => {
-                                const colData = rowData[col.column];
-
-                                return (
-                                  <React.Fragment key={colIndex}>
-                                    <td>
-                                      {colData?.op !== undefined
-                                        ? colData.op
-                                        : ""}
-                                    </td>
-                                    <td>
-                                      {colData?.in !== undefined
-                                        ? colData.in
-                                        : ""}
-                                    </td>
-                                    <td>
-                                      {colData?.out !== undefined
-                                        ? colData.out
-                                        : ""}
-                                    </td>
-                                    <td>
-                                      {colData?.bal !== undefined
-                                        ? colData.bal
-                                        : ""}
-                                    </td>
-                                  </React.Fragment>
-                                );
-                              })}
-                            </tr>
-                          );
-                        }
-                      )}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="single-report-css">
-                    {singleVarFetch &&
-                      singleVarFetch.map((item, itemIndex) => (
-                        <div
-                          key={`item-${itemIndex}`}
-                          style={{ marginBottom: "30px" }}
-                        >
-                          {Object.entries(item.data.matrix || {}).map(
-                            ([key, value], index) => (
-                              <table
-                                key={`table-${key}-${index}`}
-                                style={{ marginBottom: "30px" }}
-                                className="table1"
-                              >
-                                <thead className="report-table-head">
-                                  <tr>
-                                    <th rowSpan="2">S.N</th>
-                                    <th rowSpan="2">Code</th>
-                                    <th colSpan="4">{key}</th>
-                                  </tr>
-                                  <tr>
-                                    <th>OP</th>
-                                    <th>IN</th>
-                                    <th>OUT</th>
-                                    <th>BAL</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {Object.entries(value || {}).map(
-                                    ([innerKey, innerValue], innerIndex) => (
-                                      <tr
-                                        key={`row-${key}-${innerKey}-${innerIndex}`}
-                                      >
-                                        <td>{innerIndex + 1}</td>
-                                        <td>{innerKey}</td>
-                                        {Object.entries(innerValue || {}).map(
-                                          ([_, cellValue], colIndex) => (
-                                            <td
-                                              key={`cell-${key}-${innerKey}-${colIndex}`}
-                                            >
-                                              {cellValue}
-                                            </td>
-                                          )
-                                        )}
-                                      </tr>
-                                    )
-                                  )}
-                                </tbody>
-                              </table>
-                            )
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {reportData.map((item, index) => (
+            <div key={index} className="report-table-container">
+              <h1 className="table-title" style={{ fontSize: "20px" }}>
+                {item.title} {item.data.category}
+              </h1>
+              {item.type === "multiVar"
+                ? renderMultiVarTable(item)
+                : renderSingleVarTables(item)}
+            </div>
+          ))}
         </div>
         <div className="print-btn-container">
           <button
@@ -247,7 +204,6 @@ function Preview() {
             Print
           </button>
         </div>
-
       </div>
       {isLoading && (
         <div className="center-hanne">
