@@ -7,13 +7,13 @@
   border-collapse: collapse;
 }
 
-.lookup-report {
+/* .lookup-report {
   .lookup-report {
     table {
       table-layout: auto !important;
     }
   }
-}
+} */
 
 table {
   page-break-inside: avoid;
