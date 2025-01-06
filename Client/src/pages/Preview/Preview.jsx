@@ -209,7 +209,10 @@ function Preview() {
           {reportData.map((item, index) => (
             <div key={index} className="report-table-container">
               <h1 className="table-title" style={{ fontSize: "20px" }}>
-                {item.title} {item.data[0].category || ""}
+                {item.title}{" "}
+                {item.type === "multiVar"
+                  ? item.data.category
+                  : item.data[0].category}
               </h1>
               {item.type === "multiVar"
                 ? renderMultiVarTable(item)
