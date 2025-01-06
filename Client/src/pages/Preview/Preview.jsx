@@ -212,11 +212,9 @@ function Preview() {
             return (
               <div
                 key={index}
-                className={
-                  item.type === "multiVar"
-                    ? tableClass
-                    : "report-table-container"
-                }
+                className={`report-table-container ${
+                  item.type === "multiVar" ? tableClass : ""
+                }`}
               >
                 <h1 className="table-title" style={{ fontSize: "20px" }}>
                   {item.title}{" "}
