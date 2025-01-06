@@ -198,13 +198,26 @@ function Preview() {
       <div className="total-out report-all-container-print">
         <div id="report-content">
           {reportData.map((item, index) => {
-            console.log("Mug item yo ho hai", item.data[0].matrix);
-            const columnCount = getColumnCount(item.data[0].matrix);
-            console.log("Yo overall counting ho hai ta kta ho", columnCount);
-            const tableClass = columnCount > 7 ? "vertical-table" : "";
+            let tableClass;
+            // console.log("Mug item yo ho hai", item.data[0].matrix);
+            if (item.type === "multiVar") {
+              console.log(item);
+              const columnCount = getColumnCount(item.data.matrix);
+              console.log("Yo overall counting ho hai ta kta ho", columnCount);
+              tableClass = columnCount > 7 ? "vertical-table" : "";
+            } else {
+              console.log("Do notthing");
+            }
 
             return (
-              <div key={index} className={tableClass}>
+              <div
+                key={index}
+                className={
+                  item.type === "multiVar"
+                    ? tableClass
+                    : "report-table-container"
+                }
+              >
                 <h1 className="table-title" style={{ fontSize: "20px" }}>
                   {item.title}{" "}
                   {item.type === "multiVar"
