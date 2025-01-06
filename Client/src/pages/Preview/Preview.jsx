@@ -79,6 +79,7 @@ function Preview() {
   }, [selectedItems, selectedTitles]);
 
   const getColumnCount = (matrix) => {
+    console.log("Yop matrix ho hai", matrix);
     const firstKey = Object.keys(matrix)[0];
     console.log(Object.keys(matrix[firstKey]).length);
     if (!firstKey || !matrix[firstKey]) return 0;
@@ -86,13 +87,8 @@ function Preview() {
   };
 
   const renderMultiVarTable = (item) => {
-    const columnCount = getColumnCount(item.data.matrix);
-    console.log("Yo ho hai the column ko count ", columnCount);
-
-    const tableClass = columnCount > 7 ? "vertical-table" : "";
-
     return (
-      <table className={tableClass}>
+      <table>
         <thead className="report-table-head">
           <tr>
             <th rowSpan={2}>S.N</th>
@@ -153,15 +149,10 @@ function Preview() {
         {item.data.map((report, reportIndex) => (
           <div key={`report-${reportIndex}`} style={{ marginBottom: "30px" }}>
             {Object.entries(report.matrix || {}).map(([key, value], index) => {
-              const columnCount = Object.keys(value || {}).length;
-              console.log("Yo ho hai the column ko count ", columnCount);
-              const tableClass = columnCount > 7 ? "vertical-table" : "";
-
               return (
                 <table
                   key={`table-${key}-${index}`}
                   style={{ marginBottom: "30px" }}
-                  className={tableClass}
                 >
                   <thead className="report-table-head">
                     <tr>
@@ -206,19 +197,26 @@ function Preview() {
     <>
       <div className="total-out report-all-container-print">
         <div id="report-content">
-          {reportData.map((item, index) => (
-            <div key={index} className="report-table-container">
-              <h1 className="table-title" style={{ fontSize: "20px" }}>
-                {item.title}{" "}
+          {reportData.map((item, index) => {
+            console.log("Mug item yo ho hai", item.data[0].matrix);
+            const columnCount = getColumnCount(item.data[0].matrix);
+            console.log("Yo overall counting ho hai ta kta ho", columnCount);
+            const tableClass = columnCount > 7 ? "vertical-table" : "";
+
+            return (
+              <div key={index} className={tableClass}>
+                <h1 className="table-title" style={{ fontSize: "20px" }}>
+                  {item.title}{" "}
+                  {item.type === "multiVar"
+                    ? item.data.category
+                    : item.data[0].category}
+                </h1>
                 {item.type === "multiVar"
-                  ? item.data.category
-                  : item.data[0].category}
-              </h1>
-              {item.type === "multiVar"
-                ? renderMultiVarTable(item)
-                : renderSingleVarTables(item)}
-            </div>
-          ))}
+                  ? renderMultiVarTable(item)
+                  : renderSingleVarTables(item)}
+              </div>
+            );
+          })}
         </div>
         <div className="print-btn-container">
           <button
