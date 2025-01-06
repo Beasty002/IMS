@@ -78,107 +78,129 @@ function Preview() {
     fetchAllData();
   }, [selectedItems, selectedTitles]);
 
-  const renderMultiVarTable = (item) => (
-    <table>
-      <thead className="report-table-head">
-        <tr>
-          <th rowSpan={2}>S.N</th>
-          <th rowSpan={2}>
-            {item.data.brandCol
-              ? `${item.data.brandRow}/${item.data.brandCol}`
-              : item.data.brandRow}
-          </th>
-          {item.data.allColumns?.map((col, colIndex) => (
-            <th key={colIndex} colSpan={4}>
-              {col.column}
+  const getColumnCount = (matrix) => {
+    const firstKey = Object.keys(matrix)[0];
+    console.log(Object.keys(matrix[firstKey]).length);
+    if (!firstKey || !matrix[firstKey]) return 0;
+    return Object.keys(matrix[firstKey]).length;
+  };
+
+  const renderMultiVarTable = (item) => {
+    const columnCount = getColumnCount(item.data.matrix);
+    console.log("Yo ho hai the column ko count ", columnCount);
+
+    const tableClass = columnCount > 7 ? "vertical-table" : "";
+
+    return (
+      <table className={tableClass}>
+        <thead className="report-table-head">
+          <tr>
+            <th rowSpan={2}>S.N</th>
+            <th rowSpan={2}>
+              {item.data.brandCol
+                ? `${item.data.brandRow}/${item.data.brandCol}`
+                : item.data.brandRow}
             </th>
-          ))}
-        </tr>
-        <tr>
-          {item.data.allColumns?.map((_, colIndex) => (
-            <React.Fragment key={colIndex}>
-              <th>OP</th>
-              <th>IN</th>
-              <th>OUT</th>
-              <th>BAL</th>
-            </React.Fragment>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Object.entries(item.data.matrix || {}).map(
-          ([rowLabel, rowData], rowIndex) => {
-            if (!rowData || Object.keys(rowData).length === 0) return null;
+            {item.data.allColumns?.map((col, colIndex) => (
+              <th key={colIndex} colSpan={4}>
+                {col.column}
+              </th>
+            ))}
+          </tr>
+          <tr>
+            {item.data.allColumns?.map((_, colIndex) => (
+              <React.Fragment key={colIndex}>
+                <th>OP</th>
+                <th>IN</th>
+                <th>OUT</th>
+                <th>BAL</th>
+              </React.Fragment>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(item.data.matrix || {}).map(
+            ([rowLabel, rowData], rowIndex) => {
+              if (!rowData || Object.keys(rowData).length === 0) return null;
 
-            return (
-              <tr key={rowIndex}>
-                <td>{rowIndex + 1}</td>
-                <td>{rowLabel}</td>
-                {item.data.allColumns.map((col, colIndex) => {
-                  const colData = rowData[col.column];
-                  return (
-                    <React.Fragment key={colIndex}>
-                      <td>{colData?.op !== undefined ? colData.op : ""}</td>
-                      <td>{colData?.in !== undefined ? colData.in : ""}</td>
-                      <td>{colData?.out !== undefined ? colData.out : ""}</td>
-                      <td>{colData?.bal !== undefined ? colData.bal : ""}</td>
-                    </React.Fragment>
-                  );
-                })}
-              </tr>
-            );
-          }
-        )}
-      </tbody>
-    </table>
-  );
+              return (
+                <tr key={rowIndex}>
+                  <td>{rowIndex + 1}</td>
+                  <td>{rowLabel}</td>
+                  {item.data.allColumns.map((col, colIndex) => {
+                    const colData = rowData[col.column];
+                    return (
+                      <React.Fragment key={colIndex}>
+                        <td>{colData?.op !== undefined ? colData.op : ""}</td>
+                        <td>{colData?.in !== undefined ? colData.in : ""}</td>
+                        <td>{colData?.out !== undefined ? colData.out : ""}</td>
+                        <td>{colData?.bal !== undefined ? colData.bal : ""}</td>
+                      </React.Fragment>
+                    );
+                  })}
+                </tr>
+              );
+            }
+          )}
+        </tbody>
+      </table>
+    );
+  };
 
-  const renderSingleVarTables = (item) => (
-    <div className="single-report-css">
-      {item.data.map((report, reportIndex) => (
-        <div key={`report-${reportIndex}`} style={{ marginBottom: "30px" }}>
-          {Object.entries(report.matrix || {}).map(([key, value], index) => (
-            <table
-              key={`table-${key}-${index}`}
-              style={{ marginBottom: "30px" }}
-              className="table1"
-            >
-              <thead className="report-table-head">
-                <tr>
-                  <th rowSpan="2">S.N</th>
-                  <th rowSpan="2">Code</th>
-                  <th colSpan="4">{key}</th>
-                </tr>
-                <tr>
-                  <th>OP</th>
-                  <th>IN</th>
-                  <th>OUT</th>
-                  <th>BAL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(value || {}).map(
-                  ([innerKey, innerValue], innerIndex) => (
-                    <tr key={`row-${key}-${innerKey}-${innerIndex}`}>
-                      <td>{innerIndex + 1}</td>
-                      <td>{innerKey}</td>
-                      {Object.entries(innerValue || {}).map(
-                        ([_, cellValue], colIndex) => (
-                          <td key={`cell-${key}-${innerKey}-${colIndex}`}>
-                            {cellValue}
-                          </td>
-                        )
-                      )}
+  const renderSingleVarTables = (item) => {
+    return (
+      <div className="single-report-css">
+        {item.data.map((report, reportIndex) => (
+          <div key={`report-${reportIndex}`} style={{ marginBottom: "30px" }}>
+            {Object.entries(report.matrix || {}).map(([key, value], index) => {
+              const columnCount = Object.keys(value || {}).length;
+              console.log("Yo ho hai the column ko count ", columnCount);
+              const tableClass = columnCount > 7 ? "vertical-table" : "";
+
+              return (
+                <table
+                  key={`table-${key}-${index}`}
+                  style={{ marginBottom: "30px" }}
+                  className={tableClass}
+                >
+                  <thead className="report-table-head">
+                    <tr>
+                      <th rowSpan="2">S.N</th>
+                      <th rowSpan="2">Code</th>
+                      <th colSpan="4">{key}</th>
                     </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
+                    <tr>
+                      <th>OP</th>
+                      <th>IN</th>
+                      <th>OUT</th>
+                      <th>BAL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(value || {}).map(
+                      ([innerKey, innerValue], innerIndex) => (
+                        <tr key={`row-${key}-${innerKey}-${innerIndex}`}>
+                          <td>{innerIndex + 1}</td>
+                          <td>{innerKey}</td>
+                          {Object.entries(innerValue || {}).map(
+                            ([_, cellValue], colIndex) => (
+                              <td key={`cell-${key}-${innerKey}-${colIndex}`}>
+                                {cellValue}
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -187,7 +209,7 @@ function Preview() {
           {reportData.map((item, index) => (
             <div key={index} className="report-table-container">
               <h1 className="table-title" style={{ fontSize: "20px" }}>
-                {item.title} {item.data.category}
+                {item.title} {item.data[0].category || ""}
               </h1>
               {item.type === "multiVar"
                 ? renderMultiVarTable(item)
