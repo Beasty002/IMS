@@ -46,17 +46,7 @@
     page-break-inside: avoid;
   }
 
-  .vertical-table {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    width: auto;
-    height: 100dvh;
-    margin-left: auto;
 
-    table {
-      height: 95dvh !important;
-    }
-  }
 
 
 

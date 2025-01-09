@@ -471,7 +471,19 @@ input:focus {
         table {
             overflow: hidden !important;
             white-space: normal;
+
         }
+    }
+
+    td {
+        text-align: center !important;
+        padding: 0px !important;
+    }
+
+    .print-btn-container {
+        display: none !important;
+        background-color: red;
+
     }
 
 }
@@ -479,8 +491,8 @@ input:focus {
 .single-report-css {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 4px;
+    justify-content: flex-start;
+    gap: 20px;
 
     table {
         overflow: hidden !important;
@@ -490,3 +502,39 @@ input:focus {
 #finalReport {
     overflow-x: scroll;
 }
+
+
+@media print {
+    .print-btn-container {
+        all: initial !important;
+        display: none;
+    }
+
+    .lookup-report,
+    .lookup-report>* {
+        overflow-x: auto !important;
+    }
+
+
+
+    .vertical-table {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        width: auto;
+        height: 100dvh;
+        margin-left: auto;
+
+        table {
+            height: 100dvh !important;
+
+        }
+    }
+
+    /* .print-btn-container,
+.print-btn-container>* {
+    display: none;
+} */
+
+    .lookup-report {
+        overflow-x: auto;
+    }
