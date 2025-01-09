@@ -195,7 +195,7 @@ input:focus {
 /* 
 
 /* --------------------------------------------------------------------------------------------------------- */
-.page-top-container {
+*/ .page-top-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -477,7 +477,7 @@ input:focus {
 
     td {
         text-align: center !important;
-        padding: 0px !important;
+        padding: 0px;
     }
 
     .print-btn-container {
@@ -521,13 +521,22 @@ input:focus {
         writing-mode: vertical-rl;
         text-orientation: mixed;
         width: auto;
+
         height: 100dvh;
         margin-left: auto;
 
         table {
             height: 100dvh !important;
 
+            tbody tr td {
+                padding: 0 auto !important;
+            }
+
         }
+    }
+
+    #reportContent .vertical-table table td {
+        padding: 20px !important;
     }
 
     /* .print-btn-container,
@@ -538,3 +547,24 @@ input:focus {
     .lookup-report {
         overflow-x: auto;
     }
+}
+
+.search-btn-cont {
+    background-color: red;
+    display: flex;
+    justify-content: space-between;
+
+    .btn-container {
+        width: fit-content;
+    }
+}
+
+.page-top-container.extra {
+    position: relative;
+
+    .btn-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}

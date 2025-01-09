@@ -238,7 +238,7 @@ function SaleEntry() {
       const updatedList = prev.map((item) =>
         item.id === itemId
           ? // Math.max is used to determine upper and lower limit
-            { ...item, counter: Math.max(0, item.counter - 1) }
+          { ...item, counter: Math.max(0, item.counter - 1) }
           : item
       );
       return updatedList;
@@ -345,7 +345,7 @@ function SaleEntry() {
   return (
     <div id="newSales">
       <h2>Sales Entry</h2>
-      <section className="page-top-container">
+      <section className="page-top-container extra">
         <div className="search-box">
           <div className="search">
             <i className="bx bx-search-alt"></i>
@@ -386,6 +386,7 @@ function SaleEntry() {
         <div onClick={addNewList} className="btn-container">
           <button className="secondary-btn">+ New Item</button>
         </div>
+
       </section>
 
       <section className="sales-item-container">
@@ -424,7 +425,7 @@ function SaleEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
-                  item.fetchData.length > 0 ? (
+                    item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
@@ -444,7 +445,7 @@ function SaleEntry() {
                 >
                   <option value="">Select RowLabel</option>
                   {Array.isArray(item.brandData?.type) &&
-                  item.brandData.type.length > 0 ? (
+                    item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
