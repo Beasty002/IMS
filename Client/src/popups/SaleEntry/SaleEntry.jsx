@@ -340,6 +340,7 @@ function SaleEntry() {
     console.log(rowLabel);
     console.log(str);
   };
+  const [focused, setFocused] = useState(false);
 
   return (
     <div id="newSales">
@@ -353,6 +354,8 @@ function SaleEntry() {
               placeholder="Search items to add..."
               aria-label="Search input"
               value={searchValue}
+              onFocus={() => setFocused(!focused)}
+              onBlur={() => setFocused(!focused)}
               onChange={(e) => {
                 const newValue = e.target.value;
                 setSearchValue(newValue);
@@ -361,16 +364,22 @@ function SaleEntry() {
             />
           </div>
           <div className="search-list">
-            {isLoading ? (
+            {isLoading && focused ? (
               <p>Data is loading...</p>
             ) : (
-              <ul>
-                {resData?.map((item, index) => (
-                  <li onClick={() => getTheData(item)} key={index}>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <>
+                {focused ? (
+                  <ul>
+                    {resData?.map((item, index) => (
+                      <li onClick={() => getTheData(item)} key={index}>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <></>
+                )}
+              </>
             )}
           </div>
         </div>
