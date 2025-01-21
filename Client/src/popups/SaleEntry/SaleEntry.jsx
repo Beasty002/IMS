@@ -356,7 +356,6 @@ function SaleEntry() {
     console.log(rowLabel);
     console.log(str);
   };
-  const [focused, setFocused] = useState(false);
 
   return (
     <div id="newSales">

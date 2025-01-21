@@ -8,6 +8,23 @@ function PurchaseEntry() {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [resData, setResData] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -236,6 +253,8 @@ function PurchaseEntry() {
 
   const searchInputValue = async (currentValue) => {
     console.log(JSON.stringify({ searchedItem: currentValue }));
+
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/searchItem", {
         method: "POST",
@@ -253,6 +272,8 @@ function PurchaseEntry() {
       setResData(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -263,7 +284,6 @@ function PurchaseEntry() {
     const rowLabel = parts.length > 2 ? parts[2] : "";
     const str = parts.at(-1).replace(/[()]/g, "");
     console.log(str);
-
 
     const newInput = {
       id: Date.now(),
@@ -290,28 +310,43 @@ function PurchaseEntry() {
     <div id="newSales">
       <h2>Purchase Entry</h2>
       <section className="page-top-container extra">
-        <div className="search-box">
-          <i className="bx bx-search-alt"></i>
-          <input
-            type="text"
-            placeholder="Search items to add..."
-            aria-label="Search input"
-            value={searchValue}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setSearchValue(newValue);
-              searchInputValue(newValue);
-            }}
-          />
-          <div className="search-list">
-            <ul>
-              {resData?.map((item, index) => (
-                <li onClick={() => getTheData(item)} key={index}>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+        <div className="search-box" ref={searchContainerRef}>
+          <div className="search">
+            <i className="bx bx-search-alt"></i>
+            <input
+              type="text"
+              placeholder="Search items to add..."
+              aria-label="Search input"
+              value={searchValue}
+              onFocus={() => setShowSuggestions(true)}
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setSearchValue(newValue);
+                searchInputValue(newValue);
+              }}
+            />
           </div>
+          {showSuggestions && (
+            <div className="search-list">
+              {isLoading ? (
+                <p>Data is loading...</p>
+              ) : (
+                <ul>
+                  {resData?.map((item, index) => (
+                    <li
+                      onClick={() => {
+                        getTheData(item);
+                        setSearchValue("");
+                      }}
+                      key={index}
+                    >
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
         <div className="btn-container">
           <button onClick={addNewList} className="secondary-btn">
@@ -355,7 +390,7 @@ function PurchaseEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
-                    item.fetchData.length > 0 ? (
+                  item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
@@ -375,7 +410,7 @@ function PurchaseEntry() {
                 >
                   <option value="">Select RowLabel</option>
                   {Array.isArray(item.brandData?.type) &&
-                    item.brandData.type.length > 0 ? (
+                  item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
