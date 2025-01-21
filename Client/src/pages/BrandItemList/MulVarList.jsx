@@ -89,7 +89,13 @@ export default function MulVarList() {
       console.log(data);
       setAllData(data);
       setTableData(data.matrix);
-      setColLabel(data.allColumns);
+      const firstItem = Object.values(data.matrix)[0];
+      const headers = Object.keys(firstItem).map((key) => ({
+        _id: key,
+        column: key,
+        brandId: data.brandId,
+      }));
+      setColLabel(headers);
     } catch (error) {
       console.error("Fetch error: ", error);
     }
