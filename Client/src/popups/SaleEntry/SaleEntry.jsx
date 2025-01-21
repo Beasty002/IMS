@@ -13,6 +13,22 @@ function SaleEntry() {
   const [fetchStatus, setFetchStatus] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [resData, setResData] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const [addInput, setAddInput] = useState([
     {
       id: Date.now(),
@@ -238,7 +254,7 @@ function SaleEntry() {
       const updatedList = prev.map((item) =>
         item.id === itemId
           ? // Math.max is used to determine upper and lower limit
-          { ...item, counter: Math.max(0, item.counter - 1) }
+            { ...item, counter: Math.max(0, item.counter - 1) }
           : item
       );
       return updatedList;
@@ -346,7 +362,7 @@ function SaleEntry() {
     <div id="newSales">
       <h2>Sales Entry</h2>
       <section className="page-top-container extra">
-        <div className="search-box">
+        <div className="search-box" ref={searchContainerRef}>
           <div className="search">
             <i className="bx bx-search-alt"></i>
             <input
@@ -354,8 +370,7 @@ function SaleEntry() {
               placeholder="Search items to add..."
               aria-label="Search input"
               value={searchValue}
-              onFocus={() => setFocused(!focused)}
-              onBlur={() => setFocused(!focused)}
+              onFocus={() => setShowSuggestions(true)}
               onChange={(e) => {
                 const newValue = e.target.value;
                 setSearchValue(newValue);
@@ -363,30 +378,31 @@ function SaleEntry() {
               }}
             />
           </div>
-          <div className="search-list">
-            {isLoading && focused ? (
-              <p>Data is loading...</p>
-            ) : (
-              <>
-                {focused ? (
-                  <ul>
-                    {resData?.map((item, index) => (
-                      <li onClick={() => getTheData(item)} key={index}>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <></>
-                )}
-              </>
-            )}
-          </div>
+          {showSuggestions && (
+            <div className="search-list">
+              {isLoading ? (
+                <p>Data is loading...</p>
+              ) : (
+                <ul>
+                  {resData?.map((item, index) => (
+                    <li
+                      onClick={() => {
+                        getTheData(item);
+                        setSearchValue("");
+                      }}
+                      key={index}
+                    >
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
         <div onClick={addNewList} className="btn-container">
           <button className="secondary-btn">+ New Item</button>
         </div>
-
       </section>
 
       <section className="sales-item-container">
@@ -425,7 +441,7 @@ function SaleEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
-                    item.fetchData.length > 0 ? (
+                  item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
@@ -445,7 +461,7 @@ function SaleEntry() {
                 >
                   <option value="">Select RowLabel</option>
                   {Array.isArray(item.brandData?.type) &&
-                    item.brandData.type.length > 0 ? (
+                  item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
