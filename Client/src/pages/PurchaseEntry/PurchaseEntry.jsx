@@ -289,7 +289,7 @@ function PurchaseEntry() {
   return (
     <div id="newSales">
       <h2>Purchase Entry</h2>
-      <section className="page-top-container">
+      <section className="page-top-container extra">
         <div className="search-box">
           <i className="bx bx-search-alt"></i>
           <input
@@ -355,7 +355,7 @@ function PurchaseEntry() {
                 >
                   <option value="">Select Brand</option>
                   {Array.isArray(item.fetchData) &&
-                  item.fetchData.length > 0 ? (
+                    item.fetchData.length > 0 ? (
                     item.fetchData.map((brand) => (
                       <option key={brand._id} value={brand.brandName}>
                         {brand.brandName}
@@ -375,7 +375,7 @@ function PurchaseEntry() {
                 >
                   <option value="">Select RowLabel</option>
                   {Array.isArray(item.brandData?.type) &&
-                  item.brandData.type.length > 0 ? (
+                    item.brandData.type.length > 0 ? (
                     item.brandData.type.map((label) => (
                       <option key={label._id} value={label.type}>
                         {label.type}
