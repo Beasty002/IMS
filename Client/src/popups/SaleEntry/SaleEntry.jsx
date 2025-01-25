@@ -201,13 +201,11 @@ function SaleEntry() {
         }, 1300);
       } else {
         console.log("Error");
-        toast.error("Out of stock", {
-          autoClose: 1000,
-        });
-        return;
+        throw new Error(data.err);
       }
     } catch (error) {
       console.error(error);
+      toast.error(data.err);
     } finally {
       checkForNewDate();
     }
