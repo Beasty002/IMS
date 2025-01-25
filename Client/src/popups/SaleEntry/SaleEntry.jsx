@@ -201,7 +201,7 @@ function SaleEntry() {
         }, 1300);
       } else {
         console.log("Error");
-        throw new Error(data.err);
+        toast.error(data.err);
       }
     } catch (error) {
       console.error(error);
