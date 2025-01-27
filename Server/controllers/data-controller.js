@@ -419,12 +419,11 @@ const salesEntry = async (req, res) => {
       //   return res.status(400).json({err: `Not enough stock available! Total Stock: ${forRecordStock.totalStock}`})
       // }
       // }
+      var newSale = await newSaleEntry.save();
+  
+      saleIds.push(newSale._id);
+  
     }
-
-    var newSale = await newSaleEntry.save();
-
-    saleIds.push(newSale._id);
-
     const newSalesEntry = new SalesRecord({
       saleIds: saleIds,
     });
